@@ -136,6 +136,14 @@ supabase functions serve          # Edge Functions local
 - **Nunca** exponha `service_role` no client (qualquer `NEXT_PUBLIC_*` vai pro browser).
 - Autorização nunca via `user_metadata` (editável pelo usuário) → use `app_metadata`.
 
+### 5.7 Design — identidade visual (EON)
+
+- **Minimalista e clean**: fundo branco, hierarquia por tipografia, pouca cromia.
+- **Paleta oficial** em tokens (`globals.css` `@theme`): `preto` `#000` (títulos/ação primária), `cinza` `#404040` (texto/ícones), `bege` `#BCAB8F` (eyebrows/tags/foco — **não** como texto pequeno no branco, contraste baixo), `bege-claro` `#EEEAE3` (bordas/fundos sutis), branco no fundo. Use os utilitários `bg-preto`/`text-cinza`/`border-bege-claro`…
+- **Cor funcional** (vermelho p/ alerta de compra/saldo baixo) só quando comunica algo real — não decore.
+- **Logo:** componente [`LogoEon`](src/app/_components/logo-eon.tsx) (`currentColor`), nunca o `.svg` branco direto no fundo claro (ficaria invisível).
+- **Light-first:** `dark:` é opt-in por classe `.dark` (`@custom-variant` no globals). Detalhes em [`.claude/project-context.md`](.claude/project-context.md).
+
 ---
 
 ## 6. Forms (padrão a adotar quando criarmos as telas)

@@ -1,0 +1,950 @@
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "13.0.5"
+  }
+  estoque: {
+    Tables: {
+      composicao: {
+        Row: {
+          id: string
+          insumo_id: string
+          quantidade: number
+          tipo_kit_id: string
+        }
+        Insert: {
+          id?: string
+          insumo_id: string
+          quantidade: number
+          tipo_kit_id: string
+        }
+        Update: {
+          id?: string
+          insumo_id?: string
+          quantidade?: number
+          tipo_kit_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "composicao_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "insumo"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "composicao_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "ponto_de_pedido_view"
+            referencedColumns: ["insumo_id"]
+          },
+          {
+            foreignKeyName: "composicao_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "saldo_insumo"
+            referencedColumns: ["insumo_id"]
+          },
+          {
+            foreignKeyName: "composicao_tipo_kit_id_fkey"
+            columns: ["tipo_kit_id"]
+            isOneToOne: false
+            referencedRelation: "kits_possiveis_view"
+            referencedColumns: ["tipo_kit_id"]
+          },
+          {
+            foreignKeyName: "composicao_tipo_kit_id_fkey"
+            columns: ["tipo_kit_id"]
+            isOneToOne: false
+            referencedRelation: "tipo_kit"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      de_para_fornecedor: {
+        Row: {
+          codigo_ean: string | null
+          created_at: string
+          descricao_fornecedor: string
+          fator_conversao: number
+          id: string
+          insumo_id: string
+        }
+        Insert: {
+          codigo_ean?: string | null
+          created_at?: string
+          descricao_fornecedor: string
+          fator_conversao?: number
+          id?: string
+          insumo_id: string
+        }
+        Update: {
+          codigo_ean?: string | null
+          created_at?: string
+          descricao_fornecedor?: string
+          fator_conversao?: number
+          id?: string
+          insumo_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "de_para_fornecedor_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "insumo"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "de_para_fornecedor_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "ponto_de_pedido_view"
+            referencedColumns: ["insumo_id"]
+          },
+          {
+            foreignKeyName: "de_para_fornecedor_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "saldo_insumo"
+            referencedColumns: ["insumo_id"]
+          },
+        ]
+      }
+      empreendimento: {
+        Row: {
+          created_at: string
+          id: string
+          nome: string
+          qtd_apartamentos: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          nome: string
+          qtd_apartamentos?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          nome?: string
+          qtd_apartamentos?: number
+        }
+        Relationships: []
+      }
+      insumo: {
+        Row: {
+          consumo_dia: number
+          created_at: string
+          estoque_min: number
+          id: string
+          lead_time_dias: number
+          nome: string
+          unidade: string
+        }
+        Insert: {
+          consumo_dia?: number
+          created_at?: string
+          estoque_min?: number
+          id?: string
+          lead_time_dias?: number
+          nome: string
+          unidade: string
+        }
+        Update: {
+          consumo_dia?: number
+          created_at?: string
+          estoque_min?: number
+          id?: string
+          lead_time_dias?: number
+          nome?: string
+          unidade?: string
+        }
+        Relationships: []
+      }
+      local: {
+        Row: {
+          cnpj: string | null
+          created_at: string
+          id: string
+          is_padrao: boolean
+          nome: string
+        }
+        Insert: {
+          cnpj?: string | null
+          created_at?: string
+          id?: string
+          is_padrao?: boolean
+          nome: string
+        }
+        Update: {
+          cnpj?: string | null
+          created_at?: string
+          id?: string
+          is_padrao?: boolean
+          nome?: string
+        }
+        Relationships: []
+      }
+      lote: {
+        Row: {
+          created_at: string
+          data_producao: string
+          empreendimento_id: string | null
+          id: string
+          quantidade: number
+          tipo_kit_id: string
+        }
+        Insert: {
+          created_at?: string
+          data_producao?: string
+          empreendimento_id?: string | null
+          id?: string
+          quantidade: number
+          tipo_kit_id: string
+        }
+        Update: {
+          created_at?: string
+          data_producao?: string
+          empreendimento_id?: string | null
+          id?: string
+          quantidade?: number
+          tipo_kit_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lote_empreendimento_id_fkey"
+            columns: ["empreendimento_id"]
+            isOneToOne: false
+            referencedRelation: "empreendimento"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lote_tipo_kit_id_fkey"
+            columns: ["tipo_kit_id"]
+            isOneToOne: false
+            referencedRelation: "kits_possiveis_view"
+            referencedColumns: ["tipo_kit_id"]
+          },
+          {
+            foreignKeyName: "lote_tipo_kit_id_fkey"
+            columns: ["tipo_kit_id"]
+            isOneToOne: false
+            referencedRelation: "tipo_kit"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      movimentacao: {
+        Row: {
+          data: string
+          id: string
+          insumo_id: string | null
+          local_id: string | null
+          lote_id: string | null
+          observacao: string | null
+          quantidade: number
+          tipo: string
+          unidade_kit_id: string | null
+          usuario_id: string | null
+        }
+        Insert: {
+          data?: string
+          id?: string
+          insumo_id?: string | null
+          local_id?: string | null
+          lote_id?: string | null
+          observacao?: string | null
+          quantidade: number
+          tipo: string
+          unidade_kit_id?: string | null
+          usuario_id?: string | null
+        }
+        Update: {
+          data?: string
+          id?: string
+          insumo_id?: string | null
+          local_id?: string | null
+          lote_id?: string | null
+          observacao?: string | null
+          quantidade?: number
+          tipo?: string
+          unidade_kit_id?: string | null
+          usuario_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "movimentacao_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "insumo"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "movimentacao_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "ponto_de_pedido_view"
+            referencedColumns: ["insumo_id"]
+          },
+          {
+            foreignKeyName: "movimentacao_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "saldo_insumo"
+            referencedColumns: ["insumo_id"]
+          },
+          {
+            foreignKeyName: "movimentacao_local_id_fkey"
+            columns: ["local_id"]
+            isOneToOne: false
+            referencedRelation: "local"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "movimentacao_lote_id_fkey"
+            columns: ["lote_id"]
+            isOneToOne: false
+            referencedRelation: "lote"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "movimentacao_unidade_kit_id_fkey"
+            columns: ["unidade_kit_id"]
+            isOneToOne: false
+            referencedRelation: "unidade_kit"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tipo_kit: {
+        Row: {
+          created_at: string
+          descricao: string | null
+          id: string
+          nome: string
+        }
+        Insert: {
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome: string
+        }
+        Update: {
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome?: string
+        }
+        Relationships: []
+      }
+      unidade_kit: {
+        Row: {
+          created_at: string
+          id: string
+          local_id: string | null
+          lote_id: string
+          numero: number
+          qr_code: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          local_id?: string | null
+          lote_id: string
+          numero: number
+          qr_code: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          local_id?: string | null
+          lote_id?: string
+          numero?: number
+          qr_code?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "unidade_kit_local_id_fkey"
+            columns: ["local_id"]
+            isOneToOne: false
+            referencedRelation: "local"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "unidade_kit_lote_id_fkey"
+            columns: ["lote_id"]
+            isOneToOne: false
+            referencedRelation: "lote"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+    }
+    Views: {
+      kits_possiveis_view: {
+        Row: {
+          insumo_gargalo_id: string | null
+          insumo_gargalo_nome: string | null
+          qtd_possivel: number | null
+          tipo_kit_id: string | null
+          tipo_kit_nome: string | null
+        }
+        Relationships: []
+      }
+      ponto_de_pedido_view: {
+        Row: {
+          consumo_dia: number | null
+          estoque_min: number | null
+          insumo_id: string | null
+          lead_time_dias: number | null
+          nome: string | null
+          ponto_pedido: number | null
+          precisa_comprar: boolean | null
+          saldo: number | null
+          sugestao_compra: number | null
+          unidade: string | null
+        }
+        Relationships: []
+      }
+      saldo_insumo: {
+        Row: {
+          consumo_dia: number | null
+          estoque_min: number | null
+          insumo_id: string | null
+          lead_time_dias: number | null
+          nome: string | null
+          saldo: number | null
+          unidade: string | null
+        }
+        Relationships: []
+      }
+    }
+    Functions: {
+      calcular_kits_possiveis: {
+        Args: { p_tipo_kit_id: string }
+        Returns: {
+          insumo_gargalo_id: string
+          insumo_gargalo_nome: string
+          qtd_possivel: number
+        }[]
+      }
+      criar_kit_com_bom: {
+        Args: { p_descricao: string; p_itens: Json; p_nome: string }
+        Returns: {
+          created_at: string
+          descricao: string | null
+          id: string
+          nome: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "tipo_kit"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      editar_kit_com_bom: {
+        Args: {
+          p_descricao: string
+          p_itens: Json
+          p_kit_id: string
+          p_nome: string
+        }
+        Returns: {
+          created_at: string
+          descricao: string | null
+          id: string
+          nome: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "tipo_kit"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      produzir_lote: {
+        Args: {
+          p_empreendimento_id?: string
+          p_local_id?: string
+          p_quantidade: number
+          p_tipo_kit_id: string
+        }
+        Returns: {
+          created_at: string
+          data_producao: string
+          empreendimento_id: string | null
+          id: string
+          quantidade: number
+          tipo_kit_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "lote"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      registrar_saida_kit: {
+        Args: {
+          p_local_destino_id?: string
+          p_observacao?: string
+          p_qr_code: string
+        }
+        Returns: {
+          created_at: string
+          id: string
+          local_id: string | null
+          lote_id: string
+          numero: number
+          qr_code: string
+          status: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "unidade_kit"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+  public: {
+    Tables: {
+      configuracoes_notificacao: {
+        Row: {
+          id: number
+          notificar_fornecedor: boolean
+          notificar_grupo: boolean
+          updated_at: string
+        }
+        Insert: {
+          id?: number
+          notificar_fornecedor?: boolean
+          notificar_grupo?: boolean
+          updated_at?: string
+        }
+        Update: {
+          id?: number
+          notificar_fornecedor?: boolean
+          notificar_grupo?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      eventos_pedidos_aprovados: {
+        Row: {
+          centro_custo: string | null
+          contato_fornecedor: string | null
+          created_at: string
+          fornecedor_notificado: boolean | null
+          grupo_notificado: boolean
+          id: string
+          id_fornecedor: string | null
+          id_pedido: string | null
+          nome_contato: string | null
+          nome_fornecedor: string | null
+          notificacao_motivo: string | null
+          notificacao_status: string
+          storage_pdf_pedido: string | null
+        }
+        Insert: {
+          centro_custo?: string | null
+          contato_fornecedor?: string | null
+          created_at?: string
+          fornecedor_notificado?: boolean | null
+          grupo_notificado?: boolean
+          id?: string
+          id_fornecedor?: string | null
+          id_pedido?: string | null
+          nome_contato?: string | null
+          nome_fornecedor?: string | null
+          notificacao_motivo?: string | null
+          notificacao_status?: string
+          storage_pdf_pedido?: string | null
+        }
+        Update: {
+          centro_custo?: string | null
+          contato_fornecedor?: string | null
+          created_at?: string
+          fornecedor_notificado?: boolean | null
+          grupo_notificado?: boolean
+          id?: string
+          id_fornecedor?: string | null
+          id_pedido?: string | null
+          nome_contato?: string | null
+          nome_fornecedor?: string | null
+          notificacao_motivo?: string | null
+          notificacao_status?: string
+          storage_pdf_pedido?: string | null
+        }
+        Relationships: []
+      }
+      grupos_notificacao: {
+        Row: {
+          ativo: boolean
+          centros_custo: string[]
+          contato: string
+          created_at: string
+          id: string
+          nome_grupo: string
+        }
+        Insert: {
+          ativo?: boolean
+          centros_custo?: string[]
+          contato: string
+          created_at?: string
+          id?: string
+          nome_grupo: string
+        }
+        Update: {
+          ativo?: boolean
+          centros_custo?: string[]
+          contato?: string
+          created_at?: string
+          id?: string
+          nome_grupo?: string
+        }
+        Relationships: []
+      }
+      logs_eventos_de_solicitacao_sienge: {
+        Row: {
+          created_at: string
+          id: number
+          id_solicitacao: number
+          ultimo_evento_em: string | null
+          ultimo_item_recebido: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          id_solicitacao: number
+          ultimo_evento_em?: string | null
+          ultimo_item_recebido?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          id_solicitacao?: number
+          ultimo_evento_em?: string | null
+          ultimo_item_recebido?: number | null
+        }
+        Relationships: []
+      }
+      logs_pedidos_aprovados: {
+        Row: {
+          created_at: string
+          id: number
+          id_empreendimento: number | null
+          id_pedido: string | null
+          link_drive: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          id_empreendimento?: number | null
+          id_pedido?: string | null
+          link_drive?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          id_empreendimento?: number | null
+          id_pedido?: string | null
+          link_drive?: string | null
+        }
+        Relationships: []
+      }
+      notificacao_queue: {
+        Row: {
+          agendada_para: string
+          created_at: string
+          destinatario: string
+          evento_pedido_id: string
+          id: string
+          mensagem: string
+          nome_destinatario: string | null
+          processada_em: string | null
+          status: string
+          tentativas: number
+          tipo_destinatario: string
+          tracking_token: string
+          ultimo_erro: string | null
+        }
+        Insert: {
+          agendada_para?: string
+          created_at?: string
+          destinatario: string
+          evento_pedido_id: string
+          id?: string
+          mensagem: string
+          nome_destinatario?: string | null
+          processada_em?: string | null
+          status?: string
+          tentativas?: number
+          tipo_destinatario: string
+          tracking_token: string
+          ultimo_erro?: string | null
+        }
+        Update: {
+          agendada_para?: string
+          created_at?: string
+          destinatario?: string
+          evento_pedido_id?: string
+          id?: string
+          mensagem?: string
+          nome_destinatario?: string | null
+          processada_em?: string | null
+          status?: string
+          tentativas?: number
+          tipo_destinatario?: string
+          tracking_token?: string
+          ultimo_erro?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notificacao_queue_evento_pedido_id_fkey"
+            columns: ["evento_pedido_id"]
+            isOneToOne: false
+            referencedRelation: "eventos_pedidos_aprovados"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      whatsapp_message_status: {
+        Row: {
+          button_clicked: boolean
+          button_clicked_at: string | null
+          click_count: number
+          created_at: string
+          destinatario: string
+          evento_pedido_id: string | null
+          first_clicked_at: string | null
+          id: string
+          last_click_ip: string | null
+          last_click_user_agent: string | null
+          last_clicked_at: string | null
+          message_id: string
+          nome_destinatario: string | null
+          payload_raw: Json | null
+          status: string
+          status_timestamp: string
+          tipo_destinatario: string
+          tracking_token: string | null
+          updated_at: string
+          zaap_id: string | null
+        }
+        Insert: {
+          button_clicked?: boolean
+          button_clicked_at?: string | null
+          click_count?: number
+          created_at?: string
+          destinatario: string
+          evento_pedido_id?: string | null
+          first_clicked_at?: string | null
+          id?: string
+          last_click_ip?: string | null
+          last_click_user_agent?: string | null
+          last_clicked_at?: string | null
+          message_id: string
+          nome_destinatario?: string | null
+          payload_raw?: Json | null
+          status?: string
+          status_timestamp?: string
+          tipo_destinatario: string
+          tracking_token?: string | null
+          updated_at?: string
+          zaap_id?: string | null
+        }
+        Update: {
+          button_clicked?: boolean
+          button_clicked_at?: string | null
+          click_count?: number
+          created_at?: string
+          destinatario?: string
+          evento_pedido_id?: string | null
+          first_clicked_at?: string | null
+          id?: string
+          last_click_ip?: string | null
+          last_click_user_agent?: string | null
+          last_clicked_at?: string | null
+          message_id?: string
+          nome_destinatario?: string | null
+          payload_raw?: Json | null
+          status?: string
+          status_timestamp?: string
+          tipo_destinatario?: string
+          tracking_token?: string | null
+          updated_at?: string
+          zaap_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_message_status_evento_pedido_id_fkey"
+            columns: ["evento_pedido_id"]
+            isOneToOne: false
+            referencedRelation: "eventos_pedidos_aprovados"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+}
+
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+export const Constants = {
+  estoque: {
+    Enums: {},
+  },
+  public: {
+    Enums: {},
+  },
+} as const

@@ -1,8 +1,13 @@
 @import "tailwindcss";
 
+/* O design da EON é light-first (fundo branco). Tornamos o dark opt-in por
+   classe (.dark) em vez de seguir o prefers-color-scheme do SO — assim o app
+   fica sempre claro a menos que a gente decida o contrário. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #ffffff; /* branco */
+  --foreground: #404040; /* cinza — texto corrido */
 }
 
 @theme inline {
@@ -10,17 +15,16 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Paleta oficial EON */
+  --color-preto: #000000; /* títulos, ação primária */
+  --color-cinza: #404040; /* texto corrido, ícones */
+  --color-bege: #bcab8f; /* destaque/tags */
+  --color-bege-claro: #eeeae3; /* bordas, fundos sutis, tags minimalistas */
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }

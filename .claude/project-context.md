@@ -47,6 +47,34 @@ combater furto.
 - **Idioma**: domínio e comentários em português; identificadores de código em
   inglês/snake_case no banco.
 
+## Identidade visual / Design (EON)
+
+O sistema usa um design **minimalista e clean**: muito espaço em branco, hierarquia
+por tipografia (não por cor), pouca cromia. **Fundo branco predominante**; preto e
+cinza para textos; **bege** apenas em detalhes minimalistas (eyebrows, tags, fundos
+sutis, ícones, bordas). Cores funcionais (vermelho para "precisa comprar"/saldo
+baixo) são exceção e só aparecem quando comunicam um alerta real.
+
+**Paleta oficial** (tokens em [`src/app/globals.css`](../../src/app/globals.css), via
+`@theme` → geram utilitários `bg-*`/`text-*`/`border-*`):
+
+| Token | Hex | Uso |
+|---|---|---|
+| `preto` | `#000000` | títulos, ação primária (botões), texto forte |
+| `cinza` | `#404040` | texto corrido, ícones, secundários (`text-cinza/60` etc.) |
+| `bege` | `#BCAB8F` | eyebrows/labels, destaque de tag, borda de foco. **Não usar como texto pequeno no branco** (contraste baixo — §5.5) |
+| `bege-claro` | `#EEEAE3` | bordas, divisórias, fundos sutis, tags minimalistas |
+| `background` | `#FFFFFF` | fundo |
+
+**Logo:** [`public/logo-eon.svg`](../../public/logo-eon.svg) é **branca** (feita p/ fundo
+escuro). Use o componente [`LogoEon`](../../src/app/_components/logo-eon.tsx), que in-lina
+a SVG com `fill="currentColor"` → fica preta no fundo claro e branca quando o container
+é escuro (ex.: painel do login). Nunca referencie o `.svg` direto via `<img>` no claro
+(ficaria invisível).
+
+**Light-first:** o `dark:` do Tailwind é opt-in por classe `.dark` (ver `@custom-variant`
+no globals); sem `.dark` no `<html>`, o app é sempre claro.
+
 ## Skills aplicáveis a este projeto
 
 `next-best-practices`, `next-cache-components`, `supabase`,

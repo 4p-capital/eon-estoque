@@ -30,10 +30,10 @@ export default async function DashboardPage() {
   return (
     <main className="mx-auto max-w-5xl px-6 py-10">
       <header className="mb-8">
-        <h1 className="text-2xl font-semibold tracking-tight">
+        <h1 className="text-2xl font-semibold tracking-tight text-preto">
           Controle de Estoque — EON Instalações
         </h1>
-        <p className="mt-1 text-sm text-zinc-500">
+        <p className="mt-1 text-sm text-cinza/70">
           Capacidade de produção atual e alertas de compra.
         </p>
       </header>
@@ -51,27 +51,25 @@ export default async function DashboardPage() {
         <div className="grid gap-8 lg:grid-cols-2">
           {/* Cálculo 1 — Kits possíveis */}
           <section>
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-cinza/60">
               Kits possíveis agora
             </h2>
             <div className="space-y-3">
               {dados.kits!.map((k) => (
                 <div
                   key={k.tipo_kit_id}
-                  className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
+                  className="rounded-lg border border-bege-claro bg-white p-4"
                 >
                   <div className="flex items-baseline justify-between">
                     <span className="font-medium">{k.tipo_kit_nome}</span>
                     <span className="text-2xl font-semibold tabular-nums">
-                      {nf.format(k.qtd_possivel)}
+                      {nf.format(k.qtd_possivel ?? 0)}
                     </span>
                   </div>
                   {k.insumo_gargalo_nome && (
-                    <p className="mt-1 text-xs text-zinc-500">
+                    <p className="mt-1 text-xs text-cinza/60">
                       Gargalo:{" "}
-                      <span className="font-medium text-amber-600">
-                        {k.insumo_gargalo_nome}
-                      </span>
+                      <span className="font-medium text-preto">{k.insumo_gargalo_nome}</span>
                     </p>
                   )}
                 </div>
@@ -86,12 +84,12 @@ export default async function DashboardPage() {
 
           {/* Cálculo 2 — Ponto de pedido */}
           <section>
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-cinza/60">
               Estoque & ponto de pedido
             </h2>
-            <div className="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800">
+            <div className="overflow-hidden rounded-lg border border-bege-claro">
               <table className="w-full text-sm">
-                <thead className="bg-zinc-50 text-left text-xs uppercase text-zinc-500 dark:bg-zinc-900">
+                <thead className="bg-bege-claro/40 text-left text-xs uppercase text-cinza/60">
                   <tr>
                     <th className="px-3 py-2">Insumo</th>
                     <th className="px-3 py-2 text-right">Saldo</th>
@@ -103,22 +101,22 @@ export default async function DashboardPage() {
                   {dados.pontos!.map((p) => (
                     <tr
                       key={p.insumo_id}
-                      className="border-t border-zinc-100 dark:border-zinc-800"
+                      className="border-t border-bege-claro"
                     >
                       <td className="px-3 py-2">{p.nome}</td>
                       <td className="px-3 py-2 text-right tabular-nums">
-                        {nf.format(p.saldo)} {p.unidade}
+                        {nf.format(p.saldo ?? 0)} {p.unidade}
                       </td>
                       <td className="px-3 py-2 text-right tabular-nums text-zinc-500">
-                        {nf.format(p.ponto_pedido)}
+                        {nf.format(p.ponto_pedido ?? 0)}
                       </td>
                       <td className="px-3 py-2 text-right">
                         {p.precisa_comprar ? (
                           <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">
-                            {nf.format(p.sugestao_compra)} {p.unidade}
+                            {nf.format(p.sugestao_compra ?? 0)} {p.unidade}
                           </span>
                         ) : (
-                          <span className="text-xs text-emerald-600">OK</span>
+                          <span className="text-xs text-cinza/50">OK</span>
                         )}
                       </td>
                     </tr>

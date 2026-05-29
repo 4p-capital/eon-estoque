@@ -1,24 +1,21 @@
-// Tipos do domínio (espelham as views do Postgres).
-// Depois de conectar o projeto, dá para gerar tipos completos com:
-//   supabase gen types typescript --local > src/lib/database.types.ts
+// Tipos do domínio derivados das views do Postgres (schema `estoque`).
+// Fonte da verdade: database.types.ts (gerado via `supabase gen types`).
+// Regenerar após mudança de schema:
+//   pnpm exec supabase gen types typescript --project-id <ref> --schema public --schema estoque > src/lib/database.types.ts
 
-export type KitPossivel = {
-  tipo_kit_id: string;
-  tipo_kit_nome: string;
-  qtd_possivel: number;
-  insumo_gargalo_id: string | null;
-  insumo_gargalo_nome: string | null;
-};
+import type { Database } from "@/lib/database.types";
 
-export type PontoPedido = {
-  insumo_id: string;
-  nome: string;
-  unidade: string;
-  saldo: number;
-  consumo_dia: number;
-  lead_time_dias: number;
-  estoque_min: number;
-  ponto_pedido: number;
-  precisa_comprar: boolean;
-  sugestao_compra: number;
-};
+type EstoqueViews = Database["estoque"]["Views"];
+type EstoqueTables = Database["estoque"]["Tables"];
+
+export type KitPossivel = EstoqueViews["kits_possiveis_view"]["Row"];
+export type PontoPedido = EstoqueViews["ponto_de_pedido_view"]["Row"];
+export type SaldoInsumo = EstoqueViews["saldo_insumo"]["Row"];
+
+export type Insumo = EstoqueTables["insumo"]["Row"];
+export type InsumoInsert = EstoqueTables["insumo"]["Insert"];
+export type TipoKit = EstoqueTables["tipo_kit"]["Row"];
+export type Empreendimento = EstoqueTables["empreendimento"]["Row"];
+export type Local = EstoqueTables["local"]["Row"];
+export type Lote = EstoqueTables["lote"]["Row"];
+export type UnidadeKit = EstoqueTables["unidade_kit"]["Row"];
