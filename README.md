@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sistema Inteligente de Controle de Estoque — EON Instalações
 
-## Getting Started
+Controle de estoque para a industrialização de kits (elétrico, hidráulico…) usados
+na construção dos apartamentos. O sistema gira em torno da relação
+**insumo → kit → empreendimento**, derivada da ata de reunião.
 
-First, run the development server:
+## O que ele faz
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Kits possíveis**: calcula quantos kits dá para montar agora, apontando o
+  _insumo gargalo_ (o que acaba primeiro).
+- **Ponto de pedido**: alerta de compra quando o saldo cruza
+  `consumo_dia × lead_time + estoque_segurança` — nem comprar cedo demais, nem faltar.
+- **Produção de lote**: registra "produzi X kits", baixa os insumos pelo BOM
+  automaticamente e gera um **QR único por kit**.
+- **Saída por QR**: bipa o kit na saída, registra quem/quando/destino e recusa baixa dupla.
+- **De-Para de fornecedor**: mapeia o nome/EAN do fornecedor para o insumo interno
+  (resolve nota impressa/OCR).
+
+## Stack
+
+| Camada     | Tecnologia                                  |
+| ---------- | ------------------------------------------- |
+| Frontend   | Next.js 16 + React 19 + Tailwind CSS 4      |
+| Backend    | Supabase — Postgres, Auth, Edge Functions   |
+| Lógica     | Funções SQL (atômicas) + Edge Functions (Deno) |
+
+## Estrutura
+
+```
+eon-estoque/
+├── src/
+│   ├── app/dashboard/        # tela de kits possíveis + ponto de pedido
+│   ├── lib/supabase/         # clients (browser/server) + middleware de sessão
+│   └── lib/types.ts          # tipos do domínio
+└── supabase/
+    ├── migrations/
+    │   ├── ..._schema_inicial.sql     # tabelas, views, RLS
+    │   └── ..._funcoes_estoque.sql    # inteligência + funções transacionais
+    ├── functions/            # Edge Functions
+    │   ├── kits-possiveis/
+    │   ├── ponto-de-pedido/
+    │   ├── produzir-lote/
+    │   └── registrar-saida/
+    └── seed.sql              # dados de exemplo (cenário da reunião)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Modelo de dados (resumo)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+`TIPO_KIT` (receita/BOM) → `LOTE` (produção ligada a um `EMPREENDIMENTO`) →
+`UNIDADE_KIT` (cada kit físico, com `qr_code`). `INSUMO` + `COMPOSICAO` (BOM) e
+`MOVIMENTACAO` (livro-razão: saldo = soma das movimentações). `DE_PARA_FORNECEDOR`
+liga descrições/EAN do fornecedor ao insumo interno.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Como rodar
 
-## Learn More
+### 1. Variáveis de ambiente
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+cp .env.example .env.local
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Preencha com a URL e a anon key do Supabase (local ou nuvem).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 2. Banco de dados
 
-## Deploy on Vercel
+**Local (Docker):**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+supabase start          # sobe Postgres + Auth + Studio; imprime URL/anon key
+supabase db reset       # aplica as migrations + roda o seed.sql
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Nuvem:** conecte um projeto (`supabase link --project-ref <ref>`) e rode
+`supabase db push`. As Edge Functions sobem com `supabase functions deploy`.
+
+### 3. Frontend
+
+```bash
+pnpm install
+pnpm dev                # http://localhost:3000  -> redireciona para /dashboard
+```
+
+## Cenário do seed
+
+Estoque inicial: fio 4.500 m, disjuntor 380 un, caixa 900 un. Kit elétrico = 10 m
+fio + 1 disjuntor + 2 caixas → **380 kits possíveis** (gargalo: disjuntor).
+
+## Próximos passos sugeridos
+
+- Telas de produção (gera os QRs do lote para impressão) e de bipagem na saída.
+- Importação de NF-e (XML via chave de acesso; OCR como fallback com conferência).
+- Geração de tipos: `supabase gen types typescript --local > src/lib/database.types.ts`.
+- Autenticação (telas de login usando Supabase Auth).
