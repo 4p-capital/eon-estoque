@@ -73,7 +73,9 @@ export type Database = {
       }
       de_para_fornecedor: {
         Row: {
+          cnpj_emitente: string | null
           codigo_ean: string | null
+          codigo_produto: string | null
           created_at: string
           descricao_fornecedor: string
           fator_conversao: number
@@ -81,7 +83,9 @@ export type Database = {
           insumo_id: string
         }
         Insert: {
+          cnpj_emitente?: string | null
           codigo_ean?: string | null
+          codigo_produto?: string | null
           created_at?: string
           descricao_fornecedor: string
           fator_conversao?: number
@@ -89,7 +93,9 @@ export type Database = {
           insumo_id: string
         }
         Update: {
+          cnpj_emitente?: string | null
           codigo_ean?: string | null
+          codigo_produto?: string | null
           created_at?: string
           descricao_fornecedor?: string
           fator_conversao?: number
@@ -140,6 +146,54 @@ export type Database = {
           qtd_apartamentos?: number
         }
         Relationships: []
+      }
+      evento: {
+        Row: {
+          created_at: string
+          dados: Json | null
+          descricao: string
+          empreendimento_id: string | null
+          id: string
+          nota_id: string | null
+          tipo: string
+          usuario_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          dados?: Json | null
+          descricao: string
+          empreendimento_id?: string | null
+          id?: string
+          nota_id?: string | null
+          tipo: string
+          usuario_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          dados?: Json | null
+          descricao?: string
+          empreendimento_id?: string | null
+          id?: string
+          nota_id?: string | null
+          tipo?: string
+          usuario_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "evento_empreendimento_id_fkey"
+            columns: ["empreendimento_id"]
+            isOneToOne: false
+            referencedRelation: "empreendimento"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evento_nota_id_fkey"
+            columns: ["nota_id"]
+            isOneToOne: false
+            referencedRelation: "nota_fiscal"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       insumo: {
         Row: {
@@ -247,10 +301,12 @@ export type Database = {
       movimentacao: {
         Row: {
           data: string
+          empreendimento_id: string | null
           id: string
           insumo_id: string | null
           local_id: string | null
           lote_id: string | null
+          nota_item_id: string | null
           observacao: string | null
           quantidade: number
           tipo: string
@@ -259,10 +315,12 @@ export type Database = {
         }
         Insert: {
           data?: string
+          empreendimento_id?: string | null
           id?: string
           insumo_id?: string | null
           local_id?: string | null
           lote_id?: string | null
+          nota_item_id?: string | null
           observacao?: string | null
           quantidade: number
           tipo: string
@@ -271,10 +329,12 @@ export type Database = {
         }
         Update: {
           data?: string
+          empreendimento_id?: string | null
           id?: string
           insumo_id?: string | null
           local_id?: string | null
           lote_id?: string | null
+          nota_item_id?: string | null
           observacao?: string | null
           quantidade?: number
           tipo?: string
@@ -282,6 +342,13 @@ export type Database = {
           usuario_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "movimentacao_empreendimento_id_fkey"
+            columns: ["empreendimento_id"]
+            isOneToOne: false
+            referencedRelation: "empreendimento"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "movimentacao_insumo_id_fkey"
             columns: ["insumo_id"]
@@ -318,10 +385,231 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "movimentacao_nota_item_id_fkey"
+            columns: ["nota_item_id"]
+            isOneToOne: false
+            referencedRelation: "nota_item"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "movimentacao_unidade_kit_id_fkey"
             columns: ["unidade_kit_id"]
             isOneToOne: false
             referencedRelation: "unidade_kit"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      nota_fiscal: {
+        Row: {
+          chave: string
+          created_at: string
+          data_emissao: string | null
+          emitente_cnpj: string | null
+          emitente_nome: string | null
+          empreendimento_id: string | null
+          id: string
+          motivo_recusa: string | null
+          numero: string | null
+          recebido_em: string | null
+          recebido_por: string | null
+          serie: string | null
+          spe_id: string | null
+          status: string
+          updated_at: string
+          valor_total: number | null
+          xml: string | null
+        }
+        Insert: {
+          chave: string
+          created_at?: string
+          data_emissao?: string | null
+          emitente_cnpj?: string | null
+          emitente_nome?: string | null
+          empreendimento_id?: string | null
+          id?: string
+          motivo_recusa?: string | null
+          numero?: string | null
+          recebido_em?: string | null
+          recebido_por?: string | null
+          serie?: string | null
+          spe_id?: string | null
+          status?: string
+          updated_at?: string
+          valor_total?: number | null
+          xml?: string | null
+        }
+        Update: {
+          chave?: string
+          created_at?: string
+          data_emissao?: string | null
+          emitente_cnpj?: string | null
+          emitente_nome?: string | null
+          empreendimento_id?: string | null
+          id?: string
+          motivo_recusa?: string | null
+          numero?: string | null
+          recebido_em?: string | null
+          recebido_por?: string | null
+          serie?: string | null
+          spe_id?: string | null
+          status?: string
+          updated_at?: string
+          valor_total?: number | null
+          xml?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nota_fiscal_empreendimento_id_fkey"
+            columns: ["empreendimento_id"]
+            isOneToOne: false
+            referencedRelation: "empreendimento"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "nota_fiscal_spe_id_fkey"
+            columns: ["spe_id"]
+            isOneToOne: false
+            referencedRelation: "spe"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      nota_item: {
+        Row: {
+          cfop: string | null
+          codigo_fornecedor: string | null
+          created_at: string
+          descricao: string | null
+          ean: string | null
+          fator_conversao: number
+          id: string
+          insumo_id: string | null
+          ncm: string | null
+          nota_id: string
+          num_item: number
+          quantidade: number
+          quantidade_recebida: number | null
+          unidade: string | null
+          valor_total: number | null
+          valor_unitario: number | null
+        }
+        Insert: {
+          cfop?: string | null
+          codigo_fornecedor?: string | null
+          created_at?: string
+          descricao?: string | null
+          ean?: string | null
+          fator_conversao?: number
+          id?: string
+          insumo_id?: string | null
+          ncm?: string | null
+          nota_id: string
+          num_item: number
+          quantidade: number
+          quantidade_recebida?: number | null
+          unidade?: string | null
+          valor_total?: number | null
+          valor_unitario?: number | null
+        }
+        Update: {
+          cfop?: string | null
+          codigo_fornecedor?: string | null
+          created_at?: string
+          descricao?: string | null
+          ean?: string | null
+          fator_conversao?: number
+          id?: string
+          insumo_id?: string | null
+          ncm?: string | null
+          nota_id?: string
+          num_item?: number
+          quantidade?: number
+          quantidade_recebida?: number | null
+          unidade?: string | null
+          valor_total?: number | null
+          valor_unitario?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nota_item_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "insumo"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "nota_item_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "ponto_de_pedido_view"
+            referencedColumns: ["insumo_id"]
+          },
+          {
+            foreignKeyName: "nota_item_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "saldo_insumo"
+            referencedColumns: ["insumo_id"]
+          },
+          {
+            foreignKeyName: "nota_item_nota_id_fkey"
+            columns: ["nota_id"]
+            isOneToOne: false
+            referencedRelation: "nota_fiscal"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      spe: {
+        Row: {
+          ativo: boolean
+          certificado_cifrado: string
+          certificado_validade: string
+          cnpj: string
+          created_at: string
+          empreendimento_id: string | null
+          id: string
+          razao_social: string
+          senha_cifrada: string
+          uf: string | null
+          ultimo_nsu: number
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          certificado_cifrado: string
+          certificado_validade: string
+          cnpj: string
+          created_at?: string
+          empreendimento_id?: string | null
+          id?: string
+          razao_social: string
+          senha_cifrada: string
+          uf?: string | null
+          ultimo_nsu?: number
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          certificado_cifrado?: string
+          certificado_validade?: string
+          cnpj?: string
+          created_at?: string
+          empreendimento_id?: string | null
+          id?: string
+          razao_social?: string
+          senha_cifrada?: string
+          uf?: string | null
+          ultimo_nsu?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "spe_empreendimento_id_fkey"
+            columns: ["empreendimento_id"]
+            isOneToOne: false
+            referencedRelation: "empreendimento"
             referencedColumns: ["id"]
           },
         ]
@@ -431,16 +719,64 @@ export type Database = {
         }
         Relationships: []
       }
+      saldo_insumo_empreendimento: {
+        Row: {
+          empreendimento_id: string | null
+          insumo_id: string | null
+          nome: string | null
+          saldo: number | null
+          unidade: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "movimentacao_empreendimento_id_fkey"
+            columns: ["empreendimento_id"]
+            isOneToOne: false
+            referencedRelation: "empreendimento"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "movimentacao_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "insumo"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "movimentacao_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "ponto_de_pedido_view"
+            referencedColumns: ["insumo_id"]
+          },
+          {
+            foreignKeyName: "movimentacao_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "saldo_insumo"
+            referencedColumns: ["insumo_id"]
+          },
+        ]
+      }
     }
     Functions: {
-      calcular_kits_possiveis: {
-        Args: { p_tipo_kit_id: string }
-        Returns: {
-          insumo_gargalo_id: string
-          insumo_gargalo_nome: string
-          qtd_possivel: number
-        }[]
-      }
+      calcular_kits_possiveis:
+        | {
+            Args: { p_tipo_kit_id: string }
+            Returns: {
+              insumo_gargalo_id: string
+              insumo_gargalo_nome: string
+              qtd_possivel: number
+            }[]
+          }
+        | {
+            Args: { p_empreendimento_id: string; p_tipo_kit_id: string }
+            Returns: {
+              insumo_gargalo_id: string
+              insumo_gargalo_nome: string
+              qtd_possivel: number
+            }[]
+          }
       criar_kit_com_bom: {
         Args: { p_descricao: string; p_itens: Json; p_nome: string }
         Returns: {
@@ -494,6 +830,62 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "lote"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      receber_nota: {
+        Args: { p_itens: Json; p_local_id?: string; p_nota_id: string }
+        Returns: {
+          chave: string
+          created_at: string
+          data_emissao: string | null
+          emitente_cnpj: string | null
+          emitente_nome: string | null
+          empreendimento_id: string | null
+          id: string
+          motivo_recusa: string | null
+          numero: string | null
+          recebido_em: string | null
+          recebido_por: string | null
+          serie: string | null
+          spe_id: string | null
+          status: string
+          updated_at: string
+          valor_total: number | null
+          xml: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "nota_fiscal"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      recusar_nota: {
+        Args: { p_motivo: string; p_nota_id: string }
+        Returns: {
+          chave: string
+          created_at: string
+          data_emissao: string | null
+          emitente_cnpj: string | null
+          emitente_nome: string | null
+          empreendimento_id: string | null
+          id: string
+          motivo_recusa: string | null
+          numero: string | null
+          recebido_em: string | null
+          recebido_por: string | null
+          serie: string | null
+          spe_id: string | null
+          status: string
+          updated_at: string
+          valor_total: number | null
+          xml: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "nota_fiscal"
           isOneToOne: true
           isSetofReturn: false
         }

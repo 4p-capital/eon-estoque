@@ -2,16 +2,28 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Boxes, LayoutDashboard, PackagePlus, QrCode, Wrench } from "lucide-react";
+import {
+  Boxes,
+  History,
+  LayoutDashboard,
+  PackageCheck,
+  PackagePlus,
+  QrCode,
+  ShieldCheck,
+  Wrench,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
 const LINKS = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/entrada", label: "Entrada", icon: PackageCheck },
   { href: "/insumos", label: "Insumos", icon: Boxes },
   { href: "/tipos-kit", label: "Tipos de kit", icon: Wrench },
   { href: "/producao", label: "Produção", icon: PackagePlus },
   { href: "/saida", label: "Saída", icon: QrCode },
+  { href: "/eventos", label: "Eventos", icon: History },
+  { href: "/fiscal", label: "Certificados", icon: ShieldCheck },
 ] as const;
 
 export function AppSidebar({ collapsed }: { collapsed: boolean }) {

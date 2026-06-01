@@ -121,7 +121,7 @@ supabase functions serve          # Edge Functions local
 ### 5.4 Error handling
 
 - Server (Server Actions / Route Handlers / Edge Functions): logue com namespace, retorne mensagem **genérica em PT-BR** (nunca `error.message` cru no client).
-- Client: `toast.error()`. **Nunca `alert()`/`confirm()`** — use um `<ConfirmDialog>`.
+- Client: `toast.error()`. **Nunca `alert()`/`confirm()`** — use [`<ConfirmDialog>`](src/app/_components/confirm-dialog.tsx) (`<dialog>` nativo, acessível).
 - Fluxos críticos (baixa de estoque, saída de kit): a função SQL valida e lança exceção clara (ex.: "Insumo insuficiente…").
 
 ### 5.5 Acessibilidade
