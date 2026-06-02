@@ -24,7 +24,7 @@ export function ExcluirCertificadoButton({
       destructive
       busy={pending}
       triggerAriaLabel={`Remover certificado de ${razaoSocial}`}
-      triggerClassName="rounded-md p-2 text-cinza/60 transition-colors hover:bg-red-50 hover:text-red-600"
+      triggerClassName="rounded-md p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
       onConfirm={() =>
         startTransition(async () => {
           const res = await excluirSpe(id);

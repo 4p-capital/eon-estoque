@@ -7,6 +7,7 @@ import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
 import { inputCls, labelCls } from "@/app/_components/form-styles";
+import { Button } from "@/components/ui/button";
 import { criarKit, editarKit } from "@/app/tipos-kit/actions";
 import { InsumoPicker, type InsumoOption, type LinhaInsumo } from "./insumo-picker";
 
@@ -35,7 +36,16 @@ function linhasIniciais(inicial?: KitInicial): Linha[] {
   }));
 }
 
-export function KitForm({ insumos, inicial }: { insumos: InsumoOption[]; inicial?: KitInicial }) {
+export function KitForm({
+  insumos,
+  inicial,
+  onSuccess,
+}: {
+  insumos: InsumoOption[];
+  inicial?: KitInicial;
+  // Chamado após criar com sucesso (ex.: fechar o drawer e atualizar a lista).
+  onSuccess?: () => void;
+}) {
   const editando = Boolean(inicial);
   const router = useRouter();
   const [nome, setNome] = useState(inicial?.nome ?? "");
@@ -74,6 +84,8 @@ export function KitForm({ insumos, inicial }: { insumos: InsumoOption[]; inicial
           setNome("");
           setDescricao("");
           setLinhas([novaLinha()]);
+          onSuccess?.();
+          router.refresh();
         }
       } else {
         toast.error(res.message ?? "Erro ao salvar o kit.");
@@ -98,7 +110,7 @@ export function KitForm({ insumos, inicial }: { insumos: InsumoOption[]; inicial
         </div>
         <div>
           <label htmlFor="kit-desc" className={labelCls}>
-            Descrição <span className="text-cinza/40">(opcional)</span>
+            Descrição <span className="text-muted-foreground">(opcional)</span>
           </label>
           <input
             id="kit-desc"
@@ -112,7 +124,7 @@ export function KitForm({ insumos, inicial }: { insumos: InsumoOption[]; inicial
       <div>
         <span className={labelCls}>Composição (BOM)</span>
         <div className="mt-2 space-y-2">
-          <div className="grid grid-cols-[1fr_5rem_6rem_2.5rem] gap-2 px-1 text-xs uppercase text-cinza/50">
+          <div className="grid grid-cols-[1fr_5rem_6rem_2.5rem] gap-2 px-1 text-xs uppercase text-muted-foreground">
             <span>Insumo</span>
             <span>Unidade</span>
             <span>Qtd/kit</span>
@@ -128,7 +140,7 @@ export function KitForm({ insumos, inicial }: { insumos: InsumoOption[]; inicial
                 readOnly={!l.isNew}
                 placeholder="un"
                 aria-label="Unidade"
-                className={cn(inputCls, !l.isNew && "bg-bege-claro/30 text-cinza/70")}
+                className={cn(inputCls, !l.isNew && "bg-muted text-muted-foreground")}
               />
               <input
                 type="number"
@@ -140,38 +152,38 @@ export function KitForm({ insumos, inicial }: { insumos: InsumoOption[]; inicial
                 aria-label="Quantidade por kit"
                 className={inputCls}
               />
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="icon"
                 onClick={() =>
                   setLinhas((ls) => (ls.length > 1 ? ls.filter((x) => x.key !== l.key) : ls))
                 }
                 aria-label="Remover insumo"
-                className="mt-1 flex h-10 items-center justify-center rounded-md text-cinza/50 transition-colors hover:bg-bege-claro hover:text-red-600"
+                className="mt-1 h-10 text-muted-foreground hover:text-destructive"
               >
                 <Trash2 className="size-4" aria-hidden />
-              </button>
+              </Button>
             </div>
           ))}
         </div>
 
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="sm"
           onClick={() => setLinhas((ls) => [...ls, novaLinha()])}
-          className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-cinza transition-colors hover:text-preto"
+          className="mt-3"
         >
           <Plus className="size-4" aria-hidden />
           Adicionar insumo
-        </button>
+        </Button>
       </div>
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-preto px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-cinza focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-preto disabled:opacity-60"
-      >
+      <Button type="submit" disabled={pending} className="w-full">
         {pending && <Loader2 className="size-4 animate-spin" aria-hidden />}
         {editando ? "Salvar alterações" : "Cadastrar kit"}
-      </button>
+      </Button>
     </form>
   );
 }

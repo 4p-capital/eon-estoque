@@ -41,9 +41,9 @@ export function NovoCertificadoForm({
           type="file"
           accept=".pfx,.p12"
           required
-          className="mt-1 block w-full rounded-md border border-bege-claro bg-white px-3 py-2 text-sm text-cinza file:mr-3 file:rounded file:border-0 file:bg-preto file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-white hover:file:bg-cinza"
+          className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground file:mr-3 file:rounded file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-primary-foreground hover:file:bg-primary/80"
         />
-        <p className="mt-1.5 text-xs text-cinza/60">
+        <p className="mt-1.5 text-xs text-muted-foreground">
           CNPJ, razão social e validade são lidos do próprio certificado — você não digita nada.
         </p>
       </div>
@@ -77,14 +77,14 @@ export function NovoCertificadoForm({
             </option>
           ))}
         </select>
-        <p className="mt-1.5 text-xs text-cinza/60">
+        <p className="mt-1.5 text-xs text-muted-foreground">
           Estado da SPE — a SEFAZ exige isso na consulta (cUFAutor).
         </p>
       </div>
 
       <div>
         <label htmlFor="empreendimento_id" className={labelCls}>
-          Empreendimento <span className="text-cinza/40">(opcional)</span>
+          Empreendimento <span className="text-muted-foreground">(opcional)</span>
         </label>
         <select id="empreendimento_id" name="empreendimento_id" className={inputCls} defaultValue="">
           <option value="">— sem vínculo —</option>

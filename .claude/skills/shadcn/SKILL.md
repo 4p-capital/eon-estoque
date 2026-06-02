@@ -7,6 +7,8 @@ allowed-tools: Bash(npx shadcn@latest *), Bash(pnpm dlx shadcn@latest *), Bash(b
 
 # shadcn/ui
 
+> **Projeto eon-estoque:** componha as telas seguindo [`DESIGN_SYSTEM.md`](../../../DESIGN_SYSTEM.md) (na raiz) — ele define shadcn/ui como base obrigatória, os tokens (3 camadas), variantes de componente e estados obrigatórios. **Leia-o antes** de adicionar/estilizar componentes; em conflito, **o `DESIGN_SYSTEM.md` vence**.
+
 A framework for building ui, components and design systems. Components are added as source code to the user's project via the CLI.
 
 > **IMPORTANT:** Run all CLI commands using the project's package runner: `npx shadcn@latest`, `pnpm dlx shadcn@latest`, or `bunx --bun shadcn@latest` — based on the project's `packageManager`. Examples below use `npx shadcn@latest` but substitute the correct runner for the project.

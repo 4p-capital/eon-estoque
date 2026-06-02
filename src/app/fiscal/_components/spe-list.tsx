@@ -1,6 +1,15 @@
 import { ShieldCheck } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from "@/components/ui/table";
 import { diasAteValidade, formatarCnpj, formatarData } from "@/lib/fiscal/format";
 import { ExcluirCertificadoButton } from "@/app/fiscal/_components/excluir-certificado-button";
 
@@ -26,26 +35,25 @@ function ValidadeBadge({ validade, hoje }: { validade: string; hoje: Date }) {
       ? `Vence em ${dias} dia${dias === 1 ? "" : "s"}`
       : formatarData(validade);
 
-  return (
-    <span
-      className={cn(
-        "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
-        vencido && "bg-red-50 text-red-700",
-        proximo && "bg-amber-50 text-amber-800",
-        !vencido && !proximo && "bg-bege-claro/60 text-cinza",
-      )}
-    >
-      {texto}
-    </span>
-  );
+  if (vencido) {
+    return <Badge variant="destructive">{texto}</Badge>;
+  }
+
+  if (proximo) {
+    return <Badge className="bg-warning/15 text-warning border-transparent">{texto}</Badge>;
+  }
+
+  return <Badge className="bg-success/15 text-success border-transparent">{texto}</Badge>;
 }
 
 export function SpeList({ rows, hoje }: { rows: SpeRow[]; hoje: Date }) {
   if (rows.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-bege-claro p-10 text-center">
-        <ShieldCheck className="mx-auto size-6 text-cinza/40" aria-hidden />
-        <p className="mt-3 text-sm text-cinza/70">
+      <div className="rounded-xl border border-dashed border-border p-10 text-center">
+        <span className="mx-auto inline-flex size-12 items-center justify-center rounded-xl bg-accent text-accent-foreground">
+          <ShieldCheck className="size-6" aria-hidden />
+        </span>
+        <p className="mt-3 text-sm text-muted-foreground">
           Nenhum certificado cadastrado ainda. Suba o primeiro .pfx ao lado.
         </p>
       </div>
@@ -53,33 +61,47 @@ export function SpeList({ rows, hoje }: { rows: SpeRow[]; hoje: Date }) {
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-bege-claro">
-      <table className="w-full text-sm">
-        <thead className="bg-bege-claro/40 text-left text-xs uppercase tracking-wide text-cinza/60">
-          <tr>
-            <th className="px-4 py-3 font-medium">Razão social</th>
-            <th className="px-4 py-3 font-medium">CNPJ</th>
-            <th className="px-4 py-3 font-medium">Empreendimento</th>
-            <th className="px-4 py-3 font-medium">Validade</th>
-            <th className="px-4 py-3 font-medium text-right">Ações</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-bege-claro">
+    <div className="overflow-hidden rounded-xl border border-border bg-card">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="px-4 py-3 text-xs uppercase tracking-wide text-muted-foreground">
+              Razão social
+            </TableHead>
+            <TableHead className="px-4 py-3 text-xs uppercase tracking-wide text-muted-foreground">
+              CNPJ
+            </TableHead>
+            <TableHead className="px-4 py-3 text-xs uppercase tracking-wide text-muted-foreground">
+              Empreendimento
+            </TableHead>
+            <TableHead className="px-4 py-3 text-xs uppercase tracking-wide text-muted-foreground">
+              Validade
+            </TableHead>
+            <TableHead className="px-4 py-3 text-right text-xs uppercase tracking-wide text-muted-foreground">
+              Ações
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {rows.map((row) => (
-            <tr key={row.id} className={cn(!row.ativo && "opacity-50")}>
-              <td className="px-4 py-3 font-medium text-preto">{row.razao_social}</td>
-              <td className="px-4 py-3 text-cinza">{formatarCnpj(row.cnpj)}</td>
-              <td className="px-4 py-3 text-cinza">{row.empreendimento_nome ?? "—"}</td>
-              <td className="px-4 py-3">
+            <TableRow key={row.id} className={cn(!row.ativo && "opacity-50")}>
+              <TableCell className="px-4 py-3 font-medium text-foreground">
+                {row.razao_social}
+              </TableCell>
+              <TableCell className="px-4 py-3 text-foreground">{formatarCnpj(row.cnpj)}</TableCell>
+              <TableCell className="px-4 py-3 text-foreground">
+                {row.empreendimento_nome ?? "—"}
+              </TableCell>
+              <TableCell className="px-4 py-3">
                 <ValidadeBadge validade={row.certificado_validade} hoje={hoje} />
-              </td>
-              <td className="px-4 py-3 text-right">
+              </TableCell>
+              <TableCell className="px-4 py-3 text-right">
                 <ExcluirCertificadoButton id={row.id} razaoSocial={row.razao_social} />
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   );
 }

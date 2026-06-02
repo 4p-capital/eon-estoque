@@ -33,6 +33,9 @@
 /.certs/
 /secrets/
 
+# planilhas/dados de importação (catálogo Sienge etc.)
+/data/
+
 # debug
 npm-debug.log*
 yarn-debug.log*

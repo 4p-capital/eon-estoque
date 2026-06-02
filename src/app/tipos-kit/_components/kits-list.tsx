@@ -1,54 +1,114 @@
 import Link from "next/link";
-import { Pencil } from "lucide-react";
+import { Pencil, Wrench } from "lucide-react";
 
-import type { KitPossivel } from "@/lib/types";
+import { Tag } from "@/components/ui/tag";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
+export type KitRow = {
+  id: string | null;
+  nome: string | null;
+  descricao: string | null;
+  qtdInsumos: number;
+  qtdPossivel: number;
+  gargalo: string | null;
+};
 
 const nf = new Intl.NumberFormat("pt-BR");
 
-export function KitsList({ kits }: { kits: KitPossivel[] }) {
+export function KitsList({ kits }: { kits: KitRow[] }) {
   if (kits.length === 0) {
     return (
-      <p className="rounded-lg border border-dashed border-bege-claro bg-bege-claro/20 p-6 text-sm text-cinza/70">
-        Nenhum kit cadastrado ainda. Crie o primeiro ao lado.
-      </p>
+      <div className="rounded-xl border border-dashed border-border bg-muted/30 p-12 text-center">
+        <span className="inline-flex size-12 items-center justify-center rounded-xl bg-accent text-accent-foreground">
+          <Wrench className="size-6" aria-hidden />
+        </span>
+        <p className="mt-3 text-sm font-medium text-foreground">Nenhum kit cadastrado</p>
+        <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
+          Use o botão <span className="font-medium text-foreground">Cadastrar kit</span> acima para
+          criar a receita (BOM) do primeiro kit.
+        </p>
+      </div>
     );
   }
 
   return (
-    <div className="space-y-3">
-      {kits.map((k) => (
-        <div
-          key={k.tipo_kit_id}
-          className="rounded-lg border border-bege-claro bg-white p-4"
-        >
-          <div className="flex items-baseline justify-between gap-2">
-            <span className="font-medium text-preto">{k.tipo_kit_nome}</span>
-            <div className="flex shrink-0 items-center gap-3">
-              <span className="text-sm text-cinza/70">
-                <span className="font-semibold tabular-nums text-preto">
-                  {nf.format(k.qtd_possivel ?? 0)}
-                </span>{" "}
-                possíveis
-              </span>
-              {k.tipo_kit_id && (
-                <Link
-                  href={`/tipos-kit/${k.tipo_kit_id}`}
-                  aria-label={`Editar ${k.tipo_kit_nome ?? "kit"}`}
-                  title="Editar kit"
-                  className="rounded-md p-1.5 text-cinza/50 transition-colors hover:bg-bege-claro hover:text-preto"
+    <div className="overflow-hidden rounded-xl border border-border bg-card">
+      <Table>
+        <TableHeader>
+          <TableRow className="hover:bg-transparent">
+            <TableHead className="h-9 px-4 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+              Kit
+            </TableHead>
+            <TableHead className="h-9 px-4 text-right text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+              Insumos
+            </TableHead>
+            <TableHead className="h-9 px-4 text-right text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+              Kits possíveis
+            </TableHead>
+            <TableHead className="h-9 px-4 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+              Gargalo
+            </TableHead>
+            <TableHead className="h-9 w-10 px-4">
+              <span className="sr-only">Ações</span>
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {kits.map((k) => (
+            <TableRow key={k.id ?? k.nome} className="border-t border-border">
+              <TableCell className="px-4 py-3">
+                <p className="text-sm font-semibold text-foreground">{k.nome ?? "—"}</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  {k.descricao?.trim() || "Sem descrição"}
+                </p>
+              </TableCell>
+              <TableCell className="px-4 py-3 text-right">
+                <span className="text-sm font-semibold tabular-nums text-foreground">
+                  {nf.format(k.qtdInsumos)}
+                </span>
+                <span className="block text-[11px] text-muted-foreground">
+                  {k.qtdInsumos === 1 ? "insumo" : "insumos"}
+                </span>
+              </TableCell>
+              <TableCell className="px-4 py-3 text-right">
+                <span
+                  className={`text-base font-semibold tabular-nums ${
+                    k.qtdPossivel > 0 ? "text-primary" : "text-muted-foreground"
+                  }`}
                 >
-                  <Pencil className="size-4" aria-hidden />
-                </Link>
-              )}
-            </div>
-          </div>
-          {k.insumo_gargalo_nome && (
-            <p className="mt-1 text-xs text-cinza/60">
-              Gargalo: <span className="font-medium text-preto">{k.insumo_gargalo_nome}</span>
-            </p>
-          )}
-        </div>
-      ))}
+                  {nf.format(k.qtdPossivel)}
+                </span>
+              </TableCell>
+              <TableCell className="px-4 py-3">
+                {k.gargalo ? (
+                  <Tag color="amber">{k.gargalo}</Tag>
+                ) : (
+                  <Tag color="green">Sem gargalo</Tag>
+                )}
+              </TableCell>
+              <TableCell className="px-4 py-3 text-right">
+                {k.id && (
+                  <Link
+                    href={`/tipos-kit/${k.id}`}
+                    aria-label={`Editar ${k.nome ?? "kit"}`}
+                    title="Editar kit"
+                    className="inline-flex rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  >
+                    <Pencil className="size-4" aria-hidden />
+                  </Link>
+                )}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 }

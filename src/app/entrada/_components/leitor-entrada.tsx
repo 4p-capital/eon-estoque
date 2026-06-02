@@ -4,6 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Loader2, ScanLine } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { inputCls, labelCls } from "@/app/_components/form-styles";
 import { parseChave } from "@/lib/fiscal/chave";
 import { formatarCnpj } from "@/lib/fiscal/format";
@@ -18,7 +19,6 @@ type RespostaApi = {
   message?: string;
   nota?: NotaConferencia;
   itens?: ItemConferencia[];
-  xml?: string;
   tentativas?: TentativaApi[];
 };
 
@@ -66,7 +66,7 @@ export function LeitorEntrada({ insumos }: { insumos: InsumoOption[] }) {
             Código de barras / chave de acesso
           </label>
           <div className="relative">
-            <ScanLine className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-cinza/40" aria-hidden />
+            <ScanLine className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
             <input
               id="chave"
               name="chave"
@@ -79,40 +79,26 @@ export function LeitorEntrada({ insumos }: { insumos: InsumoOption[] }) {
               className={`${inputCls} pl-9 font-mono`}
             />
           </div>
-          {bruto && !info && <p className="mt-1.5 text-xs text-red-600">Ainda não são 44 dígitos válidos.</p>}
+          {bruto && !info && <p className="mt-1.5 text-xs text-destructive">Ainda não são 44 dígitos válidos.</p>}
           {info && (
-            <p className="mt-1.5 text-xs text-cinza/60">
+            <p className="mt-1.5 text-xs text-muted-foreground">
               Emitente {formatarCnpj(info.cnpjEmitente)} · nota nº {Number(info.numero)} · série {Number(info.serie)}
             </p>
           )}
         </div>
 
-        <button
-          type="submit"
-          disabled={carregando || !info}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-preto px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-cinza focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-preto disabled:opacity-60"
-        >
+        <Button type="submit" disabled={carregando || !info} className="w-full">
           {carregando && <Loader2 className="size-4 animate-spin" aria-hidden />}
           Consultar nota na SEFAZ
-        </button>
+        </Button>
       </form>
 
       {resultado?.encontrado && resultado.nota && resultado.itens && (
-        <div className="space-y-3">
-          <ConferenciaNota nota={resultado.nota} itens={resultado.itens} insumos={insumos} />
-          {resultado.xml && (
-            <details className="text-sm">
-              <summary className="cursor-pointer text-cinza/60 hover:text-preto">Ver XML bruto</summary>
-              <pre className="mt-2 max-h-[28rem] overflow-auto rounded-lg border border-bege-claro bg-white p-4 text-xs leading-relaxed text-cinza">
-                {resultado.xml}
-              </pre>
-            </details>
-          )}
-        </div>
+        <ConferenciaNota nota={resultado.nota} itens={resultado.itens} insumos={insumos} />
       )}
 
       {resultado && !resultado.encontrado && (
-        <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
+        <div className="rounded-lg border border-warning/40 bg-warning/10 p-4 text-sm text-foreground">
           <p className="font-medium">{resultado.message ?? "Nota não retornada."}</p>
           {resultado.tentativas && resultado.tentativas.length > 0 && (
             <ul className="mt-2 space-y-1 text-xs">
