@@ -9,6 +9,8 @@ metadata:
 
 # Web Interface Guidelines
 
+> **Projeto eon-estoque:** revise também contra [`DESIGN_SYSTEM.md`](../../../DESIGN_SYSTEM.md) (na raiz) — é a fonte da verdade de UI do projeto (tokens em 3 camadas, escala tipográfica, componentes shadcn/ui, cor/tema, motion, a11y WCAG AA, checklist §10). Em conflito, **o `DESIGN_SYSTEM.md` vence**. Reporte violações dele no mesmo formato `file:line`.
+
 Review files for compliance with Web Interface Guidelines.
 
 ## How It Works

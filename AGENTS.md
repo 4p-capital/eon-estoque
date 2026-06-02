@@ -1,9 +1,14 @@
 # eon-estoque — Guia de Desenvolvimento
 
 > Sistema Inteligente de Controle de Estoque da **EON Instalações** (industrialização de
-> kits para apartamentos). **Fonte da verdade** dos padrões — toda IA e dev humano lê antes de codar.
+> kits para apartamentos). **Fonte da verdade** dos padrões de engenharia — toda IA e dev humano lê antes de codar.
 >
 > Contexto de domínio: [`.claude/project-context.md`](.claude/project-context.md).
+>
+> **UI/Design:** a fonte da verdade é [`DESIGN_SYSTEM.md`](DESIGN_SYSTEM.md) — **leia-o antes
+> de criar/alterar qualquer componente, página ou estilo**. Em qualquer conflito entre este
+> guia e o `DESIGN_SYSTEM.md` sobre aparência/UI, **o `DESIGN_SYSTEM.md` vence** (é o novo
+> padrão). Ele já é carregado em toda sessão via [`CLAUDE.md`](CLAUDE.md).
 
 ---
 
@@ -136,19 +141,45 @@ supabase functions serve          # Edge Functions local
 - **Nunca** exponha `service_role` no client (qualquer `NEXT_PUBLIC_*` vai pro browser).
 - Autorização nunca via `user_metadata` (editável pelo usuário) → use `app_metadata`.
 
-### 5.7 Design — identidade visual (EON)
+### 5.7 Design — identidade visual
 
-- **Minimalista e clean**: fundo branco, hierarquia por tipografia, pouca cromia.
-- **Paleta oficial** em tokens (`globals.css` `@theme`): `preto` `#000` (títulos/ação primária), `cinza` `#404040` (texto/ícones), `bege` `#BCAB8F` (eyebrows/tags/foco — **não** como texto pequeno no branco, contraste baixo), `bege-claro` `#EEEAE3` (bordas/fundos sutis), branco no fundo. Use os utilitários `bg-preto`/`text-cinza`/`border-bege-claro`…
-- **Cor funcional** (vermelho p/ alerta de compra/saldo baixo) só quando comunica algo real — não decore.
+> **A fonte da verdade de UI/design é [`DESIGN_SYSTEM.md`](DESIGN_SYSTEM.md) (na raiz).**
+> Leia-o **antes** de qualquer trabalho visual e siga-o à risca — arquitetura de tokens em
+> 3 camadas, escala tipográfica, componentes base shadcn/ui, cor/tema, movimento,
+> acessibilidade WCAG AA e o checklist final. Ele **vence qualquer conflito** com este guia.
+
+Específicos do projeto **não cobertos** no `DESIGN_SYSTEM.md` (mantêm-se válidos):
+
 - **Logo:** componente [`LogoEon`](src/app/_components/logo-eon.tsx) (`currentColor`), nunca o `.svg` branco direto no fundo claro (ficaria invisível).
-- **Light-first:** `dark:` é opt-in por classe `.dark` (`@custom-variant` no globals). Detalhes em [`.claude/project-context.md`](.claude/project-context.md).
+- **Cor funcional** (vermelho p/ alerta de compra/saldo baixo) só quando comunica algo real — mapeie como token `destructive`/`warning`, não invente cor no JSX.
+
+**Tudo migrado ao `DESIGN_SYSTEM.md`:** shadcn/ui instalado (`src/components/ui/`), tokens
+em 3 camadas + dark mode (next-themes) em [`globals.css`](src/app/globals.css) com **violeta
+= `--primary`** e **fonte display Space Grotesk** (`font-heading`) nos títulos. Todas as
+telas (Início `/`, entrada, insumos, tipos-kit, eventos, fiscal, login, placeholders) e os
+componentes compartilhados usam tokens semânticos + componentes shadcn. Os tokens legados
+`preto/cinza/bege` foram **removidos** — não existem mais.
+
+Padrões reutilizáveis criados: [`PageHeader`](src/app/_components/page-header.tsx) (eyebrow
+violeta + título display + descrição), [`StatCard`](src/app/_components/stat-card.tsx),
+[`ThemeToggle`](src/app/_components/theme-toggle.tsx), e [`Tag`](src/components/ui/tag.tsx)
+(badge colorida com paleta variada — `color`: slate/violet/blue/green/amber/red/teal/orange/pink
+— para categorias/status; ex.: tipos de evento). Densidade enxuta: títulos `text-xl/2xl`,
+labels `text-[11px]` uppercase, cards compactos `p-4`.
+
+**Navegação** em [`nav-links.ts`](src/app/_components/nav-links.ts): modelo em **seções**
+com **grupos colapsáveis** (`NAV`) + lista plana de atalhos da home (`MODULES`). A sidebar
+([`app-sidebar.tsx`](src/app/_components/app-sidebar.tsx)) renderiza seções, grupos e
+sub-itens. Estrutura: `Início` → `/`; grupo **Insumos** → `Entrada` (`/entrada`), `Estoque`
+(`/insumos`, só saldo > 0), `Cadastro` (`/insumos/cadastro`, catálogo completo + form);
+`Gráficos` → `/dashboard` (reservado, `soon`).
 
 ---
 
 ## 6. Forms (padrão a adotar quando criarmos as telas)
 
-> Ainda não temos esses componentes; ao construir os primeiros forms, siga esta direção (skill `shadcn` ajuda):
+> Forms seguem o `DESIGN_SYSTEM.md` (§4 Componentes / `Form` shadcn + estados obrigatórios).
+> Ao construir os primeiros forms, siga esta direção (skill `shadcn` ajuda):
 
 - **Validação:** react-hook-form + Zod.
 - Forms com 2+ seções → componente wizard com passos e % de completude.
@@ -194,6 +225,9 @@ pnpm build                # compila
 - ❌ `<div onClick>` → ✅ `<button>`/`<a>`. ❌ `alert()`/`confirm()` → ✅ `toast` + `<ConfirmDialog>`.
 - ❌ Magic numbers, código comentado, `else` após `return`, `catch {}` vazio.
 - ❌ Criar componente sem checar `src/components/ui/` antes.
+- ❌ Fazer UI sem ler o [`DESIGN_SYSTEM.md`](DESIGN_SYSTEM.md) → ✅ é a fonte da verdade e vence conflitos.
+- ❌ Cor/espaçamento/raio hard-coded no JSX → ✅ sempre via design tokens (DESIGN_SYSTEM §1–2).
+- ❌ Estética genérica de "AI slop" (ver DESIGN_SYSTEM §0/§10) → ✅ direção visual intencional.
 - ❌ Inventar nome de migration → ✅ `supabase migration new`.
 - ❌ `cookies()`/`params` sem `await` (Next 16) · `middleware.ts` (virou `proxy.ts`).
 
@@ -223,6 +257,7 @@ Branches: `feat/<desc>`, `fix/<desc>`, `chore/<desc>`, `refactor/<desc>`.
 
 ## 12. Documentação relacionada
 
+- [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md) — **fonte da verdade de UI/design** (tokens, tipografia, componentes, cor, motion, a11y). Leia antes de qualquer trabalho visual; vence conflitos.
 - [README.md](README.md) — visão do produto e setup.
 - [.claude/project-context.md](.claude/project-context.md) — contexto de domínio (grounding dos skills).
 - `.claude/skills/` — boas práticas de Next, Supabase, Postgres, shadcn, React e design.

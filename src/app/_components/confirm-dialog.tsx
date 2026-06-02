@@ -1,7 +1,9 @@
 "use client";
 
 import { useRef, type ReactNode } from "react";
+import { AlertTriangle } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 type ConfirmDialogProps = {
@@ -46,34 +48,41 @@ export function ConfirmDialog({
 
       <dialog
         ref={ref}
-        className="m-auto w-[min(28rem,calc(100vw-2rem))] rounded-xl border border-bege-claro bg-white p-0 shadow-xl backdrop:bg-preto/40"
+        className={cn(
+          "m-auto w-[min(28rem,calc(100vw-2rem))] rounded-xl border bg-popover p-0 text-popover-foreground shadow-xl backdrop:bg-foreground/40",
+          destructive ? "border-destructive/40" : "border-border",
+        )}
       >
         <div className="p-5">
-          <h2 className="text-base font-semibold text-preto">{title}</h2>
-          {description && <p className="mt-2 text-sm text-cinza/80">{description}</p>}
+          <div className="flex items-start gap-3">
+            {destructive && (
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+                <AlertTriangle className="size-5" aria-hidden />
+              </span>
+            )}
+            <div>
+              <h2 className="font-heading text-base font-semibold text-foreground">{title}</h2>
+              {description && (
+                <p className="mt-2 text-sm text-muted-foreground">{description}</p>
+              )}
+            </div>
+          </div>
 
           <div className="mt-5 flex justify-end gap-2">
-            <button
-              type="button"
-              className="rounded-md px-4 py-2 text-sm font-medium text-cinza hover:bg-bege-claro"
-              onClick={() => ref.current?.close()}
-            >
+            <Button type="button" variant="ghost" onClick={() => ref.current?.close()}>
               {cancelLabel}
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
+              variant={destructive ? "destructive" : "default"}
               disabled={busy}
-              className={cn(
-                "rounded-md px-4 py-2 text-sm font-medium text-white transition-colors disabled:opacity-60",
-                destructive ? "bg-red-600 hover:bg-red-700" : "bg-preto hover:bg-cinza",
-              )}
               onClick={() => {
                 onConfirm();
                 ref.current?.close();
               }}
             >
               {confirmLabel}
-            </button>
+            </Button>
           </div>
         </div>
       </dialog>

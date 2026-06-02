@@ -4,6 +4,8 @@ description: Create distinctive, production-grade frontend interfaces with high 
 license: Complete terms in LICENSE.txt
 ---
 
+> **Projeto eon-estoque:** a fonte da verdade de UI é [`DESIGN_SYSTEM.md`](../../../DESIGN_SYSTEM.md) (na raiz). **Leia-o primeiro** e siga seus tokens, escala tipográfica, componentes (shadcn/ui), cor/tema, motion, a11y e checklist. Em conflito com este skill, **o `DESIGN_SYSTEM.md` vence**. Use este skill para a parte criativa (direção estética intencional, anti-"AI slop") dentro das regras do design system.
+
 This skill guides creation of distinctive, production-grade frontend interfaces that avoid generic "AI slop" aesthetics. Implement real working code with exceptional attention to aesthetic details and creative choices.
 
 The user provides frontend requirements: a component, page, application, or interface to build. They may include context about the purpose, audience, or technical constraints.

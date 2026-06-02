@@ -11,6 +11,10 @@ type EstoqueTables = Database["estoque"]["Tables"];
 export type KitPossivel = EstoqueViews["kits_possiveis_view"]["Row"];
 export type PontoPedido = EstoqueViews["ponto_de_pedido_view"]["Row"];
 export type SaldoInsumo = EstoqueViews["saldo_insumo"]["Row"];
+export type ContagemResumo = EstoqueViews["contagem_resumo"]["Row"];
+
+export type Contagem = EstoqueTables["contagem"]["Row"];
+export type ContagemItem = EstoqueTables["contagem_item"]["Row"];
 
 export type Insumo = EstoqueTables["insumo"]["Row"];
 export type InsumoInsert = EstoqueTables["insumo"]["Insert"];

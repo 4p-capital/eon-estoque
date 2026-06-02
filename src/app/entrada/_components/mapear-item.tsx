@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 
+import { Button } from "@/components/ui/button";
 import { inputCls } from "@/app/_components/form-styles";
 import { InsumoPicker, type InsumoOption, type LinhaInsumo } from "@/app/tipos-kit/_components/insumo-picker";
 import { mapearInsumo } from "@/app/entrada/actions";
@@ -56,9 +57,9 @@ export function MapearItem({ item, emitenteCnpj, insumos, onMapeado }: Props) {
   }
 
   return (
-    <div className="rounded-lg border border-bege-claro p-3">
-      <p className="text-sm font-medium text-preto">{item.descricao}</p>
-      <p className="text-xs text-cinza/60">
+    <div className="rounded-lg border border-border p-3">
+      <p className="text-sm font-medium text-foreground">{item.descricao}</p>
+      <p className="text-xs text-muted-foreground">
         Cód. {item.codigo} · NCM {item.ncm} · {item.quantidade} {item.unidade}
         {item.ean ? ` · EAN ${item.ean}` : ""}
       </p>
@@ -76,16 +77,11 @@ export function MapearItem({ item, emitenteCnpj, insumos, onMapeado }: Props) {
             aria-label="Fator de conversão"
             title="Fator de conversão (ex.: 1 rolo = 100 m)"
           />
-          <p className="mt-1 text-[11px] leading-tight text-cinza/50">fator (ex.: 1 cx = 100)</p>
+          <p className="mt-1 text-[11px] leading-tight text-muted-foreground">fator (ex.: 1 cx = 100)</p>
         </div>
-        <button
-          type="button"
-          onClick={salvar}
-          disabled={pending}
-          className="h-[42px] rounded-md bg-preto px-4 text-sm font-medium text-white transition-colors hover:bg-cinza disabled:opacity-60"
-        >
+        <Button type="button" onClick={salvar} disabled={pending} className="h-[42px]">
           Salvar
-        </button>
+        </Button>
       </div>
     </div>
   );

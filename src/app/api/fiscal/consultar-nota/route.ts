@@ -75,7 +75,6 @@ export async function POST(request: Request) {
         spe: { id: spe.id, razao_social: spe.razao_social, cnpj: spe.cnpj },
         nota: conferencia.nota,
         itens: conferencia.itens,
-        xml: docProc.xml,
       });
     } catch (err) {
       console.error("[fiscal] consultar-nota: SEFAZ", spe.razao_social, err);

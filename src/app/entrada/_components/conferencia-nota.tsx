@@ -5,6 +5,8 @@ import { toast } from "sonner";
 import { Minus, Plus, AlertTriangle } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { ConfirmDialog } from "@/app/_components/confirm-dialog";
 import type { InsumoOption } from "@/app/tipos-kit/_components/insumo-picker";
 import { MapearItem } from "@/app/entrada/_components/mapear-item";
@@ -90,8 +92,8 @@ export function ConferenciaNota({
       <Cabecalho nota={nota} status={status} />
 
       {aberta && naoMapeados.length > 0 && (
-        <section className="space-y-2 rounded-xl border border-amber-200 bg-amber-50/60 p-4">
-          <h3 className="text-sm font-semibold text-amber-900">
+        <section className="space-y-2 rounded-xl border border-warning/40 bg-warning/10 p-4">
+          <h3 className="text-sm font-semibold text-foreground">
             {naoMapeados.length} item(ns) sem insumo — mapeie para receber
           </h3>
           {naoMapeados.map((item) => (
@@ -106,32 +108,32 @@ export function ConferenciaNota({
         </section>
       )}
 
-      <div className="overflow-hidden rounded-xl border border-bege-claro">
+      <div className="overflow-hidden rounded-xl border border-border">
         <table className="w-full text-sm">
-          <thead className="bg-bege-claro/40 text-left text-xs uppercase tracking-wide text-cinza/60">
+          <thead className="bg-muted/40 text-left text-xs uppercase tracking-wide text-muted-foreground">
             <tr>
               <th className="px-3 py-2.5 font-medium">Item / insumo</th>
               <th className="px-3 py-2.5 font-medium text-right">Nota</th>
               <th className="px-3 py-2.5 font-medium text-center">Recebido</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-bege-claro">
+          <tbody className="divide-y divide-border">
             {linhas.map((l) => {
               const divergente = l.recebido < l.quantidade;
               return (
-                <tr key={l.id} className={cn(divergente && "bg-amber-50/40")}>
+                <tr key={l.id} className={cn(divergente && "bg-warning/10")}>
                   <td className="px-3 py-2.5">
-                    <p className="text-preto">{l.descricao}</p>
-                    <p className="text-xs text-cinza/60">
+                    <p className="text-foreground">{l.descricao}</p>
+                    <p className="text-xs text-muted-foreground">
                       {l.insumoNome ? (
-                        <span className="text-cinza">→ {l.insumoNome}</span>
+                        <span className="text-foreground">→ {l.insumoNome}</span>
                       ) : (
-                        <span className="text-amber-700">a mapear</span>
+                        <span className="text-warning">a mapear</span>
                       )}
                       {" · "}cód. {l.codigo}
                     </p>
                   </td>
-                  <td className="px-3 py-2.5 text-right tabular-nums text-cinza">
+                  <td className="px-3 py-2.5 text-right tabular-nums text-foreground">
                     {l.quantidade} {l.unidade}
                   </td>
                   <td className="px-3 py-2.5">
@@ -157,34 +159,26 @@ export function ConferenciaNota({
         <div className="flex flex-wrap items-center justify-between gap-3">
           <RecusarDialog busy={pending} onConfirm={recusar} />
           {bloqueado ? (
-            <button
-              type="button"
-              disabled
-              className="rounded-md bg-preto px-5 py-2.5 text-sm font-medium text-white opacity-60"
-            >
+            <Button type="button" disabled>
               Mapeie os itens para confirmar
-            </button>
+            </Button>
           ) : temDivergencia ? (
             <ConfirmDialog
-              title="Quantidade menor que a nota"
-              description="Você está registrando MENOS do que consta na nota. A diferença será REGISTRADA e os responsáveis pela compra irão apurar. Confirmar a entrada com a divergência?"
+              title="Atenção: quantidade menor que a nota"
+              description="Você está registrando MENOS do que consta na nota. A diferença será REGISTRADA com seu nome e os responsáveis pela compra irão apurar. Confirmar a entrada com a divergência?"
               confirmLabel="Registrar com divergência"
+              destructive
               triggerAriaLabel="Confirmar entrada com divergência"
-              triggerClassName="rounded-md bg-preto px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-cinza"
+              triggerClassName="inline-flex h-8 items-center justify-center rounded-lg bg-primary px-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/80"
               busy={pending}
               onConfirm={confirmar}
             >
               Confirmar entrada
             </ConfirmDialog>
           ) : (
-            <button
-              type="button"
-              onClick={confirmar}
-              disabled={pending}
-              className="rounded-md bg-preto px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-cinza disabled:opacity-60"
-            >
+            <Button type="button" onClick={confirmar} disabled={pending}>
               Confirmar entrada
-            </button>
+            </Button>
           )}
         </div>
       )}
@@ -195,20 +189,20 @@ export function ConferenciaNota({
 function Cabecalho({ nota, status }: { nota: NotaConferencia; status: StatusNota }) {
   const cor =
     status === "recusada"
-      ? "bg-red-50 text-red-700"
+      ? "bg-destructive/15 text-destructive border-transparent"
       : status === "recebida_divergencia"
-        ? "bg-amber-50 text-amber-800"
+        ? "bg-warning/15 text-warning border-transparent"
         : status === "recebida"
-          ? "bg-emerald-50 text-emerald-700"
-          : "bg-bege-claro/60 text-cinza";
+          ? "bg-success/15 text-success border-transparent"
+          : "bg-secondary text-secondary-foreground border-transparent";
   return (
-    <div className="rounded-xl border border-bege-claro bg-white p-5">
+    <div className="rounded-xl border border-border bg-card p-5">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <p className="text-sm font-medium text-preto">{nota.emitenteNome}</p>
-        <span className={cn("inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium", cor)}>
+        <p className="text-sm font-medium text-foreground">{nota.emitenteNome}</p>
+        <Badge className={cor}>
           {status !== "consultada" && status !== "recebida" && <AlertTriangle className="size-3" aria-hidden />}
           {ROTULO_STATUS[status]}
-        </span>
+        </Badge>
       </div>
       <dl className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <Campo label="CNPJ emitente" valor={formatarCnpj(nota.emitenteCnpj)} />
@@ -224,8 +218,8 @@ function Cabecalho({ nota, status }: { nota: NotaConferencia; status: StatusNota
 function Campo({ label, valor }: { label: string; valor: string }) {
   return (
     <div>
-      <dt className="text-xs uppercase tracking-wide text-cinza/50">{label}</dt>
-      <dd className="mt-0.5 text-sm text-preto">{valor}</dd>
+      <dt className="text-xs uppercase tracking-wide text-muted-foreground">{label}</dt>
+      <dd className="mt-0.5 text-sm text-foreground">{valor}</dd>
     </div>
   );
 }
@@ -241,19 +235,18 @@ function Stepper({
   disabled: boolean;
   onChange: (v: number) => void;
 }) {
-  const btn =
-    "flex size-8 items-center justify-center rounded-md border border-bege-claro text-cinza transition-colors hover:bg-bege-claro disabled:opacity-40";
   return (
     <div className="flex items-center justify-center gap-1.5">
-      <button
+      <Button
         type="button"
+        variant="outline"
+        size="icon"
         aria-label="Diminuir"
-        className={btn}
         disabled={disabled || valor <= 0}
         onClick={() => onChange(valor - 1)}
       >
         <Minus className="size-4" aria-hidden />
-      </button>
+      </Button>
       <input
         type="number"
         min={0}
@@ -262,17 +255,18 @@ function Stepper({
         value={valor}
         disabled={disabled}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-16 rounded-md border border-bege-claro px-2 py-1.5 text-center text-sm tabular-nums focus-visible:border-bege focus-visible:outline-none disabled:opacity-40"
+        className="w-16 rounded-md border border-input bg-background px-2 py-1.5 text-center text-sm text-foreground tabular-nums focus-visible:border-ring focus-visible:outline-none disabled:opacity-40"
       />
-      <button
+      <Button
         type="button"
+        variant="outline"
+        size="icon"
         aria-label="Aumentar"
-        className={btn}
         disabled={disabled || valor >= max}
         onClick={() => onChange(valor + 1)}
       >
         <Plus className="size-4" aria-hidden />
-      </button>
+      </Button>
     </div>
   );
 }

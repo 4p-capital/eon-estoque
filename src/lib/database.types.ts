@@ -14,6 +14,92 @@ export type Database = {
   }
   estoque: {
     Tables: {
+      contagem: {
+        Row: {
+          aplicada_em: string | null
+          aplicada_por: string | null
+          created_at: string
+          criado_por: string | null
+          empreendimento_id: string
+          id: string
+          observacao: string | null
+          regiao: string | null
+          status: string
+        }
+        Insert: {
+          aplicada_em?: string | null
+          aplicada_por?: string | null
+          created_at?: string
+          criado_por?: string | null
+          empreendimento_id: string
+          id?: string
+          observacao?: string | null
+          regiao?: string | null
+          status?: string
+        }
+        Update: {
+          aplicada_em?: string | null
+          aplicada_por?: string | null
+          created_at?: string
+          criado_por?: string | null
+          empreendimento_id?: string
+          id?: string
+          observacao?: string | null
+          regiao?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contagem_empreendimento_id_fkey"
+            columns: ["empreendimento_id"]
+            isOneToOne: false
+            referencedRelation: "empreendimento"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contagem_item: {
+        Row: {
+          contagem_id: string
+          created_at: string
+          id: string
+          insumo_id: string
+          qtd_contada: number
+          saldo_sistema: number | null
+        }
+        Insert: {
+          contagem_id: string
+          created_at?: string
+          id?: string
+          insumo_id: string
+          qtd_contada: number
+          saldo_sistema?: number | null
+        }
+        Update: {
+          contagem_id?: string
+          created_at?: string
+          id?: string
+          insumo_id?: string
+          qtd_contada?: number
+          saldo_sistema?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contagem_item_contagem_id_fkey"
+            columns: ["contagem_id"]
+            isOneToOne: false
+            referencedRelation: "contagem"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contagem_item_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "insumo"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       composicao: {
         Row: {
           id: string
@@ -197,6 +283,7 @@ export type Database = {
       }
       insumo: {
         Row: {
+          codigo_sienge: string | null
           consumo_dia: number
           created_at: string
           estoque_min: number
@@ -206,6 +293,7 @@ export type Database = {
           unidade: string
         }
         Insert: {
+          codigo_sienge?: string | null
           consumo_dia?: number
           created_at?: string
           estoque_min?: number
@@ -215,6 +303,7 @@ export type Database = {
           unidade: string
         }
         Update: {
+          codigo_sienge?: string | null
           consumo_dia?: number
           created_at?: string
           estoque_min?: number
@@ -682,6 +771,29 @@ export type Database = {
       }
     }
     Views: {
+      contagem_resumo: {
+        Row: {
+          aplicada_em: string | null
+          created_at: string | null
+          diferenca_total: number | null
+          empreendimento_id: string | null
+          empreendimento_nome: string | null
+          id: string | null
+          observacao: string | null
+          qtd_itens: number | null
+          regiao: string | null
+          status: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contagem_empreendimento_id_fkey"
+            columns: ["empreendimento_id"]
+            isOneToOne: false
+            referencedRelation: "empreendimento"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       kits_possiveis_view: {
         Row: {
           insumo_gargalo_id: string | null
@@ -760,6 +872,10 @@ export type Database = {
       }
     }
     Functions: {
+      aplicar_contagem: {
+        Args: { p_contagem_id: string }
+        Returns: undefined
+      }
       calcular_kits_possiveis:
         | {
             Args: { p_tipo_kit_id: string }
