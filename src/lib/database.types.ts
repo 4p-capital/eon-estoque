@@ -14,6 +14,63 @@ export type Database = {
   }
   estoque: {
     Tables: {
+      composicao: {
+        Row: {
+          id: string
+          insumo_id: string
+          quantidade: number
+          tipo_kit_id: string
+        }
+        Insert: {
+          id?: string
+          insumo_id: string
+          quantidade: number
+          tipo_kit_id: string
+        }
+        Update: {
+          id?: string
+          insumo_id?: string
+          quantidade?: number
+          tipo_kit_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "composicao_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "insumo"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "composicao_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "ponto_de_pedido_view"
+            referencedColumns: ["insumo_id"]
+          },
+          {
+            foreignKeyName: "composicao_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "saldo_insumo"
+            referencedColumns: ["insumo_id"]
+          },
+          {
+            foreignKeyName: "composicao_tipo_kit_id_fkey"
+            columns: ["tipo_kit_id"]
+            isOneToOne: false
+            referencedRelation: "kits_possiveis_view"
+            referencedColumns: ["tipo_kit_id"]
+          },
+          {
+            foreignKeyName: "composicao_tipo_kit_id_fkey"
+            columns: ["tipo_kit_id"]
+            isOneToOne: false
+            referencedRelation: "tipo_kit"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contagem: {
         Row: {
           aplicada_em: string | null
@@ -92,68 +149,32 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "contagem_item_contagem_id_fkey"
+            columns: ["contagem_id"]
+            isOneToOne: false
+            referencedRelation: "contagem_resumo"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "contagem_item_insumo_id_fkey"
             columns: ["insumo_id"]
             isOneToOne: false
             referencedRelation: "insumo"
             referencedColumns: ["id"]
           },
-        ]
-      }
-      composicao: {
-        Row: {
-          id: string
-          insumo_id: string
-          quantidade: number
-          tipo_kit_id: string
-        }
-        Insert: {
-          id?: string
-          insumo_id: string
-          quantidade: number
-          tipo_kit_id: string
-        }
-        Update: {
-          id?: string
-          insumo_id?: string
-          quantidade?: number
-          tipo_kit_id?: string
-        }
-        Relationships: [
           {
-            foreignKeyName: "composicao_insumo_id_fkey"
-            columns: ["insumo_id"]
-            isOneToOne: false
-            referencedRelation: "insumo"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "composicao_insumo_id_fkey"
+            foreignKeyName: "contagem_item_insumo_id_fkey"
             columns: ["insumo_id"]
             isOneToOne: false
             referencedRelation: "ponto_de_pedido_view"
             referencedColumns: ["insumo_id"]
           },
           {
-            foreignKeyName: "composicao_insumo_id_fkey"
+            foreignKeyName: "contagem_item_insumo_id_fkey"
             columns: ["insumo_id"]
             isOneToOne: false
             referencedRelation: "saldo_insumo"
             referencedColumns: ["insumo_id"]
-          },
-          {
-            foreignKeyName: "composicao_tipo_kit_id_fkey"
-            columns: ["tipo_kit_id"]
-            isOneToOne: false
-            referencedRelation: "kits_possiveis_view"
-            referencedColumns: ["tipo_kit_id"]
-          },
-          {
-            foreignKeyName: "composicao_tipo_kit_id_fkey"
-            columns: ["tipo_kit_id"]
-            isOneToOne: false
-            referencedRelation: "tipo_kit"
-            referencedColumns: ["id"]
           },
         ]
       }
@@ -343,24 +364,36 @@ export type Database = {
           created_at: string
           data_producao: string
           empreendimento_id: string | null
+          finalizado_em: string | null
+          finalizado_por: string | null
           id: string
-          quantidade: number
+          meta: number | null
+          quantidade: number | null
+          status: string
           tipo_kit_id: string
         }
         Insert: {
           created_at?: string
           data_producao?: string
           empreendimento_id?: string | null
+          finalizado_em?: string | null
+          finalizado_por?: string | null
           id?: string
-          quantidade: number
+          meta?: number | null
+          quantidade?: number | null
+          status?: string
           tipo_kit_id: string
         }
         Update: {
           created_at?: string
           data_producao?: string
           empreendimento_id?: string | null
+          finalizado_em?: string | null
+          finalizado_por?: string | null
           id?: string
-          quantidade?: number
+          meta?: number | null
+          quantidade?: number | null
+          status?: string
           tipo_kit_id?: string
         }
         Relationships: [
@@ -472,6 +505,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "lote"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "movimentacao_lote_id_fkey"
+            columns: ["lote_id"]
+            isOneToOne: false
+            referencedRelation: "lote_resumo_view"
+            referencedColumns: ["lote_id"]
           },
           {
             foreignKeyName: "movimentacao_nota_item_id_fkey"
@@ -727,7 +767,10 @@ export type Database = {
       unidade_kit: {
         Row: {
           created_at: string
+          entrada_em: string | null
+          entrada_por: string | null
           id: string
+          impressa_em: string | null
           local_id: string | null
           lote_id: string
           numero: number
@@ -736,7 +779,10 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          entrada_em?: string | null
+          entrada_por?: string | null
           id?: string
+          impressa_em?: string | null
           local_id?: string | null
           lote_id: string
           numero: number
@@ -745,7 +791,10 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          entrada_em?: string | null
+          entrada_por?: string | null
           id?: string
+          impressa_em?: string | null
           local_id?: string | null
           lote_id?: string
           numero?: number
@@ -766,6 +815,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "lote"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "unidade_kit_lote_id_fkey"
+            columns: ["lote_id"]
+            isOneToOne: false
+            referencedRelation: "lote_resumo_view"
+            referencedColumns: ["lote_id"]
           },
         ]
       }
@@ -803,6 +859,48 @@ export type Database = {
           tipo_kit_nome: string | null
         }
         Relationships: []
+      }
+      lote_resumo_view: {
+        Row: {
+          created_at: string | null
+          data_producao: string | null
+          empreendimento_id: string | null
+          empreendimento_nome: string | null
+          finalizado_em: string | null
+          gap: number | null
+          lote_id: string | null
+          meta: number | null
+          qtd_bipadas: number | null
+          qtd_canceladas: number | null
+          qtd_impressas: number | null
+          qtd_pendentes: number | null
+          status: string | null
+          tipo_kit_id: string | null
+          tipo_kit_nome: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lote_empreendimento_id_fkey"
+            columns: ["empreendimento_id"]
+            isOneToOne: false
+            referencedRelation: "empreendimento"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lote_tipo_kit_id_fkey"
+            columns: ["tipo_kit_id"]
+            isOneToOne: false
+            referencedRelation: "kits_possiveis_view"
+            referencedColumns: ["tipo_kit_id"]
+          },
+          {
+            foreignKeyName: "lote_tipo_kit_id_fkey"
+            columns: ["tipo_kit_id"]
+            isOneToOne: false
+            referencedRelation: "tipo_kit"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ponto_de_pedido_view: {
         Row: {
@@ -872,10 +970,32 @@ export type Database = {
       }
     }
     Functions: {
-      aplicar_contagem: {
-        Args: { p_contagem_id: string }
-        Returns: undefined
+      abrir_lote: {
+        Args: {
+          p_empreendimento_id: string
+          p_meta?: number
+          p_tipo_kit_id: string
+        }
+        Returns: {
+          created_at: string
+          data_producao: string
+          empreendimento_id: string | null
+          finalizado_em: string | null
+          finalizado_por: string | null
+          id: string
+          meta: number | null
+          quantidade: number | null
+          status: string
+          tipo_kit_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "lote"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
+      aplicar_contagem: { Args: { p_contagem_id: string }; Returns: undefined }
       calcular_kits_possiveis:
         | {
             Args: { p_tipo_kit_id: string }
@@ -893,6 +1013,39 @@ export type Database = {
               qtd_possivel: number
             }[]
           }
+      cancelar_lote: {
+        Args: { p_lote_id: string }
+        Returns: {
+          created_at: string
+          data_producao: string
+          empreendimento_id: string | null
+          finalizado_em: string | null
+          finalizado_por: string | null
+          id: string
+          meta: number | null
+          quantidade: number | null
+          status: string
+          tipo_kit_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "lote"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      consultar_kit_publico: {
+        Args: { p_qr_code: string }
+        Returns: {
+          data_producao: string
+          empreendimento_nome: string
+          fabricado_em: string
+          lote_id: string
+          numero: number
+          status: string
+          tipo_kit_nome: string
+        }[]
+      }
       criar_kit_com_bom: {
         Args: { p_descricao: string; p_itens: Json; p_nome: string }
         Returns: {
@@ -928,19 +1081,18 @@ export type Database = {
           isSetofReturn: false
         }
       }
-      produzir_lote: {
-        Args: {
-          p_empreendimento_id?: string
-          p_local_id?: string
-          p_quantidade: number
-          p_tipo_kit_id: string
-        }
+      finalizar_lote: {
+        Args: { p_lote_id: string }
         Returns: {
           created_at: string
           data_producao: string
           empreendimento_id: string | null
+          finalizado_em: string | null
+          finalizado_por: string | null
           id: string
-          quantidade: number
+          meta: number | null
+          quantidade: number | null
+          status: string
           tipo_kit_id: string
         }
         SetofOptions: {
@@ -948,6 +1100,27 @@ export type Database = {
           to: "lote"
           isOneToOne: true
           isSetofReturn: false
+        }
+      }
+      gerar_etiquetas: {
+        Args: { p_lote_id: string; p_quantidade: number }
+        Returns: {
+          created_at: string
+          entrada_em: string | null
+          entrada_por: string | null
+          id: string
+          impressa_em: string | null
+          local_id: string | null
+          lote_id: string
+          numero: number
+          qr_code: string
+          status: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "unidade_kit"
+          isOneToOne: false
+          isSetofReturn: true
         }
       }
       receber_nota: {
@@ -1006,6 +1179,27 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      registrar_entrada_kit: {
+        Args: { p_local_id?: string; p_qr_code: string }
+        Returns: {
+          created_at: string
+          entrada_em: string | null
+          entrada_por: string | null
+          id: string
+          impressa_em: string | null
+          local_id: string | null
+          lote_id: string
+          numero: number
+          qr_code: string
+          status: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "unidade_kit"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       registrar_saida_kit: {
         Args: {
           p_local_destino_id?: string
@@ -1014,7 +1208,10 @@ export type Database = {
         }
         Returns: {
           created_at: string
+          entrada_em: string | null
+          entrada_por: string | null
           id: string
+          impressa_em: string | null
           local_id: string | null
           lote_id: string
           numero: number

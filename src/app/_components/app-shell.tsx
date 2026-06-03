@@ -16,7 +16,8 @@ export function AppShell({ userEmail, children }: Props) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
 
-  if (pathname === "/login") return <>{children}</>;
+  // Login e a consulta pública de kit (/k/<token>) não usam a casca do app.
+  if (pathname === "/login" || pathname.startsWith("/k/")) return <>{children}</>;
 
   return (
     <div className="flex min-h-screen">
