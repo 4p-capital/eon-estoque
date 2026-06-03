@@ -39,20 +39,20 @@ export function KitsList({ kits }: { kits: KitRow[] }) {
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-border bg-card">
+    <div className="overflow-hidden rounded-xl bg-card shadow-sm">
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent">
-            <TableHead className="h-9 px-4 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+            <TableHead className="h-9 px-4 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
               Kit
             </TableHead>
-            <TableHead className="h-9 px-4 text-right text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+            <TableHead className="h-9 px-4 text-right text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
               Insumos
             </TableHead>
-            <TableHead className="h-9 px-4 text-right text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+            <TableHead className="h-9 px-4 text-right text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
               Kits possíveis
             </TableHead>
-            <TableHead className="h-9 px-4 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+            <TableHead className="h-9 px-4 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
               Gargalo
             </TableHead>
             <TableHead className="h-9 w-10 px-4">
@@ -73,7 +73,7 @@ export function KitsList({ kits }: { kits: KitRow[] }) {
                 <span className="text-sm font-semibold tabular-nums text-foreground">
                   {nf.format(k.qtdInsumos)}
                 </span>
-                <span className="block text-[11px] text-muted-foreground">
+                <span className="block text-[10px] text-muted-foreground">
                   {k.qtdInsumos === 1 ? "insumo" : "insumos"}
                 </span>
               </TableCell>

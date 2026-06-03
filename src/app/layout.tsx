@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
+import { Geist_Mono, Montserrat } from "next/font/google";
 
 import { AppShell } from "@/app/_components/app-shell";
 import { ThemeProvider } from "@/app/_components/theme-provider";
@@ -7,22 +7,17 @@ import { Toaster } from "@/components/ui/sonner";
 import { createClient } from "@/lib/supabase/server";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// Fonte do sistema: Montserrat (corpo e títulos). Variável → usada em
+// --font-sans e --font-heading no globals.css.
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
   subsets: ["latin"],
 });
 
+// Monoespaçada apenas para código/valores.
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
-});
-
-// Fonte display com caráter para títulos (DESIGN_SYSTEM.md §3) — diferencia a
-// hierarquia do corpo (Geist) e dá personalidade ao layout.
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-display",
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -44,7 +39,7 @@ export default async function RootLayout({
     <html
       lang="pt-BR"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} h-full antialiased`}
+      className={`${montserrat.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-screen">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>

@@ -1,6 +1,6 @@
 // Classes Tailwind compartilhadas pelos campos de formulário do app.
 // Centralizar aqui evita divergência de estilo entre as telas.
-// Usam tokens semânticos (DESIGN_SYSTEM.md) — para forms novos, prefira os
+// Usam tokens semânticos (AGENTS.md §5.7) — para forms novos, prefira os
 // componentes shadcn/ui (Input, Label, Form).
 
 export const labelCls = "block text-sm font-medium text-foreground";

@@ -69,7 +69,7 @@ function KitsPossiveis({ kits, maxQtd }: { kits: KitPossivel[]; maxQtd: number }
             <Card
               key={k.tipo_kit_id}
               size="sm"
-              className="stagger gap-2 p-4 transition-all duration-200 hover:-translate-y-0.5 hover:ring-foreground/20"
+              className="stagger gap-2 p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
               style={{ "--i": i } as React.CSSProperties}
             >
               <div className="flex items-baseline justify-between">

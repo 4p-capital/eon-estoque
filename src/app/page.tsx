@@ -1,6 +1,7 @@
+import { Sparkles } from "lucide-react";
+
 import { AtalhosGrid } from "@/app/_components/atalhos-grid";
-import { PageHeader } from "@/app/_components/page-header";
-import { DashboardConteudo } from "@/app/dashboard/_components/dashboard-conteudo";
+import { VisaoGeralCards } from "@/app/_components/visao-geral-cards";
 import { getDadosDashboard } from "@/lib/dashboard";
 import { createClient } from "@/lib/supabase/server";
 
@@ -24,26 +25,45 @@ export default async function InicioPage() {
   const dados = await getDadosDashboard();
 
   return (
-    <main className="mx-auto max-w-6xl px-6 py-10">
-      <PageHeader
-        eyebrow="EON Estoque"
-        title={nome ? `Bem-vindo, ${nome}` : "Bem-vindo"}
-        description="Capacidade de produção, alertas de compra e acesso rápido aos módulos."
-      />
+    <main className="mx-auto max-w-6xl px-6 py-12">
+      <header className="animate-fade-up mb-10 text-center">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary">
+          <Sparkles className="size-3.5" aria-hidden />
+          Controle de Estoque — EON Produções
+        </span>
+        <h1 className="font-heading mt-4 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
+          Bem-vindo{nome ? ", " : " "}
+          <span className="bg-gradient-to-r from-primary to-indigo-500 bg-clip-text text-transparent">
+            {nome ?? "de volta"}
+          </span>
+        </h1>
+        <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground sm:text-base">
+          Escolha um módulo para gerenciar entrada, estoque, produção e expedição.
+        </p>
+        {user?.email && (
+          <p className="mt-2 text-xs text-muted-foreground">
+            Conectado como <span className="font-semibold text-primary">{user.email}</span>
+          </p>
+        )}
+      </header>
 
       {"erro" in dados ? (
         <ErroSupabase detalhe={dados.erro} />
       ) : (
-        <div className="space-y-12">
-          <DashboardConteudo kits={dados.kits} pontos={dados.pontos} />
-          <section>
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-              Módulos
-            </h2>
-            <AtalhosGrid />
-          </section>
-        </div>
+        <section className="mb-12">
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+            Visão geral
+          </h2>
+          <VisaoGeralCards kits={dados.kits} pontos={dados.pontos} />
+        </section>
       )}
+
+      <section>
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          Módulos
+        </h2>
+        <AtalhosGrid />
+      </section>
     </main>
   );
 }

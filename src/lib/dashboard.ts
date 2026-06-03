@@ -30,6 +30,7 @@ export async function getDadosDashboard(): Promise<DadosDashboard> {
 // Agrega os KPIs derivados (sem nova query) usados nos stat-cards.
 export function resumoDashboard(kits: KitPossivel[], pontos: PontoPedido[]) {
   return {
+    totalEstoque: pontos.reduce((acc, p) => acc + (p.saldo ?? 0), 0),
     totalKits: kits.reduce((acc, k) => acc + (k.qtd_possivel ?? 0), 0),
     insumosMonitorados: pontos.length,
     aComprar: pontos.filter((p) => p.precisa_comprar).length,

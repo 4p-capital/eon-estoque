@@ -197,7 +197,7 @@ export function InsumosBrowser({ spes }: { spes: SpeCard[] }) {
         </p>
       ) : (
         <>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-hidden rounded-lg bg-card shadow-sm">
             <Table>
               <TableHeader className="bg-muted/50 text-xs uppercase text-muted-foreground">
                 <TableRow>
@@ -287,10 +287,10 @@ function Card({
       onClick={onClick}
       aria-current={ativa ? "true" : undefined}
       className={cn(
-        "flex items-start gap-3 rounded-xl border border-border bg-card p-4 text-left transition-colors",
+        "flex items-start gap-3 rounded-xl bg-card p-4 text-left shadow-sm transition-all",
         ativa
-          ? "border-primary ring-1 ring-primary"
-          : "hover:border-ring hover:bg-muted/50",
+          ? "ring-2 ring-primary"
+          : "hover:bg-muted/50 hover:shadow-md",
       )}
     >
       <span

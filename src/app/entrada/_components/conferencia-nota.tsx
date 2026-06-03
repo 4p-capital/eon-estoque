@@ -108,7 +108,7 @@ export function ConferenciaNota({
         </section>
       )}
 
-      <div className="overflow-hidden rounded-xl border border-border">
+      <div className="overflow-hidden rounded-xl bg-card shadow-sm">
         <table className="w-full text-sm">
           <thead className="bg-muted/40 text-left text-xs uppercase tracking-wide text-muted-foreground">
             <tr>
@@ -196,7 +196,7 @@ function Cabecalho({ nota, status }: { nota: NotaConferencia; status: StatusNota
           ? "bg-success/15 text-success border-transparent"
           : "bg-secondary text-secondary-foreground border-transparent";
   return (
-    <div className="rounded-xl border border-border bg-card p-5">
+    <div className="rounded-xl bg-card p-5 shadow-sm">
       <div className="mb-3 flex items-center justify-between gap-3">
         <p className="text-sm font-medium text-foreground">{nota.emitenteNome}</p>
         <Badge className={cor}>

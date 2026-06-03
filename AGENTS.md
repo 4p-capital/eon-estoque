@@ -5,10 +5,10 @@
 >
 > Contexto de domínio: [`.claude/project-context.md`](.claude/project-context.md).
 >
-> **UI/Design:** a fonte da verdade é [`DESIGN_SYSTEM.md`](DESIGN_SYSTEM.md) — **leia-o antes
-> de criar/alterar qualquer componente, página ou estilo**. Em qualquer conflito entre este
-> guia e o `DESIGN_SYSTEM.md` sobre aparência/UI, **o `DESIGN_SYSTEM.md` vence** (é o novo
-> padrão). Ele já é carregado em toda sessão via [`CLAUDE.md`](CLAUDE.md).
+> **UI/Design:** os padrões visuais vivem na **§5.7 (Design — identidade visual)** deste
+> guia — **leia antes de criar/alterar qualquer componente, página ou estilo**. Sempre via
+> tokens semânticos + componentes shadcn (`src/components/ui/`), nunca cor/raio/espaçamento
+> hard-coded no JSX.
 
 ---
 
@@ -143,29 +143,24 @@ supabase functions serve          # Edge Functions local
 
 ### 5.7 Design — identidade visual
 
-> **A fonte da verdade de UI/design é [`DESIGN_SYSTEM.md`](DESIGN_SYSTEM.md) (na raiz).**
-> Leia-o **antes** de qualquer trabalho visual e siga-o à risca — arquitetura de tokens em
-> 3 camadas, escala tipográfica, componentes base shadcn/ui, cor/tema, movimento,
-> acessibilidade WCAG AA e o checklist final. Ele **vence qualquer conflito** com este guia.
+> **Regra:** todo estilo via **tokens semânticos** ([`globals.css`](src/app/globals.css)) +
+> **componentes shadcn** ([`src/components/ui/`](src/components/ui/)). Nunca cor/raio/espaçamento
+> hard-coded no JSX. Sempre cheque `src/components/ui/` antes de criar componente novo.
 
-Específicos do projeto **não cobertos** no `DESIGN_SYSTEM.md` (mantêm-se válidos):
+**Tokens (shadcn, light + dark via next-themes, `.dark` opt-in):**
+- **Marca = azul** → `--primary` (light `blue-600`, dark `blue-500`), `--primary-foreground` branco. Tokens legados `preto/cinza/bege` **não existem mais**.
+- **Fonte Montserrat** (corpo e títulos: `font-sans`/`font-heading`); mono só p/ código.
+- **Escala tipográfica reduzida** (tokens `--text-*` sobrescritos): `text-base` 13px · `text-sm` 11px · `text-xs` 10px. Labels uppercase `text-[10px]`; números KPI `text-2xl`.
+- **Cor funcional** (`destructive`/`warning`) só quando comunica algo real — não inventar cor no JSX.
 
-- **Logo:** componente [`LogoEon`](src/app/_components/logo-eon.tsx) (`currentColor`), nunca o `.svg` branco direto no fundo claro (ficaria invisível).
-- **Cor funcional** (vermelho p/ alerta de compra/saldo baixo) só quando comunica algo real — mapeie como token `destructive`/`warning`, não invente cor no JSX.
+**Superfícies — elevação em 3 camadas** (contraste menu/container/cards nos 2 temas):
+- **Light:** container `--background` cinza (`oklch(0.965…)`); **menu e cards brancos** destacam por cima.
+- **Dark:** container `0.145` < **menu** `--sidebar` `0.185` < **cards** `--card` `0.215` (mais elevado = mais claro). Sem preto puro.
+- **Cards sem borda** + `shadow-sm` (branco "flutuante"); **collection lists** com `bg-card` (nunca a cor do fundo).
 
-**Tudo migrado ao `DESIGN_SYSTEM.md`:** shadcn/ui instalado (`src/components/ui/`), tokens
-em 3 camadas + dark mode (next-themes) em [`globals.css`](src/app/globals.css) com **violeta
-= `--primary`** e **fonte display Space Grotesk** (`font-heading`) nos títulos. Todas as
-telas (Início `/`, entrada, insumos, tipos-kit, eventos, fiscal, login, placeholders) e os
-componentes compartilhados usam tokens semânticos + componentes shadcn. Os tokens legados
-`preto/cinza/bege` foram **removidos** — não existem mais.
+**Layout (sem header):** o colapso do menu é a **setinha (chevron) flutuante** na borda da [`app-sidebar.tsx`](src/app/_components/app-sidebar.tsx); o **ThemeToggle** vive no rodapé da sidebar. Wordmark: **EON** (bold) + Produções (normal); só "EON" quando colapsado.
 
-Padrões reutilizáveis criados: [`PageHeader`](src/app/_components/page-header.tsx) (eyebrow
-violeta + título display + descrição), [`StatCard`](src/app/_components/stat-card.tsx),
-[`ThemeToggle`](src/app/_components/theme-toggle.tsx), e [`Tag`](src/components/ui/tag.tsx)
-(badge colorida com paleta variada — `color`: slate/violet/blue/green/amber/red/teal/orange/pink
-— para categorias/status; ex.: tipos de evento). Densidade enxuta: títulos `text-xl/2xl`,
-labels `text-[11px]` uppercase, cards compactos `p-4`.
+**Padrões reutilizáveis:** [`PageHeader`](src/app/_components/page-header.tsx) (eyebrow azul + título + descrição), [`StatCard`](src/app/_components/stat-card.tsx), [`VisaoGeralCards`](src/app/_components/visao-geral-cards.tsx) (KPIs da home), [`ThemeToggle`](src/app/_components/theme-toggle.tsx), [`Tag`](src/components/ui/tag.tsx) (badge `color`: slate/violet/blue/green/amber/red/teal/orange/pink). **Logo:** [`LogoEon`](src/app/_components/logo-eon.tsx) (`currentColor`), nunca o `.svg` branco no fundo claro.
 
 **Navegação** em [`nav-links.ts`](src/app/_components/nav-links.ts): modelo em **seções**
 com **grupos colapsáveis** (`NAV`) + lista plana de atalhos da home (`MODULES`). A sidebar
@@ -178,7 +173,7 @@ sub-itens. Estrutura: `Início` → `/`; grupo **Insumos** → `Entrada` (`/entr
 
 ## 6. Forms (padrão a adotar quando criarmos as telas)
 
-> Forms seguem o `DESIGN_SYSTEM.md` (§4 Componentes / `Form` shadcn + estados obrigatórios).
+> Forms usam o `Form` do shadcn (com estados de erro/loading obrigatórios).
 > Ao construir os primeiros forms, siga esta direção (skill `shadcn` ajuda):
 
 - **Validação:** react-hook-form + Zod.
@@ -225,9 +220,9 @@ pnpm build                # compila
 - ❌ `<div onClick>` → ✅ `<button>`/`<a>`. ❌ `alert()`/`confirm()` → ✅ `toast` + `<ConfirmDialog>`.
 - ❌ Magic numbers, código comentado, `else` após `return`, `catch {}` vazio.
 - ❌ Criar componente sem checar `src/components/ui/` antes.
-- ❌ Fazer UI sem ler o [`DESIGN_SYSTEM.md`](DESIGN_SYSTEM.md) → ✅ é a fonte da verdade e vence conflitos.
-- ❌ Cor/espaçamento/raio hard-coded no JSX → ✅ sempre via design tokens (DESIGN_SYSTEM §1–2).
-- ❌ Estética genérica de "AI slop" (ver DESIGN_SYSTEM §0/§10) → ✅ direção visual intencional.
+- ❌ Fazer UI sem ler a §5.7 (Design) → ✅ siga os tokens/superfícies/layout de lá.
+- ❌ Cor/espaçamento/raio hard-coded no JSX → ✅ sempre via design tokens (§5.7).
+- ❌ Estética genérica de "AI slop" → ✅ direção visual intencional (§5.7).
 - ❌ Inventar nome de migration → ✅ `supabase migration new`.
 - ❌ `cookies()`/`params` sem `await` (Next 16) · `middleware.ts` (virou `proxy.ts`).
 
@@ -257,7 +252,7 @@ Branches: `feat/<desc>`, `fix/<desc>`, `chore/<desc>`, `refactor/<desc>`.
 
 ## 12. Documentação relacionada
 
-- [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md) — **fonte da verdade de UI/design** (tokens, tipografia, componentes, cor, motion, a11y). Leia antes de qualquer trabalho visual; vence conflitos.
+- **UI/design:** §5.7 deste guia (tokens, superfícies/elevação, tipografia, layout sem header).
 - [README.md](README.md) — visão do produto e setup.
 - [.claude/project-context.md](.claude/project-context.md) — contexto de domínio (grounding dos skills).
 - `.claude/skills/` — boas práticas de Next, Supabase, Postgres, shadcn, React e design.

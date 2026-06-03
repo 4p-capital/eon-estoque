@@ -77,7 +77,7 @@ export function MapearItem({ item, emitenteCnpj, insumos, onMapeado }: Props) {
             aria-label="Fator de conversão"
             title="Fator de conversão (ex.: 1 rolo = 100 m)"
           />
-          <p className="mt-1 text-[11px] leading-tight text-muted-foreground">fator (ex.: 1 cx = 100)</p>
+          <p className="mt-1 text-[10px] leading-tight text-muted-foreground">fator (ex.: 1 cx = 100)</p>
         </div>
         <Button type="button" onClick={salvar} disabled={pending} className="h-[42px]">
           Salvar
