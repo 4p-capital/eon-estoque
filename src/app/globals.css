@@ -189,6 +189,23 @@
   }
 }
 
+/* Impressão: isola só a área de etiquetas (.print-area) — esconde menu/form/etc.
+   Stopgap para imprimir os QRs pelo navegador até a impressora térmica chegar. */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .print-area,
+  .print-area * {
+    visibility: visible;
+  }
+  .print-area {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

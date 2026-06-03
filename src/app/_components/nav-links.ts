@@ -5,6 +5,7 @@ import {
   Home,
   PackageCheck,
   PackagePlus,
+  PackageSearch,
   QrCode,
   ScanLine,
   ShieldCheck,
@@ -58,8 +59,16 @@ export const NAV: readonly NavSection[] = [
         ],
       },
       { href: "/tipos-kit", label: "Tipos de kit", icon: Wrench },
-      { href: "/producao", label: "Produção", icon: PackagePlus, soon: true },
-      { href: "/saida", label: "Saída", icon: QrCode, soon: true },
+      {
+        label: "Produção",
+        icon: PackagePlus,
+        children: [
+          { href: "/producao", label: "Lotes", icon: PackagePlus },
+          { href: "/producao/entrada", label: "Entrada depósito", icon: ScanLine },
+          { href: "/producao/consultar", label: "Consultar kit", icon: PackageSearch },
+          { href: "/saida", label: "Saída", icon: QrCode, soon: true },
+        ],
+      },
     ],
   },
   {
@@ -127,7 +136,6 @@ export const MODULES: readonly ModuleLink[] = [
     icon: PackagePlus,
     description: "Produza lotes: baixa o BOM e gera os QRs.",
     color: "orange",
-    soon: true,
   },
   {
     href: "/saida",

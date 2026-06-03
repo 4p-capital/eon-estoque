@@ -1,7 +1,9 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PUBLIC_ROUTES = ["/login"];
+// Rotas acessíveis sem login. "/k" = consulta pública de kit pelo QR (página
+// externa que o QR aponta — leitura básica via função SECURITY DEFINER).
+const PUBLIC_ROUTES = ["/login", "/k"];
 
 // Renova a sessão do usuário a cada request (padrão @supabase/ssr) e protege
 // as rotas: sem sessão -> manda pro /login; com sessão no /login -> vai pro app.
