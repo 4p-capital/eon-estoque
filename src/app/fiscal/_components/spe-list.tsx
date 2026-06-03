@@ -61,7 +61,7 @@ export function SpeList({ rows, hoje }: { rows: SpeRow[]; hoje: Date }) {
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-border bg-card">
+    <div className="overflow-hidden rounded-xl bg-card shadow-sm">
       <Table>
         <TableHeader>
           <TableRow>

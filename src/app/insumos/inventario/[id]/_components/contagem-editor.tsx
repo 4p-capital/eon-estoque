@@ -166,8 +166,8 @@ export function ContagemEditor({
           Busque e adicione os insumos contados. O sistema mostra o saldo atual e a diferença.
         </p>
       ) : (
-        <div className="overflow-hidden rounded-xl border border-border bg-card">
-          <div className="grid grid-cols-[1fr_5.5rem_6rem_6rem_2.5rem] gap-2 border-b border-border bg-muted/40 px-4 py-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+        <div className="overflow-hidden rounded-xl bg-card shadow-sm">
+          <div className="grid grid-cols-[1fr_5.5rem_6rem_6rem_2.5rem] gap-2 border-b border-border bg-muted/40 px-4 py-2 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
             <span>Insumo</span>
             <span className="text-right">Sistema</span>
             <span className="text-right">Contado</span>
@@ -262,8 +262,8 @@ function ContagemReadOnly({ itens, aplicada }: { itens: ItemInicial[]; aplicada:
           ? "Contagem aplicada — os ajustes já foram lançados no estoque."
           : "Contagem cancelada."}
       </div>
-      <div className="overflow-hidden rounded-xl border border-border bg-card">
-        <div className="grid grid-cols-[1fr_6rem_6rem_6rem] gap-2 border-b border-border bg-muted/40 px-4 py-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+      <div className="overflow-hidden rounded-xl bg-card shadow-sm">
+        <div className="grid grid-cols-[1fr_6rem_6rem_6rem] gap-2 border-b border-border bg-muted/40 px-4 py-2 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
           <span>Insumo</span>
           <span className="text-right">Sistema</span>
           <span className="text-right">Contado</span>

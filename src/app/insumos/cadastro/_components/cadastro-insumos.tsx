@@ -130,7 +130,7 @@ export function CadastroInsumos() {
         <form
           ref={formRef}
           action={formAction}
-          className="animate-fade-in space-y-4 rounded-xl border border-border bg-card p-5"
+          className="animate-fade-in space-y-4 rounded-xl bg-card p-5 shadow-sm"
         >
           <div>
             <label htmlFor="nome" className={labelCls}>
@@ -202,7 +202,7 @@ export function CadastroInsumos() {
         </p>
       ) : (
         <>
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-hidden rounded-lg bg-card shadow-sm">
             <Table>
               <TableHeader className="bg-muted/50 text-xs uppercase text-muted-foreground">
                 <TableRow>

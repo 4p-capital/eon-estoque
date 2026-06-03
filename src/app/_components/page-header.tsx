@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 
 type Props = {
-  // Rótulo curto em violeta acima do título (eyebrow).
+  // Rótulo curto em azul acima do título (eyebrow).
   eyebrow?: string;
   title: string;
   description?: string;
@@ -10,8 +10,8 @@ type Props = {
   className?: string;
 };
 
-// Cabeçalho de página padrão: eyebrow violeta + título display + descrição.
-// Padroniza a hierarquia e a personalidade em todas as telas (DESIGN_SYSTEM.md §3).
+// Cabeçalho de página padrão: eyebrow azul + título display + descrição.
+// Padroniza a hierarquia e a personalidade em todas as telas (AGENTS.md §5.7).
 export function PageHeader({ eyebrow, title, description, action, className }: Props) {
   return (
     <header
@@ -22,7 +22,7 @@ export function PageHeader({ eyebrow, title, description, action, className }: P
     >
       <div className="min-w-0">
         {eyebrow && (
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-primary">
             {eyebrow}
           </p>
         )}
@@ -30,7 +30,7 @@ export function PageHeader({ eyebrow, title, description, action, className }: P
           {title}
         </h1>
         {description && (
-          <p className="mt-1.5 max-w-prose text-[13px] text-muted-foreground">{description}</p>
+          <p className="mt-1.5 max-w-prose text-[12px] text-muted-foreground">{description}</p>
         )}
       </div>
       {action && <div className="shrink-0">{action}</div>}

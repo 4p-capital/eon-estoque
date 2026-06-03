@@ -3,29 +3,29 @@
 @import "shadcn/tailwind.css";
 
 /* Light-first: dark é opt-in por classe (.dark), gerenciado pelo next-themes.
-   Conforme DESIGN_SYSTEM.md §6, só a camada semântica é remapeada no dark. */
+   Conforme AGENTS.md §5.7, só a camada semântica é remapeada no dark. */
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ───────────────────────────────────────────────────────────────────────────
-   Camada semântica (shadcn/ui). Marca = violeta (--primary / --ring).
-   Cores funcionais success/warning como tokens (DESIGN_SYSTEM.md §6) — não
+   Camada semântica (shadcn/ui). Marca = azul (--primary / --ring).
+   Cores funcionais success/warning como tokens (AGENTS.md §5.7) — não
    inventar verde/amarelo no JSX.
    ─────────────────────────────────────────────────────────────────────────── */
 :root {
-  --background: oklch(1 0 0);
+  --background: oklch(0.965 0 0); /* cinza — container geral (menu/cards brancos destacam) */
   --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
+  --card: oklch(1 0 0); /* branco — eleva sobre o container */
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.541 0.281 293.009); /* violet-600 */
+  --primary: oklch(0.546 0.245 262.9); /* blue-600 */
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
+  --secondary: oklch(0.95 0 0);
   --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
+  --muted: oklch(0.95 0 0);
   --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.969 0.016 293.756); /* violet-50 — hover/realce sutil */
-  --accent-foreground: oklch(0.541 0.281 293.009); /* violet-600 */
+  --accent: oklch(0.95 0.02 254.6); /* azul bem sutil — hover/realce */
+  --accent-foreground: oklch(0.546 0.245 262.9); /* blue-600 */
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.985 0 0);
   --success: oklch(0.596 0.145 163.225); /* emerald-600 */
@@ -34,8 +34,8 @@
   --warning-foreground: oklch(0.205 0 0);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: oklch(0.541 0.281 293.009); /* violet-600 */
-  --chart-1: oklch(0.541 0.281 293.009);
+  --ring: oklch(0.546 0.245 262.9); /* blue-600 */
+  --chart-1: oklch(0.546 0.245 262.9);
   --chart-2: oklch(0.596 0.145 163.225);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.645 0.246 16.439);
@@ -43,29 +43,29 @@
   --radius: 0.625rem;
   --sidebar: oklch(1 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.541 0.281 293.009);
+  --sidebar-primary: oklch(0.546 0.245 262.9); /* blue-600 */
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.969 0.016 293.756);
-  --sidebar-accent-foreground: oklch(0.541 0.281 293.009);
+  --sidebar-accent: oklch(0.97 0.014 254.6);
+  --sidebar-accent-foreground: oklch(0.546 0.245 262.9);
   --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.541 0.281 293.009);
+  --sidebar-ring: oklch(0.546 0.245 262.9);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
+  --background: oklch(0.145 0 0); /* container geral — camada base (não é preto puro) */
   --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
+  --card: oklch(0.215 0 0); /* cards — camada mais elevada (mais clara) */
   --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
+  --popover: oklch(0.215 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.606 0.25 292.717); /* violet-500 — mais claro no escuro */
+  --primary: oklch(0.623 0.214 259.8); /* blue-500 — mais claro no escuro */
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.31 0.06 293); /* violeta escuro sutil */
-  --accent-foreground: oklch(0.902 0.06 293.5);
+  --accent: oklch(0.3 0.07 262); /* azul escuro sutil */
+  --accent-foreground: oklch(0.9 0.05 256);
   --destructive: oklch(0.704 0.191 22.216);
   --destructive-foreground: oklch(0.985 0 0);
   --success: oklch(0.696 0.17 162.48); /* emerald-500 */
@@ -74,20 +74,20 @@
   --warning-foreground: oklch(0.145 0 0);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.606 0.25 292.717); /* violet-500 */
-  --chart-1: oklch(0.606 0.25 292.717);
+  --ring: oklch(0.623 0.214 259.8); /* blue-500 */
+  --chart-1: oklch(0.623 0.214 259.8);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.828 0.189 84.429);
   --chart-4: oklch(0.645 0.246 16.439);
   --chart-5: oklch(0.6 0.118 184.704);
-  --sidebar: oklch(0.205 0 0);
+  --sidebar: oklch(0.185 0 0); /* menu — elevação intermediária (entre container e cards) */
   --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.606 0.25 292.717);
+  --sidebar-primary: oklch(0.623 0.214 259.8); /* blue-500 */
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.31 0.06 293);
-  --sidebar-accent-foreground: oklch(0.902 0.06 293.5);
+  --sidebar-accent: oklch(0.3 0.07 262);
+  --sidebar-accent-foreground: oklch(0.9 0.05 256);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.606 0.25 292.717);
+  --sidebar-ring: oklch(0.623 0.214 259.8);
 }
 
 @theme inline {
@@ -128,12 +128,18 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-montserrat);
   --font-mono: var(--font-geist-mono);
-  --font-display: var(--font-display);
-  --font-heading: var(--font-display); /* Space Grotesk — títulos */
+  --font-display: var(--font-montserrat);
+  --font-heading: var(--font-montserrat); /* Montserrat — corpo e títulos */
 
-  /* Animações de entrada (DESIGN_SYSTEM.md §7 — CSS quando der) */
+  /* Escala tipográfica reduzida — sobrescreve os tokens padrão do Tailwind.
+     base 16→13, sm 14→11, xs 12→10. */
+  --text-base: 0.8125rem; /* 13px */
+  --text-sm: 0.6875rem; /* 11px */
+  --text-xs: 0.625rem; /* 10px */
+
+  /* Animações de entrada (AGENTS.md §5.7 — CSS quando der) */
   --animate-fade-up: fade-up 0.4s ease-out both;
   --animate-fade-in: fade-in 0.3s ease-out both;
 
@@ -170,7 +176,7 @@
   animation-delay: calc(var(--i, 0) * 60ms);
 }
 
-/* Acessibilidade: respeita quem pediu menos movimento (DESIGN_SYSTEM.md §7/§8). */
+/* Acessibilidade: respeita quem pediu menos movimento (AGENTS.md §5.7). */
 @media (prefers-reduced-motion: reduce) {
   .stagger,
   [class*="animate-"] {

@@ -75,7 +75,7 @@ export default async function EventosPage() {
               ESTILO_TIPO[ev.tipo] ?? { label: ev.tipo, color: "slate" as TagColor };
             const det = detalhe(ev.tipo, ev.dados);
             return (
-              <li key={ev.id} className="rounded-xl border border-border bg-card p-4">
+              <li key={ev.id} className="rounded-xl bg-card p-4 shadow-sm">
                 <div className="flex flex-wrap items-center gap-2">
                   <Tag color={estilo.color}>{estilo.label}</Tag>
                   <span className="text-sm font-medium text-foreground">{ev.descricao}</span>

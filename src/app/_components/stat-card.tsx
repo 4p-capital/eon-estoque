@@ -20,7 +20,7 @@ export function StatCard({ icon: Icon, label, value, hint, alerta, index = 0 }: 
   return (
     <Card
       size="sm"
-      className="stagger gap-0 p-4 transition-all duration-200 hover:-translate-y-0.5 hover:ring-foreground/20"
+      className="stagger gap-0 p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
       style={{ "--i": index } as React.CSSProperties}
     >
       <div className="flex items-center gap-2.5">
@@ -32,7 +32,7 @@ export function StatCard({ icon: Icon, label, value, hint, alerta, index = 0 }: 
         >
           <Icon className="size-4" aria-hidden />
         </span>
-        <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+        <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
           {label}
         </p>
       </div>

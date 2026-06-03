@@ -5,9 +5,9 @@ import { cn } from "@/lib/utils";
 
 // Tag colorida para categorias/status. Paleta curada (variedade de cores)
 // com legibilidade garantida em claro e escuro — use o `color` semântico
-// mais próximo do significado (DESIGN_SYSTEM.md §6: cor comunica, não decora).
+// mais próximo do significado (AGENTS.md §5.7: cor comunica, não decora).
 const tagVariants = cva(
-  "inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[11px] font-medium whitespace-nowrap leading-tight [&>svg]:size-3",
+  "inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[10px] font-medium whitespace-nowrap leading-tight [&>svg]:size-3",
   {
     variants: {
       color: {

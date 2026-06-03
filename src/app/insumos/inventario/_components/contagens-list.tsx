@@ -42,23 +42,23 @@ export function ContagensList({ contagens }: { contagens: ContagemResumo[] }) {
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-border bg-card">
+    <div className="overflow-hidden rounded-xl bg-card shadow-sm">
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent">
-            <TableHead className="h-9 px-4 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+            <TableHead className="h-9 px-4 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
               Empreendimento
             </TableHead>
-            <TableHead className="h-9 px-4 text-right text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+            <TableHead className="h-9 px-4 text-right text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
               Itens
             </TableHead>
-            <TableHead className="h-9 px-4 text-right text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+            <TableHead className="h-9 px-4 text-right text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
               Diferença
             </TableHead>
-            <TableHead className="h-9 px-4 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+            <TableHead className="h-9 px-4 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
               Status
             </TableHead>
-            <TableHead className="h-9 px-4 text-right text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+            <TableHead className="h-9 px-4 text-right text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
               Data
             </TableHead>
           </TableRow>

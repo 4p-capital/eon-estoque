@@ -73,12 +73,15 @@ export const NAV: readonly NavSection[] = [
 ] as const;
 
 // ── Atalhos da home (/) ──────────────────────────────────────────────────────
-// Lista curada das áreas principais, com descrição para os cards de atalho.
+// Lista curada das áreas principais, com descrição e cor para os cards de atalho.
+export type ChipColor = "violet" | "blue" | "teal" | "amber" | "pink" | "green" | "orange";
+
 export type ModuleLink = {
   href: string;
   label: string;
   icon: LucideIcon;
   description: string;
+  color: ChipColor;
   soon?: boolean;
 };
 
@@ -88,36 +91,42 @@ export const MODULES: readonly ModuleLink[] = [
     label: "Entrada",
     icon: ScanLine,
     description: "Bipe o código de barras e confira a nota na SEFAZ.",
+    color: "violet",
   },
   {
     href: "/insumos",
     label: "Estoque",
     icon: Warehouse,
     description: "Saldo dos insumos em estoque, geral e por SPE.",
+    color: "blue",
   },
   {
     href: "/insumos/inventario",
     label: "Inventário",
     icon: ClipboardCheck,
     description: "Conferência física × sistema e saldo de abertura.",
+    color: "teal",
   },
   {
     href: "/insumos/cadastro",
     label: "Cadastro de insumos",
     icon: PackageCheck,
     description: "Catálogo de insumos e cadastro de novos itens.",
+    color: "amber",
   },
   {
     href: "/tipos-kit",
     label: "Tipos de kit",
     icon: Wrench,
     description: "Cadastre kits e suas composições (BOM).",
+    color: "pink",
   },
   {
     href: "/producao",
     label: "Produção",
     icon: PackagePlus,
     description: "Produza lotes: baixa o BOM e gera os QRs.",
+    color: "orange",
     soon: true,
   },
   {
@@ -125,6 +134,7 @@ export const MODULES: readonly ModuleLink[] = [
     label: "Saída",
     icon: QrCode,
     description: "Bipe o QR na saída do kit e registre o destino.",
+    color: "green",
     soon: true,
   },
   {
@@ -132,11 +142,13 @@ export const MODULES: readonly ModuleLink[] = [
     label: "Eventos",
     icon: BarChart3,
     description: "Trilha de auditoria: recebimentos, divergências e recusas.",
+    color: "blue",
   },
   {
     href: "/fiscal",
     label: "Certificados",
     icon: ShieldCheck,
     description: "Certificados digitais (.pfx) por empreendimento.",
+    color: "violet",
   },
 ] as const;
