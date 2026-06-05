@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { Eye, EyeOff, KeyRound, Loader2 } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, KeyRound, Loader2, Lock } from "lucide-react";
 import { toast } from "sonner";
 
 import { SubmitButton } from "@/app/_components/submit-button";
@@ -10,21 +10,44 @@ import { createClient } from "@/lib/supabase/client";
 
 const INITIAL: LoginState = {};
 
-// Form vive no painel escuro do login — tokens semânticos no escopo `.dark`
-// (ver page.tsx). Campos elevados em `bg-secondary`; botão branco em
-// `bg-foreground`; links de ação em `text-primary` (azul da marca).
+// Tokens semânticos no escopo `.dark` do painel de login (ver page.tsx).
 const labelCls = "mb-1.5 block text-sm font-medium text-foreground";
 const inputCls =
   "block w-full rounded-lg border border-border bg-secondary px-4 py-3 text-sm text-foreground shadow-sm transition-colors placeholder:text-muted-foreground/60 focus-visible:border-ring focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring";
+const primaryBtnCls =
+  "flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-foreground text-sm font-medium text-background transition-colors hover:bg-foreground/90 disabled:opacity-60";
+const linkBtnCls =
+  "font-medium text-primary transition-colors hover:text-primary/80 disabled:opacity-60";
+
+type Modo = "email" | "codigo" | "senha";
+
+function EmailInput({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  return (
+    <div>
+      <label htmlFor="email" className={labelCls}>
+        E-mail
+      </label>
+      <input
+        id="email"
+        name="email"
+        type="email"
+        autoComplete="email"
+        required
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className={inputCls}
+        placeholder="seu@email.com"
+      />
+    </div>
+  );
+}
 
 export function LoginForm() {
   const [state, formAction] = useActionState(entrar, INITIAL);
-  const [showPassword, setShowPassword] = useState(false);
+  const [modo, setModo] = useState<Modo>("email");
   const [email, setEmail] = useState("");
-
-  // Fluxo OTP (código por e-mail): inicial -> envia código -> digita -> verifica.
-  const [modo, setModo] = useState<"inicial" | "codigo">("inicial");
   const [codigo, setCodigo] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [verificando, setVerificando] = useState(false);
 
@@ -58,41 +81,21 @@ export function LoginForm() {
     }
     setVerificando(true);
     const supabase = createClient();
-    const { error } = await supabase.auth.verifyOtp({
-      email: email.trim(),
-      token,
-      type: "email",
-    });
+    const { error } = await supabase.auth.verifyOtp({ email: email.trim(), token, type: "email" });
     if (error) {
       setVerificando(false);
       console.error("[auth] verifyOtp", error);
       toast.error("Código inválido ou expirado. Peça um novo e tente de novo.");
       return;
     }
-    // Sessão setada nos cookies — recarrega pra o servidor reconhecer.
     window.location.assign("/dashboard");
   }
 
-  return (
-    <div className="space-y-5">
+  // ── Passo: SENHA (opcional) ────────────────────────────────────────────────
+  if (modo === "senha") {
+    return (
       <form action={formAction} className="space-y-5">
-        <div>
-          <label htmlFor="email" className={labelCls}>
-            E-mail
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={inputCls}
-            placeholder="seu@email.com"
-          />
-        </div>
-
+        <EmailInput value={email} onChange={setEmail} />
         <div>
           <label htmlFor="password" className={labelCls}>
             Senha
@@ -127,76 +130,104 @@ export function LoginForm() {
         <SubmitButton className="h-11 w-full bg-foreground text-background hover:bg-foreground/90">
           Entrar
         </SubmitButton>
+
+        <div className="text-center">
+          <button type="button" onClick={() => setModo("email")} className={`text-sm ${linkBtnCls}`}>
+            Entrar com código por e-mail
+          </button>
+        </div>
       </form>
+    );
+  }
+
+  // ── Passo: CÓDIGO (OTP) ────────────────────────────────────────────────────
+  if (modo === "codigo") {
+    return (
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          confirmarCodigo();
+        }}
+        className="space-y-4"
+      >
+        <p className="text-sm text-muted-foreground">
+          Enviamos um código de 6 dígitos para{" "}
+          <strong className="text-foreground">{email}</strong>.
+        </p>
+        <div>
+          <label htmlFor="codigo" className={labelCls}>
+            Código
+          </label>
+          <input
+            id="codigo"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            autoFocus
+            maxLength={6}
+            value={codigo}
+            onChange={(e) => setCodigo(e.target.value.replace(/\D/g, ""))}
+            className={`${inputCls} text-center text-lg tracking-[0.5em]`}
+            placeholder="000000"
+          />
+        </div>
+        <button type="submit" disabled={verificando} className={primaryBtnCls}>
+          {verificando && <Loader2 className="size-4 animate-spin" />}
+          {verificando ? "Verificando…" : "Entrar"}
+        </button>
+        <div className="flex justify-between text-xs">
+          <button
+            type="button"
+            onClick={() => {
+              setModo("email");
+              setCodigo("");
+            }}
+            className="flex items-center gap-1 font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ArrowLeft className="size-3.5" />
+            Trocar e-mail
+          </button>
+          <button type="button" onClick={enviarCodigo} disabled={enviando} className={linkBtnCls}>
+            Reenviar código
+          </button>
+        </div>
+      </form>
+    );
+  }
+
+  // ── Passo: E-MAIL (inicial — padrão passwordless) ──────────────────────────
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        enviarCodigo();
+      }}
+      className="space-y-5"
+    >
+      <EmailInput value={email} onChange={setEmail} />
+
+      <button type="submit" disabled={enviando} className={primaryBtnCls}>
+        {enviando ? <Loader2 className="size-4 animate-spin" /> : <KeyRound className="size-4" />}
+        {enviando ? "Enviando código…" : "Receber código por e-mail"}
+      </button>
 
       <div className="flex items-center gap-3">
         <span className="h-px flex-1 bg-border" />
-        <span className="text-xs text-muted-foreground">ou entre sem senha</span>
+        <span className="text-xs text-muted-foreground">ou</span>
         <span className="h-px flex-1 bg-border" />
       </div>
 
-      {modo === "inicial" ? (
-        <button
-          type="button"
-          onClick={enviarCodigo}
-          disabled={enviando}
-          className="flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-border bg-secondary text-sm font-medium text-foreground transition-colors hover:bg-secondary/70 disabled:opacity-60"
-        >
-          {enviando ? <Loader2 className="size-4 animate-spin" /> : <KeyRound className="size-4" />}
-          {enviando ? "Enviando código…" : "Receber código por e-mail"}
-        </button>
-      ) : (
-        <div className="space-y-3">
-          <div>
-            <label htmlFor="codigo" className={labelCls}>
-              Código do e-mail
-            </label>
-            <input
-              id="codigo"
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              maxLength={6}
-              value={codigo}
-              onChange={(e) => setCodigo(e.target.value.replace(/\D/g, ""))}
-              className={`${inputCls} text-center text-lg tracking-[0.5em]`}
-              placeholder="000000"
-            />
-          </div>
-          <button
-            type="button"
-            onClick={confirmarCodigo}
-            disabled={verificando}
-            className="flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-foreground text-sm font-medium text-background transition-colors hover:bg-foreground/90 disabled:opacity-60"
-          >
-            {verificando && <Loader2 className="size-4 animate-spin" />}
-            {verificando ? "Verificando…" : "Entrar com o código"}
-          </button>
-          <div className="flex justify-between text-xs">
-            <button
-              type="button"
-              onClick={() => {
-                setModo("inicial");
-                setCodigo("");
-              }}
-              className="font-medium text-muted-foreground transition-colors hover:text-foreground"
-            >
-              Trocar e-mail
-            </button>
-            <button
-              type="button"
-              onClick={enviarCodigo}
-              disabled={enviando}
-              className="font-medium text-primary transition-colors hover:text-primary/80 disabled:opacity-60"
-            >
-              Reenviar código
-            </button>
-          </div>
-        </div>
-      )}
+      <button
+        type="button"
+        onClick={() => setModo("senha")}
+        className="flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-border bg-secondary text-sm font-medium text-foreground transition-colors hover:bg-secondary/70"
+      >
+        <Lock className="size-4" />
+        Entrar com senha
+      </button>
 
       <p className="text-center text-xs text-muted-foreground">
         Acesso restrito — contas são criadas pelo administrador.
       </p>
-    </div>
+    </form>
   );
 }
