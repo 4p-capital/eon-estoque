@@ -127,8 +127,6 @@ export function AppSidebar({
           <ContextoSwitcher
             collapsed={collapsed}
             modo={contexto.modo}
-            tenantAtivoId={contexto.tenantAtivoId}
-            tenants={contexto.tenants}
             vinculadoId={contexto.vinculadoId}
             vinculadoNome={contexto.vinculadoNome}
           />

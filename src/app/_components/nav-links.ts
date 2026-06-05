@@ -123,7 +123,9 @@ export type ModuleLink = {
   soon?: boolean;
 };
 
-export const MODULES: readonly ModuleLink[] = [
+// Atalhos da OPERAÇÃO (galpão). Sem Certificados (foi pra área do tenant);
+// com Clientes (convidar).
+export const MODULES_GALPAO: readonly ModuleLink[] = [
   {
     href: "/entrada",
     label: "Entrada",
@@ -182,10 +184,49 @@ export const MODULES: readonly ModuleLink[] = [
     color: "blue",
   },
   {
+    href: "/clientes",
+    label: "Clientes",
+    icon: Building2,
+    description: "Convide construtoras clientes e acompanhe o cadastro.",
+    color: "teal",
+  },
+] as const;
+
+// Atalhos da ÁREA DO TENANT (cliente / "dentro do tenant"). Espelha NAV_TENANT.
+export const MODULES_TENANT: readonly ModuleLink[] = [
+  {
+    href: "/insumos",
+    label: "Estoque",
+    icon: Warehouse,
+    description: "Saldo dos seus insumos em estoque, por SPE.",
+    color: "blue",
+  },
+  {
+    href: "/producao",
+    label: "Produção",
+    icon: PackagePlus,
+    description: "Acompanhe a produção dos seus kits.",
+    color: "orange",
+  },
+  {
+    href: "/eventos",
+    label: "Eventos",
+    icon: BarChart3,
+    description: "Trilha de recebimentos, divergências e recusas.",
+    color: "blue",
+  },
+  {
     href: "/fiscal",
     label: "Certificados",
     icon: ShieldCheck,
-    description: "Certificados digitais (.pfx) por empreendimento.",
+    description: "Certificados digitais (.pfx) das suas SPEs.",
     color: "violet",
+  },
+  {
+    href: "/equipe",
+    label: "Equipe",
+    icon: Users,
+    description: "Convide administradores e gestores da sua empresa.",
+    color: "green",
   },
 ] as const;
