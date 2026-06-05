@@ -1,17 +1,17 @@
 import { LogoEon } from "@/app/_components/logo-eon";
 import { LoginForm } from "@/app/login/_components/login-form";
 
-// Tela de login standalone (sem casca do app — ver AppShell). Layout monocromático
-// claro: a classe `light` força os tokens claros mesmo se o tema global estiver em
-// dark. Marca centralizada à esquerda + formulário à direita. Cores via tokens
-// semânticos (bg-card / text-foreground), nunca cor crua.
+// Tela de login standalone (sem casca do app — ver AppShell). Split de tema:
+// container ESQUERDO claro (marca preta sobre branco, alinhada à esquerda) e
+// container DIREITO escuro (formulário em dark). Cada lado força seu tema com
+// `light`/`dark`, independente do tema global. Cores via tokens semânticos.
 export default function LoginPage() {
   return (
-    <main className="light grid min-h-screen bg-card text-foreground lg:grid-cols-2">
-      {/* Esquerda — marca centralizada, monocromática */}
-      <div className="hidden flex-col items-center justify-center gap-3 border-r border-border px-12 text-center lg:flex">
+    <main className="grid min-h-screen lg:grid-cols-2">
+      {/* Esquerda — marca, fundo branco, alinhada à esquerda */}
+      <div className="light hidden flex-col justify-center border-r border-border bg-card px-12 text-foreground lg:flex xl:px-16">
         <LogoEon className="h-12 text-foreground" />
-        <p className="text-xs font-normal uppercase tracking-[0.3em] text-foreground">
+        <p className="mt-1 text-xs font-normal uppercase tracking-[0.3em] text-foreground">
           Produções
         </p>
         <h2 className="mt-6 max-w-md text-2xl font-normal leading-tight tracking-tight text-foreground xl:text-3xl">
@@ -19,8 +19,8 @@ export default function LoginPage() {
         </h2>
       </div>
 
-      {/* Direita — formulário */}
-      <div className="flex flex-col justify-center px-6 py-12 sm:px-12 lg:px-16">
+      {/* Direita — painel escuro com o formulário */}
+      <div className="dark flex flex-col justify-center bg-background px-6 py-12 text-foreground sm:px-12 lg:px-16">
         <div className="mx-auto w-full max-w-sm">
           <LogoEon className="mb-10 h-8 text-foreground lg:hidden" />
 
