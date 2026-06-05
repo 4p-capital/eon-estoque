@@ -9,7 +9,7 @@ export default function LoginPage() {
   return (
     <main className="grid min-h-screen lg:grid-cols-2">
       {/* Esquerda — marca, fundo branco, alinhada à esquerda */}
-      <div className="light hidden flex-col justify-center border-r border-border bg-card px-12 text-foreground lg:flex xl:px-16">
+      <div className="light hidden flex-col items-start justify-center border-r border-border bg-card px-12 text-foreground lg:flex xl:px-16">
         <LogoEon className="h-12 text-foreground" />
         <p className="mt-1 text-xs font-normal uppercase tracking-[0.3em] text-foreground">
           Produções
