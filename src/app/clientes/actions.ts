@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-import { convidarUsuario } from "@/lib/auth/convite";
+import { convidarUsuario, reenviarConvite } from "@/lib/auth/convite";
 import { getSessao } from "@/lib/auth/sessao";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -108,5 +108,29 @@ export async function provisionarTenant(
     status: "ok",
     message: `Convite enviado para ${parsed.data.adminEmail}. Ele completa o cadastro da empresa no primeiro acesso.`,
     linkFallback: convite.linkFallback,
+  };
+}
+
+const reenviarSchema = z.object({ email: z.string().trim().email("E-mail inválido.") });
+
+export async function reenviarConviteCliente(
+  _prev: ProvisionarState,
+  formData: FormData,
+): Promise<ProvisionarState> {
+  const sessao = await getSessao();
+  if (!sessao || sessao.papel !== "galpao_admin") {
+    return { status: "error", message: "Apenas um administrador do galpão pode reenviar convites." };
+  }
+  const parsed = reenviarSchema.safeParse({ email: formData.get("email") });
+  if (!parsed.success) {
+    return { status: "error", message: parsed.error.issues[0]?.message ?? "Dados inválidos." };
+  }
+
+  const admin = createAdminClient();
+  const linkFallback = await reenviarConvite(admin, parsed.data.email, "/onboarding");
+  return {
+    status: "ok",
+    message: `Convite reenviado para ${parsed.data.email}.`,
+    linkFallback,
   };
 }

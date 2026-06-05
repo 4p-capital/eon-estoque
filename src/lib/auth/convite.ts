@@ -81,3 +81,32 @@ export async function convidarUsuario(
 
   return { ok: true, userId, linkFallback };
 }
+
+// Reenvia o acesso a um usuário JÁ existente (convite não chegou / link expirou):
+// dispara o e-mail (signInWithOtp) e devolve um magic link de fallback.
+export async function reenviarConvite(
+  admin: AdminClient,
+  email: string,
+  next: string,
+): Promise<string | undefined> {
+  const redirectTo = `${redirectBase()}/auth/callback?next=${encodeURIComponent(next)}`;
+
+  const { error: erroOtp } = await admin.auth.signInWithOtp({
+    email,
+    options: { shouldCreateUser: false, emailRedirectTo: redirectTo },
+  });
+  if (erroOtp) {
+    console.error("[convite] reenviar signInWithOtp", erroOtp);
+  }
+
+  const { data, error } = await admin.auth.admin.generateLink({
+    type: "magiclink",
+    email,
+    options: { redirectTo },
+  });
+  if (error) {
+    console.error("[convite] reenviar generateLink", error);
+    return undefined;
+  }
+  return data.properties?.action_link;
+}

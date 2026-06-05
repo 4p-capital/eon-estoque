@@ -3,6 +3,7 @@ import { Building2 } from "lucide-react";
 
 import { PageHeader } from "@/app/_components/page-header";
 import { ProvisionarForm } from "@/app/clientes/_components/provisionar-form";
+import { ReenviarConviteBotao } from "@/app/clientes/_components/reenviar-convite-botao";
 import { Card } from "@/components/ui/card";
 import { Tag } from "@/components/ui/tag";
 import { getSessao } from "@/lib/auth/sessao";
@@ -19,6 +20,18 @@ export default async function ClientesPage() {
     .from("tenant")
     .select("id, nome, slug, ativo, onboarding_completo, created_at")
     .order("created_at", { ascending: true });
+
+  // E-mail do admin (tenant_admin) de cada tenant, para reenviar o convite.
+  const { data: admins } = await admin
+    .from("perfil")
+    .select("tenant_id, email")
+    .eq("papel", "tenant_admin");
+  const emailPorTenant = new Map<string, string>();
+  for (const a of admins ?? []) {
+    if (a.tenant_id && a.email && !emailPorTenant.has(a.tenant_id)) {
+      emailPorTenant.set(a.tenant_id, a.email);
+    }
+  }
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
@@ -56,6 +69,9 @@ export default async function ClientesPage() {
                   <Tag color="amber">Pendente</Tag>
                 ) : (
                   <Tag color={t.ativo ? "green" : "slate"}>{t.ativo ? "Ativo" : "Inativo"}</Tag>
+                )}
+                {emailPorTenant.has(t.id) && (
+                  <ReenviarConviteBotao email={emailPorTenant.get(t.id)!} />
                 )}
               </li>
             ))}
