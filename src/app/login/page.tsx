@@ -10,11 +10,11 @@ export default function LoginPage() {
     <main className="grid min-h-screen lg:grid-cols-2">
       {/* Esquerda — marca, fundo branco, alinhada à esquerda */}
       <div className="light hidden flex-col items-start justify-center border-r border-border bg-card px-12 text-foreground lg:flex xl:px-16">
-        <LogoEon className="h-12 text-foreground" />
+        <LogoEon className="h-10 text-foreground" />
         <p className="mt-1 text-xs font-normal uppercase tracking-[0.3em] text-foreground">
           Produções
         </p>
-        <h2 className="mt-6 max-w-md text-2xl font-normal leading-tight tracking-tight text-foreground xl:text-3xl">
+        <h2 className="mt-6 max-w-md text-[20px] font-normal leading-tight tracking-tight text-foreground xl:text-[26px]">
           Criamos soluções que duram, impactam e evoluem com o tempo.
         </h2>
       </div>
