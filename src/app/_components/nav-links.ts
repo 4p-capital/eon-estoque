@@ -1,6 +1,7 @@
 import {
   BarChart3,
   Boxes,
+  Building2,
   ClipboardCheck,
   Home,
   PackageCheck,
@@ -9,6 +10,7 @@ import {
   QrCode,
   ScanLine,
   ShieldCheck,
+  Users,
   Warehouse,
   Wrench,
   type LucideIcon,
@@ -80,6 +82,12 @@ export const NAV: readonly NavSection[] = [
     ],
   },
 ] as const;
+
+// ── Itens de administração por papel (M2) ───────────────────────────────────
+// Renderizados condicionalmente na sidebar conforme o papel do usuário.
+// galpao_admin → provisiona clientes; tenant_admin → gerencia a equipe.
+export const ADMIN_GALPAO: NavItem = { href: "/clientes", label: "Clientes", icon: Building2 };
+export const ADMIN_TENANT: NavItem = { href: "/equipe", label: "Equipe", icon: Users };
 
 // ── Atalhos da home (/) ──────────────────────────────────────────────────────
 // Lista curada das áreas principais, com descrição e cor para os cards de atalho.

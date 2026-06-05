@@ -4,7 +4,7 @@ import { Geist_Mono, Montserrat } from "next/font/google";
 import { AppShell } from "@/app/_components/app-shell";
 import { ThemeProvider } from "@/app/_components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
-import { createClient } from "@/lib/supabase/server";
+import { getSessao } from "@/lib/auth/sessao";
 import "./globals.css";
 
 // Fonte do sistema: Montserrat (corpo e títulos). Variável → usada em
@@ -30,10 +30,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const sessao = await getSessao();
 
   return (
     <html
@@ -43,7 +40,9 @@ export default async function RootLayout({
     >
       <body className="min-h-screen">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-          <AppShell userEmail={user?.email ?? null}>{children}</AppShell>
+          <AppShell userEmail={sessao?.email ?? null} papel={sessao?.papel ?? null}>
+            {children}
+          </AppShell>
           <Toaster richColors position="top-right" />
         </ThemeProvider>
       </body>

@@ -6,10 +6,24 @@ import { usePathname } from "next/navigation";
 import { ChevronLeft, ChevronRight, LogOut } from "lucide-react";
 
 import { sair } from "@/app/login/actions";
-import { NAV, isGroup, type NavGroup, type NavItem } from "@/app/_components/nav-links";
+import {
+  ADMIN_GALPAO,
+  ADMIN_TENANT,
+  NAV,
+  isGroup,
+  type NavGroup,
+  type NavItem,
+} from "@/app/_components/nav-links";
 import { ThemeToggle } from "@/app/_components/theme-toggle";
 import { Badge } from "@/components/ui/badge";
+import type { Papel } from "@/lib/auth/papel";
 import { cn } from "@/lib/utils";
+
+function adminItemDoPapel(papel: Papel | null): NavItem | null {
+  if (papel === "galpao_admin") return ADMIN_GALPAO;
+  if (papel === "tenant_admin") return ADMIN_TENANT;
+  return null;
+}
 
 function matches(pathname: string, href: string): boolean {
   if (href === "/") return pathname === "/";
@@ -35,16 +49,22 @@ function primeiroNome(email: string | null): string {
 export function AppSidebar({
   collapsed,
   userEmail,
+  papel,
   onToggle,
 }: {
   collapsed: boolean;
   userEmail: string | null;
+  papel: Papel | null;
   onToggle: () => void;
 }) {
   const pathname = usePathname();
-  const allHrefs = NAV.flatMap((s) =>
-    s.entries.flatMap((e) => (isGroup(e) ? e.children.map((c) => c.href) : [e.href])),
-  );
+  const adminItem = adminItemDoPapel(papel);
+  const allHrefs = [
+    ...NAV.flatMap((s) =>
+      s.entries.flatMap((e) => (isGroup(e) ? e.children.map((c) => c.href) : [e.href])),
+    ),
+    ...(adminItem ? [adminItem.href] : []),
+  ];
   const active = activeHref(pathname, allHrefs);
   const nome = primeiroNome(userEmail);
 
@@ -124,6 +144,17 @@ export function AppSidebar({
             )}
           </div>
         ))}
+
+        {adminItem && (
+          <div className="space-y-0.5">
+            {!collapsed && (
+              <p className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground/70">
+                Administração
+              </p>
+            )}
+            <NavLink item={adminItem} collapsed={collapsed} active={active === adminItem.href} />
+          </div>
+        )}
       </nav>
 
       {/* Tema + Sair */}

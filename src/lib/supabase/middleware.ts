@@ -1,9 +1,18 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+import { isPapel, type Papel } from "@/lib/auth/papel";
+
 // Rotas acessíveis sem login. "/k" = consulta pública de kit pelo QR (página
-// externa que o QR aponta — leitura básica via função SECURITY DEFINER).
-const PUBLIC_ROUTES = ["/login", "/k"];
+// externa que o QR aponta). "/auth" = callback do magic link (estabelece a sessão).
+const PUBLIC_ROUTES = ["/login", "/k", "/auth"];
+
+// Gating por papel (M2). O split completo de áreas galpão×tenant é o M4; aqui só
+// protegemos as rotas novas: provisionamento (galpão) e equipe (tenant).
+const ROTAS_POR_PAPEL: { prefix: string; permitido: (papel: Papel | null) => boolean }[] = [
+  { prefix: "/clientes", permitido: (p) => p === "galpao_admin" },
+  { prefix: "/equipe", permitido: (p) => p === "tenant_admin" },
+];
 
 // Renova a sessão do usuário a cada request (padrão @supabase/ssr) e protege
 // as rotas: sem sessão -> manda pro /login; com sessão no /login -> vai pro app.
@@ -44,6 +53,18 @@ export async function updateSession(request: NextRequest) {
   }
   if (user && pathname === "/login") {
     return redirectTo(request, "/dashboard", supabaseResponse);
+  }
+
+  // Gating por papel das rotas restritas (lê app_metadata do JWT).
+  if (user) {
+    const rawPapel = user.app_metadata?.papel;
+    const papel = isPapel(rawPapel) ? rawPapel : null;
+    const regra = ROTAS_POR_PAPEL.find(
+      (r) => pathname === r.prefix || pathname.startsWith(`${r.prefix}/`),
+    );
+    if (regra && !regra.permitido(papel)) {
+      return redirectTo(request, "/dashboard", supabaseResponse);
+    }
   }
 
   return supabaseResponse;
