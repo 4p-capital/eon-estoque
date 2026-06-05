@@ -1,0 +1,84 @@
+<!--
+  Template "Invite user" (Supabase → Authentication → Email Templates → Invite user).
+  Assunto sugerido: Você foi convidado — EON Produções
+  Variável usada: {{ .ConfirmationURL }}
+  Padrão: hero da home (fundo preto, pill, título branco + acento azul, centralizado).
+-->
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body
+    style="margin:0;padding:0;background:#0a0a0a;font-family:'Montserrat','Segoe UI',Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;"
+  >
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;padding:48px 16px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:540px;">
+            <tr>
+              <td align="center" style="text-align:center;padding:0 16px;">
+                <!-- Pill -->
+                <span style="display:inline-block;border:1px solid #1f2937;background:#141414;border-radius:999px;padding:7px 16px;font-size:12px;font-weight:600;color:#3b82f6;">
+                  &#10038;&nbsp;&nbsp;Controle de Estoque &mdash; EON Produções
+                </span>
+
+                <!-- Título -->
+                <h1 style="margin:24px 0 0;font-size:30px;line-height:1.2;font-weight:800;letter-spacing:-0.02em;color:#ffffff;">
+                  Você foi convidado para o<br /><span style="color:#3b82f6;">EON Produções</span>
+                </h1>
+
+                <!-- Subtítulo -->
+                <p style="margin:16px auto 0;max-width:420px;font-size:15px;line-height:1.6;color:#a3a3a3;">
+                  Você recebeu acesso à plataforma de controle de estoque. Ative sua conta e
+                  configure sua empresa em poucos cliques.
+                </p>
+
+                <!-- Botão (degradê azul→índigo do sistema) -->
+                <table role="presentation" cellpadding="0" cellspacing="0" align="center" style="margin:32px auto 0;">
+                  <tr>
+                    <td
+                      align="center"
+                      style="border-radius:10px;background-color:#4f46e5;background-image:linear-gradient(135deg,#3b82f6 0%,#4f46e5 100%);"
+                    >
+                      <a
+                        href="{{ .ConfirmationURL }}"
+                        style="display:inline-block;padding:14px 40px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:10px;"
+                      >
+                        Aceitar convite
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+
+                <!-- Fallback -->
+                <p style="margin:32px 0 6px;font-size:13px;line-height:1.6;color:#a3a3a3;">
+                  Se o botão não funcionar, copie e cole este endereço no navegador:
+                </p>
+                <p style="margin:0;font-size:12px;line-height:1.5;word-break:break-all;">
+                  <a href="{{ .ConfirmationURL }}" style="color:#3b82f6;text-decoration:underline;">{{ .ConfirmationURL }}</a>
+                </p>
+
+                <hr style="border:none;border-top:1px solid #1f1f1f;margin:32px 0 16px;" />
+                <p style="margin:0;font-size:12px;line-height:1.6;color:#737373;">
+                  Este convite é pessoal e expira em breve. Se você não esperava este e-mail,
+                  pode ignorá-lo com segurança.
+                </p>
+
+                <p style="margin:28px 0 0;font-size:11px;color:#525252;">
+                  EON Produções · Controle de Estoque
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

@@ -1,7 +1,9 @@
 import { Sparkles } from "lucide-react";
 
 import { AtalhosGrid } from "@/app/_components/atalhos-grid";
+import { MODULES_GALPAO, MODULES_TENANT } from "@/app/_components/nav-links";
 import { VisaoGeralCards } from "@/app/_components/visao-geral-cards";
+import { getContexto } from "@/lib/auth/contexto";
 import { getDadosDashboard } from "@/lib/dashboard";
 import { createClient } from "@/lib/supabase/server";
 
@@ -21,6 +23,10 @@ export default async function InicioPage() {
     data: { user },
   } = await supabase.auth.getUser();
   const nome = primeiroNome(user?.email ?? null);
+
+  // Os atalhos refletem o menu do contexto (operação do galpão × área do tenant).
+  const contexto = await getContexto();
+  const modules = contexto?.modo === "tenant" ? MODULES_TENANT : MODULES_GALPAO;
 
   const dados = await getDadosDashboard();
 
@@ -62,7 +68,7 @@ export default async function InicioPage() {
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
           Módulos
         </h2>
-        <AtalhosGrid />
+        <AtalhosGrid modules={modules} />
       </section>
     </main>
   );

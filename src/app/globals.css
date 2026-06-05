@@ -11,7 +11,8 @@
    Cores funcionais success/warning como tokens (AGENTS.md §5.7) — não
    inventar verde/amarelo no JSX.
    ─────────────────────────────────────────────────────────────────────────── */
-:root {
+:root,
+.light {
   --background: oklch(0.965 0 0); /* cinza — container geral (menu/cards brancos destacam) */
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0); /* branco — eleva sobre o container */

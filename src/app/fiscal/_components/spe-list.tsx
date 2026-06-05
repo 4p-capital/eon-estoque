@@ -54,7 +54,8 @@ export function SpeList({ rows, hoje }: { rows: SpeRow[]; hoje: Date }) {
           <ShieldCheck className="size-6" aria-hidden />
         </span>
         <p className="mt-3 text-sm text-muted-foreground">
-          Nenhum certificado cadastrado ainda. Suba o primeiro .pfx ao lado.
+          Nenhum certificado cadastrado ainda. Clique em “Cadastrar certificado” para subir o
+          primeiro .pfx.
         </p>
       </div>
     );

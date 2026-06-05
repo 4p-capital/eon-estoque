@@ -1,12 +1,10 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, Loader2, Plus, Search, X } from "lucide-react";
-import { toast } from "sonner";
+import { useEffect, useState } from "react";
+import { ChevronLeft, ChevronRight, Loader2, Search } from "lucide-react";
 
-import { criarInsumo, type FormState } from "@/app/insumos/actions";
-import { inputCls, labelCls } from "@/app/_components/form-styles";
-import { SubmitButton } from "@/app/_components/submit-button";
+import { inputCls } from "@/app/_components/form-styles";
+import { NovoInsumoDrawer } from "@/app/insumos/cadastro/_components/novo-insumo-drawer";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -26,11 +24,9 @@ type Linha = {
 };
 
 const POR_PAGINA = 200;
-const INITIAL: FormState = { status: "idle" };
 const nf = new Intl.NumberFormat("pt-BR");
 
 export function CadastroInsumos() {
-  const [aberto, setAberto] = useState(false);
   const [busca, setBusca] = useState("");
   const [termo, setTermo] = useState("");
   const [page, setPage] = useState(0);
@@ -39,9 +35,6 @@ export function CadastroInsumos() {
   const [carregando, setCarregando] = useState(true);
   const [recarga, setRecarga] = useState(0);
 
-  const [state, formAction] = useActionState(criarInsumo, INITIAL);
-  const formRef = useRef<HTMLFormElement>(null);
-
   useEffect(() => {
     const t = setTimeout(() => {
       setTermo(busca.trim());
@@ -49,18 +42,6 @@ export function CadastroInsumos() {
     }, 300);
     return () => clearTimeout(t);
   }, [busca]);
-
-  useEffect(() => {
-    if (state.status === "ok") {
-      toast.success(state.message ?? "Insumo cadastrado.");
-      formRef.current?.reset();
-      // Recarrega a lista após cadastrar (reage à mudança de `state`, não a render).
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setRecarga((n) => n + 1);
-    } else if (state.status === "error") {
-      toast.error(state.message ?? "Erro ao salvar.");
-    }
-  }, [state]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -120,77 +101,8 @@ export function CadastroInsumos() {
             className={`${inputCls} pl-9`}
           />
         </div>
-        <Button type="button" onClick={() => setAberto((a) => !a)}>
-          {aberto ? <X className="size-4" aria-hidden /> : <Plus className="size-4" aria-hidden />}
-          {aberto ? "Fechar" : "Cadastrar insumo"}
-        </Button>
+        <NovoInsumoDrawer onCreated={() => setRecarga((n) => n + 1)} />
       </div>
-
-      {aberto && (
-        <form
-          ref={formRef}
-          action={formAction}
-          className="animate-fade-in space-y-4 rounded-xl bg-card p-5 shadow-sm"
-        >
-          <div>
-            <label htmlFor="nome" className={labelCls}>
-              Nome
-            </label>
-            <input id="nome" name="nome" required className={inputCls} placeholder="Fio flexível 2,5mm" />
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label htmlFor="unidade" className={labelCls}>
-                Unidade
-              </label>
-              <input id="unidade" name="unidade" required className={inputCls} placeholder="m" />
-            </div>
-            <div>
-              <label htmlFor="estoque_min" className={labelCls}>
-                Estoque mínimo
-              </label>
-              <input
-                id="estoque_min"
-                name="estoque_min"
-                type="number"
-                min={0}
-                step="0.001"
-                defaultValue={0}
-                className={inputCls}
-              />
-            </div>
-            <div>
-              <label htmlFor="lead_time_dias" className={labelCls}>
-                Lead time (dias)
-              </label>
-              <input
-                id="lead_time_dias"
-                name="lead_time_dias"
-                type="number"
-                min={0}
-                step="1"
-                defaultValue={0}
-                className={inputCls}
-              />
-            </div>
-            <div>
-              <label htmlFor="consumo_dia" className={labelCls}>
-                Consumo/dia
-              </label>
-              <input
-                id="consumo_dia"
-                name="consumo_dia"
-                type="number"
-                min={0}
-                step="0.001"
-                defaultValue={0}
-                className={inputCls}
-              />
-            </div>
-          </div>
-          <SubmitButton className="w-full">Cadastrar insumo</SubmitButton>
-        </form>
-      )}
 
       {carregando ? (
         <div className="flex items-center justify-center gap-2 rounded-lg border border-border py-12 text-sm text-muted-foreground">
