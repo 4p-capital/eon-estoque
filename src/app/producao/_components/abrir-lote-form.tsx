@@ -14,9 +14,10 @@ type Opcao = { id: string; nome: string };
 type Props = {
   kits: Opcao[];
   empreendimentos: Opcao[];
+  onSuccess?: () => void;
 };
 
-export function AbrirLoteForm({ kits, empreendimentos }: Props) {
+export function AbrirLoteForm({ kits, empreendimentos, onSuccess }: Props) {
   const router = useRouter();
   const [tipoKitId, setTipoKitId] = useState("");
   const [empreendimentoId, setEmpreendimentoId] = useState("");
@@ -40,12 +41,13 @@ export function AbrirLoteForm({ kits, empreendimentos }: Props) {
         return;
       }
       toast.success("Lote aberto.");
+      onSuccess?.();
       router.push(`/producao/${res.loteId}`);
     });
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4 rounded-xl bg-card p-5 text-card-foreground shadow-sm">
+    <form onSubmit={onSubmit} className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label htmlFor="tipo-kit" className={labelCls}>
@@ -96,7 +98,7 @@ export function AbrirLoteForm({ kits, empreendimentos }: Props) {
         />
       </div>
 
-      <Button type="submit" disabled={pendente || !tipoKitId || !empreendimentoId} className="w-full sm:w-auto">
+      <Button type="submit" disabled={pendente || !tipoKitId || !empreendimentoId} className="w-full">
         <PackagePlus className="size-4" aria-hidden />
         {pendente ? "Abrindo…" : "Abrir lote"}
       </Button>

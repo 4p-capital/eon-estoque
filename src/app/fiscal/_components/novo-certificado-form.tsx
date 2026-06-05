@@ -14,8 +14,10 @@ type EmpreendimentoOption = { id: string; nome: string };
 
 export function NovoCertificadoForm({
   empreendimentos,
+  onSuccess,
 }: {
   empreendimentos: EmpreendimentoOption[];
+  onSuccess?: () => void;
 }) {
   const [state, formAction] = useActionState(cadastrarSpe, INITIAL);
   const formRef = useRef<HTMLFormElement>(null);
@@ -24,10 +26,11 @@ export function NovoCertificadoForm({
     if (state.status === "ok") {
       toast.success(state.message ?? "Certificado cadastrado.");
       formRef.current?.reset();
+      onSuccess?.();
     } else if (state.status === "error") {
       toast.error(state.message ?? "Erro ao cadastrar.");
     }
-  }, [state]);
+  }, [state, onSuccess]);
 
   return (
     <form ref={formRef} action={formAction} className="space-y-4">
