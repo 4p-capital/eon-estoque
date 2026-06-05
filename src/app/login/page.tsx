@@ -1,45 +1,28 @@
-import Image from "next/image";
-
 import { LogoEon } from "@/app/_components/logo-eon";
 import { LoginForm } from "@/app/login/_components/login-form";
 
-// Tela de login standalone (sem casca do app — ver AppShell). Layout de marca:
-// capa fotográfica à esquerda + painel escuro com o form à direita. O escopo é
-// forçado em `.dark` para a estética da referência sair dos tokens semânticos
-// (near-black em --background, botão branco em --foreground), sem cor crua.
+// Tela de login standalone (sem casca do app — ver AppShell). Layout monocromático
+// claro: a classe `light` força os tokens claros mesmo se o tema global estiver em
+// dark. Marca centralizada à esquerda + formulário à direita. Cores via tokens
+// semânticos (bg-card / text-foreground), nunca cor crua.
 export default function LoginPage() {
   return (
-    <main className="dark grid min-h-screen bg-background text-foreground lg:grid-cols-2">
-      {/* Esquerda — capa fotográfica (b&w) com marca e mensagem */}
-      <div className="relative hidden flex-col justify-start overflow-hidden bg-secondary p-12 lg:flex xl:p-16">
-        <Image
-          src="/EON.png"
-          alt=""
-          fill
-          priority
-          unoptimized
-          sizes="50vw"
-          className="object-cover grayscale"
-        />
-        {/* Véu para legibilidade do texto sobre a foto */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/40" />
-
-        <div className="relative">
-          <LogoEon className="h-7 text-white" />
-          <p className="mt-1 text-xs font-medium uppercase tracking-[0.3em] text-white/60">
-            Produções
-          </p>
-
-          <h2 className="mt-8 max-w-lg text-[24px] font-bold leading-tight tracking-tight text-white xl:text-[32px]">
-            Criamos soluções que duram, impactam e evoluem com o tempo.
-          </h2>
-        </div>
+    <main className="light grid min-h-screen bg-card text-foreground lg:grid-cols-2">
+      {/* Esquerda — marca centralizada, monocromática */}
+      <div className="hidden flex-col items-center justify-center gap-3 border-r border-border px-12 text-center lg:flex">
+        <LogoEon className="h-12 text-foreground" />
+        <p className="text-xs font-normal uppercase tracking-[0.3em] text-foreground">
+          Produções
+        </p>
+        <h2 className="mt-6 max-w-md text-2xl font-normal leading-tight tracking-tight text-foreground xl:text-3xl">
+          Criamos soluções que duram, impactam e evoluem com o tempo.
+        </h2>
       </div>
 
-      {/* Direita — painel escuro com o formulário */}
+      {/* Direita — formulário */}
       <div className="flex flex-col justify-center px-6 py-12 sm:px-12 lg:px-16">
         <div className="mx-auto w-full max-w-sm">
-          <LogoEon className="mb-10 h-6 text-foreground lg:hidden" />
+          <LogoEon className="mb-10 h-8 text-foreground lg:hidden" />
 
           <h1 className="text-3xl font-semibold tracking-tight text-foreground">
             Bem-vindo de volta
