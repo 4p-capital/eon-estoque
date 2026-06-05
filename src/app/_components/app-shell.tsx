@@ -3,18 +3,17 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 
-import { AppSidebar } from "@/app/_components/app-sidebar";
-import type { Papel } from "@/lib/auth/papel";
+import { AppSidebar, type SidebarContexto } from "@/app/_components/app-sidebar";
 
 type Props = {
   userEmail: string | null;
-  papel: Papel | null;
+  contexto: SidebarContexto;
   children: React.ReactNode;
 };
 
 // Casca do app: sidebar + conteúdo (sem header — o colapso e o tema vivem na
 // própria sidebar). Some na tela de login.
-export function AppShell({ userEmail, papel, children }: Props) {
+export function AppShell({ userEmail, contexto, children }: Props) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
 
@@ -28,7 +27,7 @@ export function AppShell({ userEmail, papel, children }: Props) {
       <AppSidebar
         collapsed={collapsed}
         userEmail={userEmail}
-        papel={papel}
+        contexto={contexto}
         onToggle={() => setCollapsed((c) => !c)}
       />
       <div className="min-w-0 flex-1">{children}</div>

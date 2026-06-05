@@ -43,7 +43,10 @@ export function isGroup(entry: NavEntry): entry is NavGroup {
   return "children" in entry;
 }
 
-export const NAV: readonly NavSection[] = [
+// ── Nav do GALPÃO (contexto operação) ───────────────────────────────────────
+// Visão operacional de todo o galpão (todos os tenants). Certificados NÃO ficam
+// aqui — são do cofre fiscal, que vive na área do tenant.
+export const NAV_GALPAO: readonly NavSection[] = [
   {
     entries: [{ href: "/", label: "Início", icon: Home }],
   },
@@ -77,17 +80,35 @@ export const NAV: readonly NavSection[] = [
     title: "Gestão",
     entries: [
       { href: "/eventos", label: "Eventos", icon: BarChart3 },
-      { href: "/fiscal", label: "Certificados", icon: ShieldCheck },
+      { href: "/clientes", label: "Clientes", icon: Building2 },
       { href: "/dashboard", label: "Gráficos", icon: BarChart3, soon: true },
     ],
   },
 ] as const;
 
-// ── Itens de administração por papel (M2) ───────────────────────────────────
-// Renderizados condicionalmente na sidebar conforme o papel do usuário.
-// galpao_admin → provisiona clientes; tenant_admin → gerencia a equipe.
-export const ADMIN_GALPAO: NavItem = { href: "/clientes", label: "Clientes", icon: Building2 };
-export const ADMIN_TENANT: NavItem = { href: "/equipe", label: "Equipe", icon: Users };
+// ── Nav do TENANT (contexto cliente / "dentro do tenant") ────────────────────
+// Experiência do cliente: vê o estoque/produção do tenant e gerencia o cofre
+// fiscal (certificados/SPEs) e a equipe.
+export const NAV_TENANT: readonly NavSection[] = [
+  {
+    entries: [{ href: "/", label: "Início", icon: Home }],
+  },
+  {
+    title: "Minha operação",
+    entries: [
+      { href: "/insumos", label: "Estoque", icon: Warehouse },
+      { href: "/producao", label: "Produção", icon: PackagePlus },
+      { href: "/eventos", label: "Eventos", icon: BarChart3 },
+    ],
+  },
+  {
+    title: "Fiscal & Equipe",
+    entries: [
+      { href: "/fiscal", label: "Certificados", icon: ShieldCheck },
+      { href: "/equipe", label: "Equipe", icon: Users },
+    ],
+  },
+] as const;
 
 // ── Atalhos da home (/) ──────────────────────────────────────────────────────
 // Lista curada das áreas principais, com descrição e cor para os cards de atalho.

@@ -7,23 +7,16 @@ import { ChevronLeft, ChevronRight, LogOut } from "lucide-react";
 
 import { sair } from "@/app/login/actions";
 import {
-  ADMIN_GALPAO,
-  ADMIN_TENANT,
-  NAV,
+  NAV_GALPAO,
+  NAV_TENANT,
   isGroup,
   type NavGroup,
   type NavItem,
 } from "@/app/_components/nav-links";
+import { ContextoSwitcher, type TenantOpcao } from "@/app/_components/contexto-switcher";
 import { ThemeToggle } from "@/app/_components/theme-toggle";
 import { Badge } from "@/components/ui/badge";
-import type { Papel } from "@/lib/auth/papel";
 import { cn } from "@/lib/utils";
-
-function adminItemDoPapel(papel: Papel | null): NavItem | null {
-  if (papel === "galpao_admin") return ADMIN_GALPAO;
-  if (papel === "tenant_admin") return ADMIN_TENANT;
-  return null;
-}
 
 function matches(pathname: string, href: string): boolean {
   if (href === "/") return pathname === "/";
@@ -46,25 +39,31 @@ function primeiroNome(email: string | null): string {
   return bruto.charAt(0).toUpperCase() + bruto.slice(1);
 }
 
+export type SidebarContexto = {
+  isGalpao: boolean;
+  modo: "operacao" | "tenant";
+  tenantAtivoId: string | null;
+  tenants: TenantOpcao[];
+  vinculadoId: string | null;
+  vinculadoNome: string | null;
+};
+
 export function AppSidebar({
   collapsed,
   userEmail,
-  papel,
+  contexto,
   onToggle,
 }: {
   collapsed: boolean;
   userEmail: string | null;
-  papel: Papel | null;
+  contexto: SidebarContexto;
   onToggle: () => void;
 }) {
   const pathname = usePathname();
-  const adminItem = adminItemDoPapel(papel);
-  const allHrefs = [
-    ...NAV.flatMap((s) =>
-      s.entries.flatMap((e) => (isGroup(e) ? e.children.map((c) => c.href) : [e.href])),
-    ),
-    ...(adminItem ? [adminItem.href] : []),
-  ];
+  const nav = contexto.modo === "tenant" ? NAV_TENANT : NAV_GALPAO;
+  const allHrefs = nav.flatMap((s) =>
+    s.entries.flatMap((e) => (isGroup(e) ? e.children.map((c) => c.href) : [e.href])),
+  );
   const active = activeHref(pathname, allHrefs);
   const nome = primeiroNome(userEmail);
 
@@ -122,8 +121,22 @@ export function AppSidebar({
         )}
       </div>
 
+      {/* Switcher de contexto — só galpão alterna (operação × entrar no tenant). */}
+      {contexto.isGalpao && (
+        <div className={cn("border-b border-sidebar-border py-3", collapsed ? "px-2" : "px-3")}>
+          <ContextoSwitcher
+            collapsed={collapsed}
+            modo={contexto.modo}
+            tenantAtivoId={contexto.tenantAtivoId}
+            tenants={contexto.tenants}
+            vinculadoId={contexto.vinculadoId}
+            vinculadoNome={contexto.vinculadoNome}
+          />
+        </div>
+      )}
+
       <nav className="flex-1 space-y-4 overflow-y-auto px-3 py-3">
-        {NAV.map((section, i) => (
+        {nav.map((section, i) => (
           <div key={section.title ?? `s${i}`} className="space-y-0.5">
             {section.title && !collapsed && (
               <p className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground/70">
@@ -144,17 +157,6 @@ export function AppSidebar({
             )}
           </div>
         ))}
-
-        {adminItem && (
-          <div className="space-y-0.5">
-            {!collapsed && (
-              <p className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground/70">
-                Administração
-              </p>
-            )}
-            <NavLink item={adminItem} collapsed={collapsed} active={active === adminItem.href} />
-          </div>
-        )}
       </nav>
 
       {/* Tema + Sair */}
