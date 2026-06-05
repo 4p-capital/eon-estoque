@@ -1,11 +1,36 @@
+import { redirect } from "next/navigation";
 import { Sparkles } from "lucide-react";
 
 import { AtalhosGrid } from "@/app/_components/atalhos-grid";
 import { MODULES_GALPAO, MODULES_TENANT } from "@/app/_components/nav-links";
 import { VisaoGeralCards } from "@/app/_components/visao-geral-cards";
 import { getContexto } from "@/lib/auth/contexto";
+import { getSessao } from "@/lib/auth/sessao";
 import { getDadosDashboard } from "@/lib/dashboard";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+
+// tenant_admin com onboarding pendente -> manda completar o cadastro da empresa.
+async function redirecionarSeOnboardingPendente(): Promise<void> {
+  const sessao = await getSessao();
+  if (sessao?.papel !== "tenant_admin" || !sessao.tenantId) {
+    return;
+  }
+  try {
+    const admin = createAdminClient();
+    const { data } = await admin
+      .from("tenant")
+      .select("onboarding_completo")
+      .eq("id", sessao.tenantId)
+      .single();
+    if (data && !data.onboarding_completo) {
+      redirect("/onboarding");
+    }
+  } catch (err) {
+    if (err && typeof err === "object" && "digest" in err) throw err; // re-lança o redirect
+    console.error("[inicio] checar onboarding", err);
+  }
+}
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +43,8 @@ function primeiroNome(email: string | null): string | null {
 }
 
 export default async function InicioPage() {
+  await redirecionarSeOnboardingPendente();
+
   const supabase = await createClient();
   const {
     data: { user },

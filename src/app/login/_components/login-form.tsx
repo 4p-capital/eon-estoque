@@ -88,7 +88,8 @@ export function LoginForm() {
       toast.error("Código inválido ou expirado. Peça um novo e tente de novo.");
       return;
     }
-    window.location.assign("/dashboard");
+    // Vai pra home — que roteia o cliente com onboarding pendente pro /onboarding.
+    window.location.assign("/");
   }
 
   // ── Passo: SENHA (opcional) ────────────────────────────────────────────────
