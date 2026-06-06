@@ -1,49 +1,38 @@
 import { LogoEon } from "@/app/_components/logo-eon";
 import { LoginForm } from "@/app/login/_components/login-form";
 
+// Tela de login standalone (sem casca do app — ver AppShell). Split de tema:
+// container ESQUERDO claro (marca preta sobre branco, alinhada à esquerda) e
+// container DIREITO escuro (formulário em dark). Cada lado força seu tema com
+// `light`/`dark`, independente do tema global. Cores via tokens semânticos.
 export default function LoginPage() {
-  const ano = new Date().getFullYear();
-
   return (
     <main className="grid min-h-screen lg:grid-cols-2">
-      {/* Esquerda — comunicação do sistema */}
-      <div className="relative hidden flex-col justify-between bg-background px-16 py-12 lg:flex">
-        <LogoEon className="h-6 text-foreground" />
-
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-bege">
-            Sistema interno · Estoque
-          </p>
-          <h2 className="mt-4 text-4xl font-semibold leading-tight tracking-tight text-foreground">
-            Do insumo ao kit rastreado.
-          </h2>
-          <p className="mt-5 max-w-md text-sm leading-relaxed text-muted-foreground">
-            Capacidade de produção, ponto de pedido e rastreio por QR — controle
-            anti-furto numa só superfície.
-          </p>
-        </div>
-
-        <p className="text-xs text-muted-foreground">
-          © {ano} EON Instalações · Controle de estoque
+      {/* Esquerda — marca, fundo branco, alinhada à esquerda */}
+      <div className="light hidden flex-col items-start justify-center border-r border-border bg-card px-12 text-foreground lg:flex xl:px-16">
+        <LogoEon className="h-10 text-foreground" />
+        <p className="mt-1 text-xs font-normal uppercase tracking-[0.3em] text-foreground">
+          Produções
         </p>
+        <h2 className="mt-6 max-w-md text-[20px] font-normal leading-tight tracking-tight text-foreground xl:text-[26px]">
+          Criamos soluções que duram, impactam e evoluem com o tempo.
+        </h2>
       </div>
 
-      {/* Direita — formulário (painel de marca, violeta) */}
-      <div className="flex flex-col bg-primary px-6 py-10 text-primary-foreground sm:px-12 lg:px-16">
-        <LogoEon className="h-6 text-primary-foreground lg:hidden" />
+      {/* Direita — painel escuro com o formulário */}
+      <div className="dark flex flex-col justify-center bg-background px-6 py-12 text-foreground sm:px-12 lg:px-16">
+        <div className="mx-auto w-full max-w-sm">
+          <LogoEon className="mb-10 h-8 text-foreground lg:hidden" />
 
-        <div className="flex flex-1 items-center justify-center">
-          <div className="w-full max-w-sm py-12">
-            <h1 className="text-3xl font-semibold tracking-tight text-primary-foreground">
-              Bem-vindo de volta
-            </h1>
-            <p className="mt-2 text-sm text-primary-foreground/70">
-              Acesse o controle de estoque da EON.
-            </p>
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground">
+            Bem-vindo de volta
+          </h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Acesse o controle de estoque da EON.
+          </p>
 
-            <div className="mt-8">
-              <LoginForm />
-            </div>
+          <div className="mt-8">
+            <LoginForm />
           </div>
         </div>
       </div>

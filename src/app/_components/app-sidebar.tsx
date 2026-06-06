@@ -6,7 +6,14 @@ import { usePathname } from "next/navigation";
 import { ChevronLeft, ChevronRight, LogOut } from "lucide-react";
 
 import { sair } from "@/app/login/actions";
-import { NAV, isGroup, type NavGroup, type NavItem } from "@/app/_components/nav-links";
+import {
+  NAV_GALPAO,
+  NAV_TENANT,
+  isGroup,
+  type NavGroup,
+  type NavItem,
+} from "@/app/_components/nav-links";
+import { ContextoSwitcher, type TenantOpcao } from "@/app/_components/contexto-switcher";
 import { ThemeToggle } from "@/app/_components/theme-toggle";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -32,17 +39,29 @@ function primeiroNome(email: string | null): string {
   return bruto.charAt(0).toUpperCase() + bruto.slice(1);
 }
 
+export type SidebarContexto = {
+  isGalpao: boolean;
+  modo: "operacao" | "tenant";
+  tenantAtivoId: string | null;
+  tenants: TenantOpcao[];
+  vinculadoId: string | null;
+  vinculadoNome: string | null;
+};
+
 export function AppSidebar({
   collapsed,
   userEmail,
+  contexto,
   onToggle,
 }: {
   collapsed: boolean;
   userEmail: string | null;
+  contexto: SidebarContexto;
   onToggle: () => void;
 }) {
   const pathname = usePathname();
-  const allHrefs = NAV.flatMap((s) =>
+  const nav = contexto.modo === "tenant" ? NAV_TENANT : NAV_GALPAO;
+  const allHrefs = nav.flatMap((s) =>
     s.entries.flatMap((e) => (isGroup(e) ? e.children.map((c) => c.href) : [e.href])),
   );
   const active = activeHref(pathname, allHrefs);
@@ -102,8 +121,20 @@ export function AppSidebar({
         )}
       </div>
 
+      {/* Switcher de contexto — só galpão alterna (operação × entrar no tenant). */}
+      {contexto.isGalpao && (
+        <div className={cn("border-b border-sidebar-border py-3", collapsed ? "px-2" : "px-3")}>
+          <ContextoSwitcher
+            collapsed={collapsed}
+            modo={contexto.modo}
+            vinculadoId={contexto.vinculadoId}
+            vinculadoNome={contexto.vinculadoNome}
+          />
+        </div>
+      )}
+
       <nav className="flex-1 space-y-4 overflow-y-auto px-3 py-3">
-        {NAV.map((section, i) => (
+        {nav.map((section, i) => (
           <div key={section.title ?? `s${i}`} className="space-y-0.5">
             {section.title && !collapsed && (
               <p className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground/70">

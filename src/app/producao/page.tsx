@@ -2,7 +2,7 @@ import Link from "next/link";
 import { QrCode } from "lucide-react";
 
 import { PageHeader } from "@/app/_components/page-header";
-import { AbrirLoteForm } from "@/app/producao/_components/abrir-lote-form";
+import { NovoLoteDrawer } from "@/app/producao/_components/novo-lote-drawer";
 import { LoteCard } from "@/app/producao/_components/lote-card";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
@@ -31,22 +31,25 @@ export default async function ProducaoPage() {
         title="Lotes de produção"
         description="Abra um lote, gere as etiquetas com QR conforme produz e bipe a entrada dos kits no depósito."
         action={
-          <Button asChild variant="outline" size="sm">
-            <Link href="/producao/entrada">
-              <QrCode className="size-4" aria-hidden />
-              Entrada no depósito
-            </Link>
-          </Button>
+          <div className="flex items-center gap-2">
+            {kits.length > 0 && (
+              <NovoLoteDrawer kits={kits} empreendimentos={empreendimentos} />
+            )}
+            <Button asChild variant="outline">
+              <Link href="/producao/entrada">
+                <QrCode className="size-4" aria-hidden />
+                Entrada no depósito
+              </Link>
+            </Button>
+          </div>
         }
       />
 
-      {kits.length === 0 ? (
+      {kits.length === 0 && (
         <p className="rounded-xl bg-card p-6 text-center text-sm text-muted-foreground shadow-sm">
           Nenhum tipo de kit cadastrado. Cadastre um kit e sua composição (BOM) em{" "}
           <span className="font-medium text-foreground">Tipos de kit</span> primeiro.
         </p>
-      ) : (
-        <AbrirLoteForm kits={kits} empreendimentos={empreendimentos} />
       )}
 
       <section className="mt-10">
@@ -55,7 +58,7 @@ export default async function ProducaoPage() {
         </h2>
         {abertos.length === 0 ? (
           <p className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
-            Nenhum lote aberto. Abra um acima para começar.
+            Nenhum lote aberto. Clique em “Cadastrar lote” para começar.
           </p>
         ) : (
           <div className="space-y-2">

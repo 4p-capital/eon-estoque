@@ -1,0 +1,76 @@
+<!--
+  Template "Magic Link" (Supabase → Authentication → Email Templates → Magic Link).
+  Usado SÓ no LOGIN por código (OTP): mostra {{ .Token }}. O convite/reenvio NÃO
+  usa este template — usa o "Invite user" (link), via re-provisionamento.
+  Assunto sugerido: Seu código de acesso — EON Produções
+  Variável: {{ .Token }}
+-->
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body
+    style="margin:0;padding:0;background:#0a0a0a;font-family:'Montserrat','Segoe UI',Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;"
+  >
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;padding:48px 16px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:540px;">
+            <tr>
+              <td align="center" style="text-align:center;padding:0 16px;">
+                <!-- Pill -->
+                <span style="display:inline-block;border:1px solid #1f2937;background:#141414;border-radius:999px;padding:7px 16px;font-size:12px;font-weight:600;color:#3b82f6;">
+                  &#10038;&nbsp;&nbsp;Controle de Estoque &mdash; EON Produções
+                </span>
+
+                <!-- Título -->
+                <h1 style="margin:24px 0 0;font-size:30px;line-height:1.2;font-weight:800;letter-spacing:-0.02em;color:#ffffff;">
+                  Seu <span style="color:#3b82f6;">código</span> de acesso
+                </h1>
+
+                <!-- Subtítulo -->
+                <p style="margin:16px auto 0;max-width:420px;font-size:15px;line-height:1.6;color:#a3a3a3;">
+                  Use o código abaixo para entrar no EON Produções.
+                </p>
+
+                <!-- Código -->
+                <table role="presentation" cellpadding="0" cellspacing="0" align="center" style="margin:28px auto 0;">
+                  <tr>
+                    <td
+                      align="center"
+                      style="background:#141414;border:1px solid #262626;border-radius:12px;padding:18px 32px;"
+                    >
+                      <span style="font-size:36px;font-weight:700;letter-spacing:0.4em;color:#ffffff;font-family:'Montserrat',monospace;">
+                        {{ .Token }}
+                      </span>
+                    </td>
+                  </tr>
+                </table>
+
+                <p style="margin:24px auto 0;max-width:420px;font-size:13px;line-height:1.6;color:#a3a3a3;">
+                  O código expira em alguns minutos e só pode ser usado uma vez.
+                </p>
+
+                <hr style="border:none;border-top:1px solid #1f1f1f;margin:32px 0 16px;" />
+                <p style="margin:0;font-size:12px;line-height:1.6;color:#737373;">
+                  Se você não tentou entrar, ignore este e-mail — sua conta segue protegida.
+                </p>
+
+                <p style="margin:28px 0 0;font-size:11px;color:#525252;">
+                  EON Produções · Controle de Estoque
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

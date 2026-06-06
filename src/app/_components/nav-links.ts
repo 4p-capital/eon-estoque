@@ -1,6 +1,7 @@
 import {
   BarChart3,
   Boxes,
+  Building2,
   ClipboardCheck,
   Home,
   PackageCheck,
@@ -9,6 +10,7 @@ import {
   QrCode,
   ScanLine,
   ShieldCheck,
+  Users,
   Warehouse,
   Wrench,
   type LucideIcon,
@@ -41,7 +43,10 @@ export function isGroup(entry: NavEntry): entry is NavGroup {
   return "children" in entry;
 }
 
-export const NAV: readonly NavSection[] = [
+// ── Nav do GALPÃO (contexto operação) ───────────────────────────────────────
+// Visão operacional de todo o galpão (todos os tenants). Certificados NÃO ficam
+// aqui — são do cofre fiscal, que vive na área do tenant.
+export const NAV_GALPAO: readonly NavSection[] = [
   {
     entries: [{ href: "/", label: "Início", icon: Home }],
   },
@@ -75,8 +80,32 @@ export const NAV: readonly NavSection[] = [
     title: "Gestão",
     entries: [
       { href: "/eventos", label: "Eventos", icon: BarChart3 },
-      { href: "/fiscal", label: "Certificados", icon: ShieldCheck },
+      { href: "/clientes", label: "Clientes", icon: Building2 },
       { href: "/dashboard", label: "Gráficos", icon: BarChart3, soon: true },
+    ],
+  },
+] as const;
+
+// ── Nav do TENANT (contexto cliente / "dentro do tenant") ────────────────────
+// Experiência do cliente: vê o estoque/produção do tenant e gerencia o cofre
+// fiscal (certificados/SPEs) e a equipe.
+export const NAV_TENANT: readonly NavSection[] = [
+  {
+    entries: [{ href: "/", label: "Início", icon: Home }],
+  },
+  {
+    title: "Minha operação",
+    entries: [
+      { href: "/insumos", label: "Estoque", icon: Warehouse },
+      { href: "/producao", label: "Produção", icon: PackagePlus },
+      { href: "/eventos", label: "Eventos", icon: BarChart3 },
+    ],
+  },
+  {
+    title: "Fiscal & Equipe",
+    entries: [
+      { href: "/fiscal", label: "Certificados", icon: ShieldCheck },
+      { href: "/equipe", label: "Equipe", icon: Users },
     ],
   },
 ] as const;
@@ -94,7 +123,9 @@ export type ModuleLink = {
   soon?: boolean;
 };
 
-export const MODULES: readonly ModuleLink[] = [
+// Atalhos da OPERAÇÃO (galpão). Sem Certificados (foi pra área do tenant);
+// com Clientes (convidar).
+export const MODULES_GALPAO: readonly ModuleLink[] = [
   {
     href: "/entrada",
     label: "Entrada",
@@ -153,10 +184,49 @@ export const MODULES: readonly ModuleLink[] = [
     color: "blue",
   },
   {
+    href: "/clientes",
+    label: "Clientes",
+    icon: Building2,
+    description: "Convide construtoras clientes e acompanhe o cadastro.",
+    color: "teal",
+  },
+] as const;
+
+// Atalhos da ÁREA DO TENANT (cliente / "dentro do tenant"). Espelha NAV_TENANT.
+export const MODULES_TENANT: readonly ModuleLink[] = [
+  {
+    href: "/insumos",
+    label: "Estoque",
+    icon: Warehouse,
+    description: "Saldo dos seus insumos em estoque, por SPE.",
+    color: "blue",
+  },
+  {
+    href: "/producao",
+    label: "Produção",
+    icon: PackagePlus,
+    description: "Acompanhe a produção dos seus kits.",
+    color: "orange",
+  },
+  {
+    href: "/eventos",
+    label: "Eventos",
+    icon: BarChart3,
+    description: "Trilha de recebimentos, divergências e recusas.",
+    color: "blue",
+  },
+  {
     href: "/fiscal",
     label: "Certificados",
     icon: ShieldCheck,
-    description: "Certificados digitais (.pfx) por empreendimento.",
+    description: "Certificados digitais (.pfx) das suas SPEs.",
     color: "violet",
+  },
+  {
+    href: "/equipe",
+    label: "Equipe",
+    icon: Users,
+    description: "Convide administradores e gestores da sua empresa.",
+    color: "green",
   },
 ] as const;

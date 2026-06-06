@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
-import { MODULES, type ChipColor } from "@/app/_components/nav-links";
+import { type ChipColor, type ModuleLink } from "@/app/_components/nav-links";
 import { Badge } from "@/components/ui/badge";
 
 // Gradiente do chip de ícone e do CTA por módulo (variedade de cor, estilo SaaS).
@@ -35,10 +35,10 @@ const TEXT: Record<ChipColor, string> = {
   orange: "text-orange-600 dark:text-orange-400",
 };
 
-export function AtalhosGrid() {
+export function AtalhosGrid({ modules }: { modules: readonly ModuleLink[] }) {
   return (
     <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {MODULES.map(({ href, label, icon: Icon, description, color, soon }, i) => (
+      {modules.map(({ href, label, icon: Icon, description, color, soon }, i) => (
         <Link
           key={href}
           href={href}

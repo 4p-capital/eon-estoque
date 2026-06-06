@@ -10,6 +10,7 @@
 
 do $$
 declare
+  v_eon        uuid;
   v_local_eon  uuid;
   v_emp_toc    uuid;
   v_fio        uuid;
@@ -20,12 +21,17 @@ declare
   v_kit_eletr  uuid;
   v_kit_hidr   uuid;
 begin
-  -- Locais
+  -- Tenant dono do seed (criado na migration de fundação multi-tenant).
+  -- O seed roda como postgres (sem JWT), então carimbamos tenant_id explícito:
+  -- os triggers de derivação só preenchem via sessão/empreendimento.
+  select id into v_eon from tenant where slug = 'eon';
+
+  -- Locais (catálogo global — sem tenant_id)
   insert into local (nome, is_padrao) values ('EON Instalações', true)
     returning id into v_local_eon;
 
-  -- Empreendimento
-  insert into empreendimento (nome, qtd_apartamentos) values ('TOC', 450)
+  -- Empreendimento (do tenant EON)
+  insert into empreendimento (nome, qtd_apartamentos, tenant_id) values ('TOC', 450, v_eon)
     returning id into v_emp_toc;
 
   -- Insumos (com lead time e consumo/dia para o ponto de pedido)
@@ -63,11 +69,13 @@ begin
     (v_kit_hidr, v_tubo, 8),
     (v_kit_hidr, v_conexao, 4);
 
-  -- Estoque inicial via movimentações de entrada (o saldo é a soma do livro-razão)
-  insert into movimentacao (tipo, insumo_id, local_id, quantidade, observacao) values
-    ('entrada_insumo', v_fio,       v_local_eon, 4500, 'Estoque inicial (seed)'),
-    ('entrada_insumo', v_disjuntor, v_local_eon,  380, 'Estoque inicial (seed)'),
-    ('entrada_insumo', v_caixa,     v_local_eon,  900, 'Estoque inicial (seed)'),
-    ('entrada_insumo', v_tubo,      v_local_eon, 2000, 'Estoque inicial (seed)'),
-    ('entrada_insumo', v_conexao,   v_local_eon,  600, 'Estoque inicial (seed)');
+  -- Estoque inicial via movimentações de entrada (o saldo é a soma do livro-razão).
+  -- tenant_id explícito (EON): estas entradas são "globais" (sem empreendimento),
+  -- então o trigger não tem de onde derivar — carimbamos direto.
+  insert into movimentacao (tipo, insumo_id, local_id, quantidade, observacao, tenant_id) values
+    ('entrada_insumo', v_fio,       v_local_eon, 4500, 'Estoque inicial (seed)', v_eon),
+    ('entrada_insumo', v_disjuntor, v_local_eon,  380, 'Estoque inicial (seed)', v_eon),
+    ('entrada_insumo', v_caixa,     v_local_eon,  900, 'Estoque inicial (seed)', v_eon),
+    ('entrada_insumo', v_tubo,      v_local_eon, 2000, 'Estoque inicial (seed)', v_eon),
+    ('entrada_insumo', v_conexao,   v_local_eon,  600, 'Estoque inicial (seed)', v_eon);
 end $$;
