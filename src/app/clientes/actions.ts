@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-import { convidarUsuario, reenviarConvite } from "@/lib/auth/convite";
+import { convidarUsuario } from "@/lib/auth/convite";
 import { getSessao } from "@/lib/auth/sessao";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -126,11 +126,53 @@ export async function reenviarConviteCliente(
     return { status: "error", message: parsed.error.issues[0]?.message ?? "Dados inválidos." };
   }
 
+  const email = parsed.data.email;
   const admin = createAdminClient();
-  const linkFallback = await reenviarConvite(admin, parsed.data.email, "/onboarding");
+
+  // Acha o admin pendente desse cliente (perfil tenant_admin com esse e-mail).
+  const { data: perfil } = await admin
+    .from("perfil")
+    .select("id, tenant_id, nome")
+    .eq("email", email)
+    .eq("papel", "tenant_admin")
+    .maybeSingle();
+  if (!perfil?.tenant_id) {
+    return { status: "error", message: "Não encontrei o convite desse cliente." };
+  }
+
+  // Só reenvia (re-provisiona) enquanto o cliente NÃO concluiu o onboarding.
+  const { data: tenant } = await admin
+    .from("tenant")
+    .select("onboarding_completo")
+    .eq("id", perfil.tenant_id)
+    .single();
+  if (tenant?.onboarding_completo) {
+    return { status: "error", message: "Esse cliente já concluiu o acesso — não precisa reenviar." };
+  }
+
+  // Re-provisiona: remove o usuário pendente e dispara um convite NOVO (template
+  // Invite = link limpo, sem código). O tenant rascunho permanece.
+  const { error: erroDel } = await admin.auth.admin.deleteUser(perfil.id);
+  if (erroDel) {
+    console.error("[clientes] reenviar deleteUser", erroDel);
+    return { status: "error", message: "Não foi possível reenviar. Tente novamente." };
+  }
+
+  const convite = await convidarUsuario(admin, {
+    email,
+    nome: perfil.nome ?? email,
+    tenantId: perfil.tenant_id,
+    papel: "tenant_admin",
+    next: "/onboarding",
+  });
+  if (!convite.ok) {
+    return { status: "error", message: "Não foi possível reenviar o convite." };
+  }
+
+  revalidatePath("/clientes");
   return {
     status: "ok",
-    message: `Convite reenviado para ${parsed.data.email}.`,
-    linkFallback,
+    message: `Convite reenviado para ${email}.`,
+    linkFallback: convite.linkFallback,
   };
 }

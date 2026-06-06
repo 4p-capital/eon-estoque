@@ -19,8 +19,12 @@ export type ConviteResult =
   | { ok: false; motivo: "email_existe" | "erro" };
 
 function redirectBase(): string {
-  const site = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "");
-  return site && site.length > 0 ? site : "http://localhost:3000";
+  const raw = process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/+$/, "");
+  if (!raw) {
+    return "http://localhost:3000";
+  }
+  // Garante o esquema — sem https:// o redirect vira path inválido no Supabase.
+  return /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
 }
 
 // Convida um usuário (template "Invite user"): cria a conta, manda o e-mail de
@@ -80,33 +84,4 @@ export async function convidarUsuario(
   }
 
   return { ok: true, userId, linkFallback };
-}
-
-// Reenvia o acesso a um usuário JÁ existente (convite não chegou / link expirou):
-// dispara o e-mail (signInWithOtp) e devolve um magic link de fallback.
-export async function reenviarConvite(
-  admin: AdminClient,
-  email: string,
-  next: string,
-): Promise<string | undefined> {
-  const redirectTo = `${redirectBase()}/auth/callback?next=${encodeURIComponent(next)}`;
-
-  const { error: erroOtp } = await admin.auth.signInWithOtp({
-    email,
-    options: { shouldCreateUser: false, emailRedirectTo: redirectTo },
-  });
-  if (erroOtp) {
-    console.error("[convite] reenviar signInWithOtp", erroOtp);
-  }
-
-  const { data, error } = await admin.auth.admin.generateLink({
-    type: "magiclink",
-    email,
-    options: { redirectTo },
-  });
-  if (error) {
-    console.error("[convite] reenviar generateLink", error);
-    return undefined;
-  }
-  return data.properties?.action_link;
 }
