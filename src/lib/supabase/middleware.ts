@@ -11,7 +11,8 @@ const PUBLIC_ROUTES = ["/login", "/k", "/auth"];
 // protegemos as rotas novas: provisionamento (galpão) e equipe (tenant).
 const ROTAS_POR_PAPEL: { prefix: string; permitido: (papel: Papel | null) => boolean }[] = [
   { prefix: "/clientes", permitido: (p) => p === "galpao_admin" },
-  { prefix: "/equipe", permitido: (p) => p === "tenant_admin" },
+  // /equipe é ciente do papel: galpão gerencia a equipe do galpão, tenant a sua.
+  { prefix: "/equipe", permitido: (p) => p === "tenant_admin" || p === "galpao_admin" },
 ];
 
 // Renova a sessão do usuário a cada request (padrão @supabase/ssr) e protege
