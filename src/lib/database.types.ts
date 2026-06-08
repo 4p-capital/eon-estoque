@@ -82,6 +82,7 @@ export type Database = {
           observacao: string | null
           regiao: string | null
           status: string
+          tenant_id?: string
         }
         Insert: {
           aplicada_em?: string | null
@@ -93,6 +94,7 @@ export type Database = {
           observacao?: string | null
           regiao?: string | null
           status?: string
+          tenant_id?: string
         }
         Update: {
           aplicada_em?: string | null
@@ -104,6 +106,7 @@ export type Database = {
           observacao?: string | null
           regiao?: string | null
           status?: string
+          tenant_id?: string
         }
         Relationships: [
           {
@@ -111,6 +114,13 @@ export type Database = {
             columns: ["empreendimento_id"]
             isOneToOne: false
             referencedRelation: "empreendimento"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contagem_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenant"
             referencedColumns: ["id"]
           },
         ]
@@ -123,6 +133,7 @@ export type Database = {
           insumo_id: string
           qtd_contada: number
           saldo_sistema: number | null
+          tenant_id?: string
         }
         Insert: {
           contagem_id: string
@@ -131,6 +142,7 @@ export type Database = {
           insumo_id: string
           qtd_contada: number
           saldo_sistema?: number | null
+          tenant_id?: string
         }
         Update: {
           contagem_id?: string
@@ -139,6 +151,7 @@ export type Database = {
           insumo_id?: string
           qtd_contada?: number
           saldo_sistema?: number | null
+          tenant_id?: string
         }
         Relationships: [
           {
@@ -175,6 +188,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "saldo_insumo"
             referencedColumns: ["insumo_id"]
+          },
+          {
+            foreignKeyName: "contagem_item_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenant"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -239,20 +259,31 @@ export type Database = {
           id: string
           nome: string
           qtd_apartamentos: number
+          tenant_id?: string
         }
         Insert: {
           created_at?: string
           id?: string
           nome: string
           qtd_apartamentos?: number
+          tenant_id?: string
         }
         Update: {
           created_at?: string
           id?: string
           nome?: string
           qtd_apartamentos?: number
+          tenant_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "empreendimento_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenant"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       evento: {
         Row: {
@@ -262,6 +293,7 @@ export type Database = {
           empreendimento_id: string | null
           id: string
           nota_id: string | null
+          tenant_id?: string
           tipo: string
           usuario_id: string | null
         }
@@ -272,6 +304,7 @@ export type Database = {
           empreendimento_id?: string | null
           id?: string
           nota_id?: string | null
+          tenant_id?: string
           tipo: string
           usuario_id?: string | null
         }
@@ -282,6 +315,7 @@ export type Database = {
           empreendimento_id?: string | null
           id?: string
           nota_id?: string | null
+          tenant_id?: string
           tipo?: string
           usuario_id?: string | null
         }
@@ -298,6 +332,13 @@ export type Database = {
             columns: ["nota_id"]
             isOneToOne: false
             referencedRelation: "nota_fiscal"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evento_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenant"
             referencedColumns: ["id"]
           },
         ]
@@ -370,6 +411,7 @@ export type Database = {
           meta: number | null
           quantidade: number | null
           status: string
+          tenant_id?: string
           tipo_kit_id: string
         }
         Insert: {
@@ -382,6 +424,7 @@ export type Database = {
           meta?: number | null
           quantidade?: number | null
           status?: string
+          tenant_id?: string
           tipo_kit_id: string
         }
         Update: {
@@ -394,6 +437,7 @@ export type Database = {
           meta?: number | null
           quantidade?: number | null
           status?: string
+          tenant_id?: string
           tipo_kit_id?: string
         }
         Relationships: [
@@ -402,6 +446,13 @@ export type Database = {
             columns: ["empreendimento_id"]
             isOneToOne: false
             referencedRelation: "empreendimento"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lote_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenant"
             referencedColumns: ["id"]
           },
           {
@@ -431,6 +482,7 @@ export type Database = {
           nota_item_id: string | null
           observacao: string | null
           quantidade: number
+          tenant_id?: string
           tipo: string
           unidade_kit_id: string | null
           usuario_id: string | null
@@ -445,6 +497,7 @@ export type Database = {
           nota_item_id?: string | null
           observacao?: string | null
           quantidade: number
+          tenant_id?: string
           tipo: string
           unidade_kit_id?: string | null
           usuario_id?: string | null
@@ -459,6 +512,7 @@ export type Database = {
           nota_item_id?: string | null
           observacao?: string | null
           quantidade?: number
+          tenant_id?: string
           tipo?: string
           unidade_kit_id?: string | null
           usuario_id?: string | null
@@ -521,6 +575,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "movimentacao_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenant"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "movimentacao_unidade_kit_id_fkey"
             columns: ["unidade_kit_id"]
             isOneToOne: false
@@ -545,6 +606,7 @@ export type Database = {
           serie: string | null
           spe_id: string | null
           status: string
+          tenant_id?: string
           updated_at: string
           valor_total: number | null
           xml: string | null
@@ -564,6 +626,7 @@ export type Database = {
           serie?: string | null
           spe_id?: string | null
           status?: string
+          tenant_id?: string
           updated_at?: string
           valor_total?: number | null
           xml?: string | null
@@ -583,6 +646,7 @@ export type Database = {
           serie?: string | null
           spe_id?: string | null
           status?: string
+          tenant_id?: string
           updated_at?: string
           valor_total?: number | null
           xml?: string | null
@@ -602,6 +666,13 @@ export type Database = {
             referencedRelation: "spe"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "nota_fiscal_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenant"
+            referencedColumns: ["id"]
+          },
         ]
       }
       nota_item: {
@@ -619,6 +690,7 @@ export type Database = {
           num_item: number
           quantidade: number
           quantidade_recebida: number | null
+          tenant_id?: string
           unidade: string | null
           valor_total: number | null
           valor_unitario: number | null
@@ -637,6 +709,7 @@ export type Database = {
           num_item: number
           quantidade: number
           quantidade_recebida?: number | null
+          tenant_id?: string
           unidade?: string | null
           valor_total?: number | null
           valor_unitario?: number | null
@@ -655,6 +728,7 @@ export type Database = {
           num_item?: number
           quantidade?: number
           quantidade_recebida?: number | null
+          tenant_id?: string
           unidade?: string | null
           valor_total?: number | null
           valor_unitario?: number | null
@@ -688,6 +762,105 @@ export type Database = {
             referencedRelation: "nota_fiscal"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "nota_item_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenant"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      perfil: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          nome: string | null
+          papel: string
+          tenant_id?: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id: string
+          nome?: string | null
+          papel: string
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          nome?: string | null
+          papel?: string
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "perfil_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenant"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saida: {
+        Row: {
+          created_at: string
+          criado_por: string | null
+          destino: string | null
+          empreendimento_id: string
+          finalizado_em: string | null
+          finalizado_por: string | null
+          id: string
+          observacao: string | null
+          status: string
+          tenant_id?: string
+        }
+        Insert: {
+          created_at?: string
+          criado_por?: string | null
+          destino?: string | null
+          empreendimento_id: string
+          finalizado_em?: string | null
+          finalizado_por?: string | null
+          id?: string
+          observacao?: string | null
+          status?: string
+          tenant_id?: string
+        }
+        Update: {
+          created_at?: string
+          criado_por?: string | null
+          destino?: string | null
+          empreendimento_id?: string
+          finalizado_em?: string | null
+          finalizado_por?: string | null
+          id?: string
+          observacao?: string | null
+          status?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saida_empreendimento_id_fkey"
+            columns: ["empreendimento_id"]
+            isOneToOne: false
+            referencedRelation: "empreendimento"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "saida_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenant"
+            referencedColumns: ["id"]
+          },
         ]
       }
       spe: {
@@ -701,6 +874,7 @@ export type Database = {
           id: string
           razao_social: string
           senha_cifrada: string
+          tenant_id?: string
           uf: string | null
           ultimo_nsu: number
           updated_at: string
@@ -715,6 +889,7 @@ export type Database = {
           id?: string
           razao_social: string
           senha_cifrada: string
+          tenant_id?: string
           uf?: string | null
           ultimo_nsu?: number
           updated_at?: string
@@ -729,6 +904,7 @@ export type Database = {
           id?: string
           razao_social?: string
           senha_cifrada?: string
+          tenant_id?: string
           uf?: string | null
           ultimo_nsu?: number
           updated_at?: string
@@ -741,7 +917,44 @@ export type Database = {
             referencedRelation: "empreendimento"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "spe_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenant"
+            referencedColumns: ["id"]
+          },
         ]
+      }
+      tenant: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          id: string
+          nome: string
+          onboarding_completo: boolean
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          id?: string
+          nome: string
+          onboarding_completo?: boolean
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          id?: string
+          nome?: string
+          onboarding_completo?: boolean
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       tipo_kit: {
         Row: {
@@ -775,7 +988,9 @@ export type Database = {
           lote_id: string
           numero: number
           qr_code: string
+          saida_id: string | null
           status: string
+          tenant_id?: string
         }
         Insert: {
           created_at?: string
@@ -787,7 +1002,9 @@ export type Database = {
           lote_id: string
           numero: number
           qr_code: string
+          saida_id?: string | null
           status?: string
+          tenant_id?: string
         }
         Update: {
           created_at?: string
@@ -799,7 +1016,9 @@ export type Database = {
           lote_id?: string
           numero?: number
           qr_code?: string
+          saida_id?: string | null
           status?: string
+          tenant_id?: string
         }
         Relationships: [
           {
@@ -823,6 +1042,27 @@ export type Database = {
             referencedRelation: "lote_resumo_view"
             referencedColumns: ["lote_id"]
           },
+          {
+            foreignKeyName: "unidade_kit_saida_id_fkey"
+            columns: ["saida_id"]
+            isOneToOne: false
+            referencedRelation: "saida"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "unidade_kit_saida_id_fkey"
+            columns: ["saida_id"]
+            isOneToOne: false
+            referencedRelation: "saida_resumo_view"
+            referencedColumns: ["saida_id"]
+          },
+          {
+            foreignKeyName: "unidade_kit_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenant"
+            referencedColumns: ["id"]
+          },
         ]
       }
     }
@@ -839,6 +1079,7 @@ export type Database = {
           qtd_itens: number | null
           regiao: string | null
           status: string | null
+          tenant_id?: string | null
         }
         Relationships: [
           {
@@ -846,6 +1087,13 @@ export type Database = {
             columns: ["empreendimento_id"]
             isOneToOne: false
             referencedRelation: "empreendimento"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contagem_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenant"
             referencedColumns: ["id"]
           },
         ]
@@ -875,6 +1123,7 @@ export type Database = {
           qtd_impressas: number | null
           qtd_pendentes: number | null
           status: string | null
+          tenant_id?: string | null
           tipo_kit_id: string | null
           tipo_kit_nome: string | null
         }
@@ -884,6 +1133,13 @@ export type Database = {
             columns: ["empreendimento_id"]
             isOneToOne: false
             referencedRelation: "empreendimento"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lote_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenant"
             referencedColumns: ["id"]
           },
           {
@@ -917,6 +1173,36 @@ export type Database = {
         }
         Relationships: []
       }
+      saida_resumo_view: {
+        Row: {
+          created_at: string | null
+          destino: string | null
+          empreendimento_id: string | null
+          empreendimento_nome: string | null
+          finalizado_em: string | null
+          observacao: string | null
+          qtd_kits: number | null
+          saida_id: string | null
+          status: string | null
+          tenant_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saida_empreendimento_id_fkey"
+            columns: ["empreendimento_id"]
+            isOneToOne: false
+            referencedRelation: "empreendimento"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "saida_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenant"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       saldo_insumo: {
         Row: {
           consumo_dia: number | null
@@ -935,6 +1221,7 @@ export type Database = {
           insumo_id: string | null
           nome: string | null
           saldo: number | null
+          tenant_id?: string | null
           unidade: string | null
         }
         Relationships: [
@@ -966,6 +1253,13 @@ export type Database = {
             referencedRelation: "saldo_insumo"
             referencedColumns: ["insumo_id"]
           },
+          {
+            foreignKeyName: "movimentacao_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenant"
+            referencedColumns: ["id"]
+          },
         ]
       }
     }
@@ -986,6 +1280,7 @@ export type Database = {
           meta: number | null
           quantidade: number | null
           status: string
+          tenant_id?: string
           tipo_kit_id: string
         }
         SetofOptions: {
@@ -995,7 +1290,55 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      abrir_saida: {
+        Args: {
+          p_destino?: string
+          p_empreendimento_id: string
+          p_observacao?: string
+        }
+        Returns: {
+          created_at: string
+          criado_por: string | null
+          destino: string | null
+          empreendimento_id: string
+          finalizado_em: string | null
+          finalizado_por: string | null
+          id: string
+          observacao: string | null
+          status: string
+          tenant_id?: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "saida"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       aplicar_contagem: { Args: { p_contagem_id: string }; Returns: undefined }
+      bipar_saida: {
+        Args: { p_qr_code: string; p_saida_id: string }
+        Returns: {
+          created_at: string
+          entrada_em: string | null
+          entrada_por: string | null
+          id: string
+          impressa_em: string | null
+          local_id: string | null
+          lote_id: string
+          numero: number
+          qr_code: string
+          saida_id: string | null
+          status: string
+          tenant_id?: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "unidade_kit"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       calcular_kits_possiveis:
         | {
             Args: { p_tipo_kit_id: string }
@@ -1025,11 +1368,33 @@ export type Database = {
           meta: number | null
           quantidade: number | null
           status: string
+          tenant_id?: string
           tipo_kit_id: string
         }
         SetofOptions: {
           from: "*"
           to: "lote"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      cancelar_saida: {
+        Args: { p_saida_id: string }
+        Returns: {
+          created_at: string
+          criado_por: string | null
+          destino: string | null
+          empreendimento_id: string
+          finalizado_em: string | null
+          finalizado_por: string | null
+          id: string
+          observacao: string | null
+          status: string
+          tenant_id?: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "saida"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -1061,6 +1426,8 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      current_papel: { Args: never; Returns: string }
+      current_tenant_id: { Args: never; Returns: string }
       editar_kit_com_bom: {
         Args: {
           p_descricao: string
@@ -1093,11 +1460,33 @@ export type Database = {
           meta: number | null
           quantidade: number | null
           status: string
+          tenant_id?: string
           tipo_kit_id: string
         }
         SetofOptions: {
           from: "*"
           to: "lote"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      finalizar_saida: {
+        Args: { p_saida_id: string }
+        Returns: {
+          created_at: string
+          criado_por: string | null
+          destino: string | null
+          empreendimento_id: string
+          finalizado_em: string | null
+          finalizado_por: string | null
+          id: string
+          observacao: string | null
+          status: string
+          tenant_id?: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "saida"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -1114,7 +1503,9 @@ export type Database = {
           lote_id: string
           numero: number
           qr_code: string
+          saida_id: string | null
           status: string
+          tenant_id?: string
         }[]
         SetofOptions: {
           from: "*"
@@ -1123,6 +1514,7 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      is_galpao: { Args: never; Returns: boolean }
       receber_nota: {
         Args: { p_itens: Json; p_local_id?: string; p_nota_id: string }
         Returns: {
@@ -1140,6 +1532,7 @@ export type Database = {
           serie: string | null
           spe_id: string | null
           status: string
+          tenant_id?: string
           updated_at: string
           valor_total: number | null
           xml: string | null
@@ -1168,6 +1561,7 @@ export type Database = {
           serie: string | null
           spe_id: string | null
           status: string
+          tenant_id?: string
           updated_at: string
           valor_total: number | null
           xml: string | null
@@ -1191,7 +1585,9 @@ export type Database = {
           lote_id: string
           numero: number
           qr_code: string
+          saida_id: string | null
           status: string
+          tenant_id?: string
         }
         SetofOptions: {
           from: "*"
@@ -1216,7 +1612,9 @@ export type Database = {
           lote_id: string
           numero: number
           qr_code: string
+          saida_id: string | null
           status: string
+          tenant_id?: string
         }
         SetofOptions: {
           from: "*"
@@ -1225,299 +1623,6 @@ export type Database = {
           isSetofReturn: false
         }
       }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
-  public: {
-    Tables: {
-      configuracoes_notificacao: {
-        Row: {
-          id: number
-          notificar_fornecedor: boolean
-          notificar_grupo: boolean
-          updated_at: string
-        }
-        Insert: {
-          id?: number
-          notificar_fornecedor?: boolean
-          notificar_grupo?: boolean
-          updated_at?: string
-        }
-        Update: {
-          id?: number
-          notificar_fornecedor?: boolean
-          notificar_grupo?: boolean
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      eventos_pedidos_aprovados: {
-        Row: {
-          centro_custo: string | null
-          contato_fornecedor: string | null
-          created_at: string
-          fornecedor_notificado: boolean | null
-          grupo_notificado: boolean
-          id: string
-          id_fornecedor: string | null
-          id_pedido: string | null
-          nome_contato: string | null
-          nome_fornecedor: string | null
-          notificacao_motivo: string | null
-          notificacao_status: string
-          storage_pdf_pedido: string | null
-        }
-        Insert: {
-          centro_custo?: string | null
-          contato_fornecedor?: string | null
-          created_at?: string
-          fornecedor_notificado?: boolean | null
-          grupo_notificado?: boolean
-          id?: string
-          id_fornecedor?: string | null
-          id_pedido?: string | null
-          nome_contato?: string | null
-          nome_fornecedor?: string | null
-          notificacao_motivo?: string | null
-          notificacao_status?: string
-          storage_pdf_pedido?: string | null
-        }
-        Update: {
-          centro_custo?: string | null
-          contato_fornecedor?: string | null
-          created_at?: string
-          fornecedor_notificado?: boolean | null
-          grupo_notificado?: boolean
-          id?: string
-          id_fornecedor?: string | null
-          id_pedido?: string | null
-          nome_contato?: string | null
-          nome_fornecedor?: string | null
-          notificacao_motivo?: string | null
-          notificacao_status?: string
-          storage_pdf_pedido?: string | null
-        }
-        Relationships: []
-      }
-      grupos_notificacao: {
-        Row: {
-          ativo: boolean
-          centros_custo: string[]
-          contato: string
-          created_at: string
-          id: string
-          nome_grupo: string
-        }
-        Insert: {
-          ativo?: boolean
-          centros_custo?: string[]
-          contato: string
-          created_at?: string
-          id?: string
-          nome_grupo: string
-        }
-        Update: {
-          ativo?: boolean
-          centros_custo?: string[]
-          contato?: string
-          created_at?: string
-          id?: string
-          nome_grupo?: string
-        }
-        Relationships: []
-      }
-      logs_eventos_de_solicitacao_sienge: {
-        Row: {
-          created_at: string
-          id: number
-          id_solicitacao: number
-          ultimo_evento_em: string | null
-          ultimo_item_recebido: number | null
-        }
-        Insert: {
-          created_at?: string
-          id?: number
-          id_solicitacao: number
-          ultimo_evento_em?: string | null
-          ultimo_item_recebido?: number | null
-        }
-        Update: {
-          created_at?: string
-          id?: number
-          id_solicitacao?: number
-          ultimo_evento_em?: string | null
-          ultimo_item_recebido?: number | null
-        }
-        Relationships: []
-      }
-      logs_pedidos_aprovados: {
-        Row: {
-          created_at: string
-          id: number
-          id_empreendimento: number | null
-          id_pedido: string | null
-          link_drive: string | null
-        }
-        Insert: {
-          created_at?: string
-          id?: number
-          id_empreendimento?: number | null
-          id_pedido?: string | null
-          link_drive?: string | null
-        }
-        Update: {
-          created_at?: string
-          id?: number
-          id_empreendimento?: number | null
-          id_pedido?: string | null
-          link_drive?: string | null
-        }
-        Relationships: []
-      }
-      notificacao_queue: {
-        Row: {
-          agendada_para: string
-          created_at: string
-          destinatario: string
-          evento_pedido_id: string
-          id: string
-          mensagem: string
-          nome_destinatario: string | null
-          processada_em: string | null
-          status: string
-          tentativas: number
-          tipo_destinatario: string
-          tracking_token: string
-          ultimo_erro: string | null
-        }
-        Insert: {
-          agendada_para?: string
-          created_at?: string
-          destinatario: string
-          evento_pedido_id: string
-          id?: string
-          mensagem: string
-          nome_destinatario?: string | null
-          processada_em?: string | null
-          status?: string
-          tentativas?: number
-          tipo_destinatario: string
-          tracking_token: string
-          ultimo_erro?: string | null
-        }
-        Update: {
-          agendada_para?: string
-          created_at?: string
-          destinatario?: string
-          evento_pedido_id?: string
-          id?: string
-          mensagem?: string
-          nome_destinatario?: string | null
-          processada_em?: string | null
-          status?: string
-          tentativas?: number
-          tipo_destinatario?: string
-          tracking_token?: string
-          ultimo_erro?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "notificacao_queue_evento_pedido_id_fkey"
-            columns: ["evento_pedido_id"]
-            isOneToOne: false
-            referencedRelation: "eventos_pedidos_aprovados"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      whatsapp_message_status: {
-        Row: {
-          button_clicked: boolean
-          button_clicked_at: string | null
-          click_count: number
-          created_at: string
-          destinatario: string
-          evento_pedido_id: string | null
-          first_clicked_at: string | null
-          id: string
-          last_click_ip: string | null
-          last_click_user_agent: string | null
-          last_clicked_at: string | null
-          message_id: string
-          nome_destinatario: string | null
-          payload_raw: Json | null
-          status: string
-          status_timestamp: string
-          tipo_destinatario: string
-          tracking_token: string | null
-          updated_at: string
-          zaap_id: string | null
-        }
-        Insert: {
-          button_clicked?: boolean
-          button_clicked_at?: string | null
-          click_count?: number
-          created_at?: string
-          destinatario: string
-          evento_pedido_id?: string | null
-          first_clicked_at?: string | null
-          id?: string
-          last_click_ip?: string | null
-          last_click_user_agent?: string | null
-          last_clicked_at?: string | null
-          message_id: string
-          nome_destinatario?: string | null
-          payload_raw?: Json | null
-          status?: string
-          status_timestamp?: string
-          tipo_destinatario: string
-          tracking_token?: string | null
-          updated_at?: string
-          zaap_id?: string | null
-        }
-        Update: {
-          button_clicked?: boolean
-          button_clicked_at?: string | null
-          click_count?: number
-          created_at?: string
-          destinatario?: string
-          evento_pedido_id?: string | null
-          first_clicked_at?: string | null
-          id?: string
-          last_click_ip?: string | null
-          last_click_user_agent?: string | null
-          last_clicked_at?: string | null
-          message_id?: string
-          nome_destinatario?: string | null
-          payload_raw?: Json | null
-          status?: string
-          status_timestamp?: string
-          tipo_destinatario?: string
-          tracking_token?: string | null
-          updated_at?: string
-          zaap_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "whatsapp_message_status_evento_pedido_id_fkey"
-            columns: ["evento_pedido_id"]
-            isOneToOne: false
-            referencedRelation: "eventos_pedidos_aprovados"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      [_ in never]: never
     }
     Enums: {
       [_ in never]: never
@@ -1647,9 +1752,6 @@ export type CompositeTypes<
 
 export const Constants = {
   estoque: {
-    Enums: {},
-  },
-  public: {
     Enums: {},
   },
 } as const

@@ -6,46 +6,93 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 
 // O QR codifica a URL /k/<token>; o scanner pode "digitar" a URL inteira.
-// Extrai o token (último segmento de /k/) ou usa o valor cru.
 function tokenFromScan(v: string): string {
   const t = v.trim();
   const m = t.match(/\/k\/([^/?#\s]+)/);
   return m ? decodeURIComponent(m[1]) : t;
 }
 
-const schema = z.object({
-  qrCode: z.string().trim().min(1, "Bipe um QR."),
+function revalidarSaida(saidaId?: string) {
+  revalidatePath("/saida");
+  if (saidaId) revalidatePath(`/saida/${saidaId}`);
+  revalidatePath("/producao");
+  revalidatePath("/dashboard");
+}
+
+// ── Abrir remessa de saída ───────────────────────────────────────────────────
+const abrirSchema = z.object({
+  empreendimentoId: z.string().uuid("Selecione um empreendimento."),
   destino: z.string().trim().max(120, "Destino muito longo.").optional(),
+  observacao: z.string().trim().max(300, "Observação muito longa.").optional(),
 });
+export type AbrirSaidaInput = z.input<typeof abrirSchema>;
+export type AbrirSaidaResult = { status: "ok"; saidaId: string } | { status: "error"; message: string };
 
-export type RegistrarSaidaResult =
-  | { status: "ok"; numero: number }
-  | { status: "error"; message: string };
+export async function abrirSaida(input: AbrirSaidaInput): Promise<AbrirSaidaResult> {
+  const parsed = abrirSchema.safeParse(input);
+  if (!parsed.success) {
+    return { status: "error", message: parsed.error.issues[0]?.message ?? "Dados inválidos." };
+  }
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("abrir_saida", {
+    p_empreendimento_id: parsed.data.empreendimentoId,
+    p_destino: parsed.data.destino || undefined,
+    p_observacao: parsed.data.observacao || undefined,
+  });
+  if (error || !data) {
+    console.error("[saida] abrirSaida", error);
+    return { status: "error", message: error?.message || "Não foi possível abrir a saída." };
+  }
+  revalidarSaida();
+  return { status: "ok", saidaId: data.id };
+}
 
-// Bipe de saída: registra a expedição do kit (em_estoque → expedido), grava a
-// movimentação de saída com o destino e recusa baixa dupla (regra na RPC).
-export async function registrarSaida(
-  qrCode: string,
-  destino?: string,
-): Promise<RegistrarSaidaResult> {
-  const parsed = schema.safeParse({ qrCode, destino });
+// ── Bipar um kit dentro da remessa (em_estoque → expedido) ────────────────────
+const biparSchema = z.object({
+  saidaId: z.string().uuid(),
+  qrCode: z.string().trim().min(1, "Bipe um QR."),
+});
+export type BiparSaidaResult = { status: "ok"; numero: number } | { status: "error"; message: string };
+
+export async function biparSaida(saidaId: string, qrCode: string): Promise<BiparSaidaResult> {
+  const parsed = biparSchema.safeParse({ saidaId, qrCode });
   if (!parsed.success) {
     return { status: "error", message: parsed.error.issues[0]?.message ?? "QR inválido." };
   }
-
-  const obs = parsed.data.destino && parsed.data.destino.length > 0 ? parsed.data.destino : undefined;
   const supabase = await createClient();
-  const { data, error } = await supabase.rpc("registrar_saida_kit", {
+  const { data, error } = await supabase.rpc("bipar_saida", {
+    p_saida_id: parsed.data.saidaId,
     p_qr_code: tokenFromScan(parsed.data.qrCode),
-    p_observacao: obs,
   });
   if (error || !data) {
-    console.error("[saida] registrarSaida", error);
+    console.error("[saida] biparSaida", error);
     return { status: "error", message: error?.message || "Não foi possível registrar a saída." };
   }
+  revalidarSaida(parsed.data.saidaId);
+  return { status: "ok", numero: data.numero };
+}
 
-  revalidatePath("/saida");
-  revalidatePath("/producao");
-  revalidatePath("/dashboard");
-  return { status: "ok", numero: (data as { numero: number }).numero };
+// ── Finalizar / cancelar remessa ──────────────────────────────────────────────
+export type ActionResult = { status: "ok" | "error"; message?: string };
+
+export async function finalizarSaida(saidaId: string): Promise<ActionResult> {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("finalizar_saida", { p_saida_id: saidaId });
+  if (error) {
+    console.error("[saida] finalizarSaida", error);
+    return { status: "error", message: error.message || "Não foi possível finalizar a saída." };
+  }
+  revalidarSaida(saidaId);
+  return { status: "ok" };
+}
+
+export async function cancelarSaida(saidaId: string): Promise<ActionResult> {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("cancelar_saida", { p_saida_id: saidaId });
+  if (error) {
+    console.error("[saida] cancelarSaida", error);
+    return { status: "error", message: error.message || "Não foi possível cancelar a saída." };
+  }
+  revalidarSaida(saidaId);
+  return { status: "ok" };
 }
