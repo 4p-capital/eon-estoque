@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
-import { ScanLine } from "lucide-react";
+import { ScanLine, Truck } from "lucide-react";
 import { toast } from "sonner";
 
 import { inputCls, labelCls } from "@/app/_components/form-styles";
@@ -101,6 +101,19 @@ export function ConsultarKit() {
             <Linha rotulo="Fabricação" valor={dataHoraBR(kit.fabricadoEm)} />
             <Linha rotulo="Entrada no depósito" valor={dataHoraBR(kit.entradaEm)} />
           </dl>
+
+          {kit.saida && (
+            <div className="mt-5 rounded-lg border border-border bg-muted/30 p-4">
+              <h3 className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                <Truck className="size-3.5" aria-hidden /> Expedição
+              </h3>
+              <dl className="grid gap-3 text-sm sm:grid-cols-2">
+                <Linha rotulo="SPE de destino" valor={kit.saida.empreendimentoNome ?? "—"} />
+                <Linha rotulo="Destino" valor={kit.saida.destino ?? "—"} />
+                <Linha rotulo="Saída em" valor={dataHoraBR(kit.saida.data)} />
+              </dl>
+            </div>
+          )}
 
           <h3 className="mt-5 mb-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
             Movimentações

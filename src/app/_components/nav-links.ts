@@ -69,6 +69,7 @@ export const NAV_GALPAO: readonly NavSection[] = [
         icon: PackagePlus,
         children: [
           { href: "/producao", label: "Lotes", icon: PackagePlus },
+          { href: "/producao/estoque", label: "Em estoque", icon: Boxes },
           { href: "/producao/entrada", label: "Entrada depósito", icon: ScanLine },
           { href: "/producao/consultar", label: "Consultar kit", icon: PackageSearch },
           { href: "/saida", label: "Saída", icon: QrCode },
@@ -98,6 +99,7 @@ export const NAV_TENANT: readonly NavSection[] = [
     entries: [
       { href: "/insumos", label: "Estoque", icon: Warehouse },
       { href: "/producao", label: "Produção", icon: PackagePlus },
+      { href: "/producao/estoque", label: "Kits em estoque", icon: Boxes },
       { href: "/eventos", label: "Eventos", icon: BarChart3 },
     ],
   },

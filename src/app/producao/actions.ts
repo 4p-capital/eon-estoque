@@ -145,6 +145,12 @@ export type KitConsulta = {
   fabricadoEm: string | null;
   entradaEm: string | null;
   dataProducao: string | null;
+  saida: {
+    destino: string | null;
+    status: string | null;
+    empreendimentoNome: string | null;
+    data: string | null;
+  } | null;
   movimentos: KitMovimento[];
 };
 export type ConsultarKitResult =
@@ -158,7 +164,7 @@ export async function consultarKit(qrCode: string): Promise<ConsultarKitResult> 
   const supabase = await createClient();
   const { data: unidade, error } = await supabase
     .from("unidade_kit")
-    .select("id, numero, status, impressa_em, entrada_em, lote_id")
+    .select("id, numero, status, impressa_em, entrada_em, lote_id, saida_id")
     .eq("qr_code", token)
     .maybeSingle();
   if (error) {
@@ -179,6 +185,24 @@ export async function consultarKit(qrCode: string): Promise<ConsultarKitResult> 
     .eq("unidade_kit_id", unidade.id)
     .order("data", { ascending: true });
 
+  // Expedição: se o kit já entrou numa remessa, traz os dados da saída.
+  let saida: KitConsulta["saida"] = null;
+  if (unidade.saida_id) {
+    const { data: s } = await supabase
+      .from("saida_resumo_view")
+      .select("destino, status, empreendimento_nome, created_at")
+      .eq("saida_id", unidade.saida_id)
+      .maybeSingle();
+    if (s) {
+      saida = {
+        destino: s.destino,
+        status: s.status,
+        empreendimentoNome: s.empreendimento_nome,
+        data: s.created_at,
+      };
+    }
+  }
+
   return {
     status: "ok",
     kit: {
@@ -191,6 +215,7 @@ export async function consultarKit(qrCode: string): Promise<ConsultarKitResult> 
       fabricadoEm: unidade.impressa_em,
       entradaEm: unidade.entrada_em,
       dataProducao: lote?.data_producao ?? null,
+      saida,
       movimentos: (movs ?? []).map((m) => ({
         tipo: m.tipo,
         quantidade: Number(m.quantidade),
