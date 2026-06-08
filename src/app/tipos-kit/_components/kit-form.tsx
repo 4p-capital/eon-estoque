@@ -11,17 +11,25 @@ import { Button } from "@/components/ui/button";
 import { criarKit, editarKit } from "@/app/tipos-kit/actions";
 import { InsumoPicker, type InsumoOption, type LinhaInsumo } from "./insumo-picker";
 
-type Linha = LinhaInsumo & { key: string; quantidade: string };
+type Linha = LinhaInsumo & { key: string; quantidade: string; estoqueMin: string };
 
 export type KitInicial = {
   id: string;
   nome: string;
   descricao: string;
-  itens: { insumoId: string; nome: string; unidade: string; quantidade: number }[];
+  itens: { insumoId: string; nome: string; unidade: string; quantidade: number; estoqueMin: number }[];
 };
 
 function novaLinha(): Linha {
-  return { key: crypto.randomUUID(), insumoId: null, nome: "", unidade: "", isNew: false, quantidade: "" };
+  return {
+    key: crypto.randomUUID(),
+    insumoId: null,
+    nome: "",
+    unidade: "",
+    isNew: false,
+    quantidade: "",
+    estoqueMin: "",
+  };
 }
 
 function linhasIniciais(inicial?: KitInicial): Linha[] {
@@ -33,6 +41,7 @@ function linhasIniciais(inicial?: KitInicial): Linha[] {
     unidade: i.unidade,
     isNew: false,
     quantidade: String(i.quantidade),
+    estoqueMin: i.estoqueMin ? String(i.estoqueMin) : "",
   }));
 }
 
@@ -66,6 +75,7 @@ export function KitForm({
         nome: l.nome.trim(),
         unidade: l.unidade.trim(),
         quantidade: Number(l.quantidade),
+        estoque_min: l.estoqueMin.trim() === "" ? null : Number(l.estoqueMin),
       }));
 
     if (!nome.trim()) return toast.error("Informe o nome do kit.");
@@ -124,15 +134,19 @@ export function KitForm({
       <div>
         <span className={labelCls}>Composição (BOM)</span>
         <div className="mt-2 space-y-2">
-          <div className="grid grid-cols-[1fr_5rem_6rem_2.5rem] gap-2 px-1 text-xs uppercase text-muted-foreground">
+          <div className="grid grid-cols-[minmax(0,1fr)_3.5rem_4.5rem_4.5rem_2.5rem] gap-2 px-1 text-xs uppercase text-muted-foreground">
             <span>Insumo</span>
-            <span>Unidade</span>
+            <span>Un.</span>
             <span>Qtd/kit</span>
+            <span>Mín.</span>
             <span className="sr-only">Remover</span>
           </div>
 
           {linhas.map((l) => (
-            <div key={l.key} className="grid grid-cols-[1fr_5rem_6rem_2.5rem] items-start gap-2">
+            <div
+              key={l.key}
+              className="grid grid-cols-[minmax(0,1fr)_3.5rem_4.5rem_4.5rem_2.5rem] items-start gap-2"
+            >
               <InsumoPicker insumos={insumos} value={l} onChange={(v) => patchLinha(l.key, v)} />
               <input
                 value={l.unidade}
@@ -150,6 +164,17 @@ export function KitForm({
                 onChange={(e) => patchLinha(l.key, { quantidade: e.target.value })}
                 placeholder="0"
                 aria-label="Quantidade por kit"
+                className={inputCls}
+              />
+              <input
+                type="number"
+                min={0}
+                step="0.001"
+                value={l.estoqueMin}
+                onChange={(e) => patchLinha(l.key, { estoqueMin: e.target.value })}
+                placeholder="—"
+                aria-label="Estoque mínimo do insumo"
+                title="Estoque mínimo do insumo (acende o alerta de reposição)"
                 className={inputCls}
               />
               <Button

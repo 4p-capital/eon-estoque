@@ -1098,6 +1098,46 @@ export type Database = {
           },
         ]
       }
+      kits_em_estoque_view: {
+        Row: {
+          empreendimento_id: string | null
+          empreendimento_nome: string | null
+          qtd: number | null
+          tenant_id?: string | null
+          tipo_kit_id: string | null
+          tipo_kit_nome: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lote_empreendimento_id_fkey"
+            columns: ["empreendimento_id"]
+            isOneToOne: false
+            referencedRelation: "empreendimento"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lote_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenant"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lote_tipo_kit_id_fkey"
+            columns: ["tipo_kit_id"]
+            isOneToOne: false
+            referencedRelation: "kits_possiveis_view"
+            referencedColumns: ["tipo_kit_id"]
+          },
+          {
+            foreignKeyName: "lote_tipo_kit_id_fkey"
+            columns: ["tipo_kit_id"]
+            isOneToOne: false
+            referencedRelation: "tipo_kit"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       kits_possiveis_view: {
         Row: {
           insumo_gargalo_id: string | null
@@ -1232,6 +1272,46 @@ export type Database = {
             referencedRelation: "empreendimento"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "movimentacao_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "insumo"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "movimentacao_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "ponto_de_pedido_view"
+            referencedColumns: ["insumo_id"]
+          },
+          {
+            foreignKeyName: "movimentacao_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "saldo_insumo"
+            referencedColumns: ["insumo_id"]
+          },
+          {
+            foreignKeyName: "movimentacao_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenant"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saldo_insumo_tenant: {
+        Row: {
+          estoque_min: number | null
+          insumo_id: string | null
+          nome: string | null
+          saldo: number | null
+          tenant_id?: string | null
+          unidade: string | null
+        }
+        Relationships: [
           {
             foreignKeyName: "movimentacao_insumo_id_fkey"
             columns: ["insumo_id"]

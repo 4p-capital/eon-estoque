@@ -25,6 +25,7 @@ export default async function FiscalPage() {
     razao_social: s.razao_social,
     certificado_validade: s.certificado_validade,
     ativo: s.ativo,
+    empreendimento_id: s.empreendimento_id ?? null,
     empreendimento_nome: s.empreendimento_id
       ? (nomePorEmpreendimento.get(s.empreendimento_id) ?? null)
       : null,

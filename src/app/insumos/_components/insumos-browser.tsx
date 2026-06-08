@@ -6,7 +6,6 @@ import { Building2, ChevronLeft, ChevronRight, Layers, Loader2, Search } from "l
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { inputCls } from "@/app/_components/form-styles";
-import { formatarCnpj } from "@/lib/fiscal/format";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -17,11 +16,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-export type SpeCard = {
-  empreendimentoId: string;
-  razaoSocial: string;
-  cnpj: string;
-  qtdInsumos: number;
+export type Empresa = {
+  tenantId: string;
+  nome: string;
+  spes: { empreendimentoId: string; nome: string; qtdInsumos: number }[];
 };
 
 type Linha = {
@@ -36,7 +34,11 @@ const POR_PAGINA = 200;
 const GERAL = "geral";
 const nf = new Intl.NumberFormat("pt-BR");
 
-export function InsumosBrowser({ spes }: { spes: SpeCard[] }) {
+// Estoque de insumos em 2 níveis: empresa (tenant) -> SPE (empreendimento).
+// "Geral da empresa" soma as SPEs (saldo_insumo_tenant); cada SPE usa
+// saldo_insumo_empreendimento. Galpão alterna empresas; cliente vê só a sua.
+export function InsumosBrowser({ empresas }: { empresas: Empresa[] }) {
+  const [empresaId, setEmpresaId] = useState(empresas[0]?.tenantId ?? "");
   const [modo, setModo] = useState<string>(GERAL); // GERAL ou um empreendimentoId
   const [busca, setBusca] = useState("");
   const [termo, setTermo] = useState("");
@@ -45,9 +47,15 @@ export function InsumosBrowser({ spes }: { spes: SpeCard[] }) {
   const [total, setTotal] = useState(0);
   const [carregando, setCarregando] = useState(true);
 
+  const empresa = empresas.find((e) => e.tenantId === empresaId) ?? empresas[0];
   const geral = modo === GERAL;
-  const speAtiva = spes.find((s) => s.empreendimentoId === modo);
+  const speAtiva = empresa?.spes.find((s) => s.empreendimentoId === modo);
 
+  function trocarEmpresa(id: string) {
+    setEmpresaId(id);
+    setModo(GERAL);
+    setPage(0);
+  }
   function selecionar(novoModo: string) {
     setModo(novoModo);
     setPage(0);
@@ -61,62 +69,36 @@ export function InsumosBrowser({ spes }: { spes: SpeCard[] }) {
     return () => clearTimeout(t);
   }, [busca]);
 
-  // troca de visão (geral/SPE) feita pelos cards já reseta a página no handler.
-
   useEffect(() => {
+    if (!empresa) return;
     const supabase = createClient();
     let cancelado = false;
-    // Loading da busca: set intencional no início do efeito de fetch.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setCarregando(true);
     const de = page * POR_PAGINA;
     const ate = de + POR_PAGINA - 1;
 
     (async () => {
-      if (geral) {
-        let q = supabase
-          .from("saldo_insumo")
-          .select("insumo_id, nome, unidade, saldo, estoque_min", { count: "exact" })
-          .gt("saldo", 0); // Estoque mostra só o que tem saldo; o catálogo completo fica em Cadastro.
-        if (termo) q = q.ilike("nome", `%${termo}%`);
-        const { data, count, error } = await q
-          .order("saldo", { ascending: false })
-          .order("nome", { ascending: true })
-          .range(de, ate);
-        if (cancelado) return;
-        if (error) {
-          console.error("[insumos] browser geral", error);
-          setRows([]);
-          setTotal(0);
-        } else {
-          setRows(
-            (data ?? []).map((d) => ({
-              insumoId: d.insumo_id ?? "",
-              nome: d.nome ?? "",
-              unidade: d.unidade ?? "",
-              saldo: Number(d.saldo ?? 0),
-              estoqueMin: Number(d.estoque_min ?? 0),
-            })),
-          );
-          setTotal(count ?? 0);
-        }
-        setCarregando(false);
-        return;
-      }
+      const base = geral
+        ? supabase
+            .from("saldo_insumo_tenant")
+            .select("insumo_id, nome, unidade, saldo, estoque_min", { count: "exact" })
+            .eq("tenant_id", empresa.tenantId)
+        : supabase
+            .from("saldo_insumo_empreendimento")
+            .select("insumo_id, nome, unidade, saldo", { count: "exact" })
+            .eq("empreendimento_id", modo);
 
-      let q = supabase
-        .from("saldo_insumo_empreendimento")
-        .select("insumo_id, nome, unidade, saldo", { count: "exact" })
-        .eq("empreendimento_id", modo)
-        .gt("saldo", 0);
+      let q = base.gt("saldo", 0); // estoque mostra só o que tem saldo; catálogo fica em Cadastro.
       if (termo) q = q.ilike("nome", `%${termo}%`);
       const { data, count, error } = await q
         .order("saldo", { ascending: false })
         .order("nome", { ascending: true })
         .range(de, ate);
+
       if (cancelado) return;
       if (error) {
-        console.error("[insumos] browser spe", error);
+        console.error("[insumos] browser", error);
         setRows([]);
         setTotal(0);
       } else {
@@ -126,7 +108,7 @@ export function InsumosBrowser({ spes }: { spes: SpeCard[] }) {
             nome: d.nome ?? "",
             unidade: d.unidade ?? "",
             saldo: Number(d.saldo ?? 0),
-            estoqueMin: null,
+            estoqueMin: geral && "estoque_min" in d ? Number(d.estoque_min ?? 0) : null,
           })),
         );
         setTotal(count ?? 0);
@@ -137,32 +119,61 @@ export function InsumosBrowser({ spes }: { spes: SpeCard[] }) {
     return () => {
       cancelado = true;
     };
-  }, [modo, geral, termo, page]);
+  }, [empresa, empresaId, modo, geral, termo, page]);
 
   const totalPaginas = Math.max(1, Math.ceil(total / POR_PAGINA));
   const inicio = total === 0 ? 0 : page * POR_PAGINA + 1;
   const fim = Math.min(total, (page + 1) * POR_PAGINA);
 
+  if (!empresa) {
+    return (
+      <p className="rounded-lg border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
+        Nenhuma empresa com estoque para mostrar.
+      </p>
+    );
+  }
+
   return (
     <div className="space-y-5">
-      {/* Cards: estoque geral + um por SPE */}
+      {/* Seletor de empresa (só quando o galpão vê mais de uma) */}
+      {empresas.length > 1 && (
+        <div className="flex flex-wrap gap-2">
+          {empresas.map((e) => (
+            <button
+              key={e.tenantId}
+              type="button"
+              onClick={() => trocarEmpresa(e.tenantId)}
+              aria-current={e.tenantId === empresaId ? "true" : undefined}
+              className={cn(
+                "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
+                e.tenantId === empresaId
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:bg-muted/70",
+              )}
+            >
+              {e.nome}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Cards: geral da empresa + uma por SPE */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         <Card
           ativa={geral}
           icone={<Layers className="size-5" aria-hidden />}
-          titulo="Estoque geral"
-          linha1="Todas as SPEs"
-          linha2="Catálogo completo"
+          titulo="Geral da empresa"
+          subtitulo={empresa.nome}
+          rodape="Soma das SPEs"
           onClick={() => selecionar(GERAL)}
         />
-        {spes.map((s) => (
+        {empresa.spes.map((s) => (
           <Card
             key={s.empreendimentoId}
             ativa={modo === s.empreendimentoId}
             icone={<Building2 className="size-5" aria-hidden />}
-            titulo={s.razaoSocial}
-            linha1={formatarCnpj(s.cnpj)}
-            linha2={`${s.qtdInsumos} insumo${s.qtdInsumos === 1 ? "" : "s"} em estoque`}
+            titulo={s.nome}
+            subtitulo={`${s.qtdInsumos} insumo${s.qtdInsumos === 1 ? "" : "s"} em estoque`}
             onClick={() => selecionar(s.empreendimentoId)}
           />
         ))}
@@ -171,7 +182,7 @@ export function InsumosBrowser({ spes }: { spes: SpeCard[] }) {
       {/* Cabeçalho da visão + busca */}
       <div className="space-y-3">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-          {geral ? "Estoque geral" : speAtiva?.razaoSocial}
+          {geral ? `Geral da empresa — ${empresa.nome}` : speAtiva?.nome}
         </h2>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
@@ -192,7 +203,7 @@ export function InsumosBrowser({ spes }: { spes: SpeCard[] }) {
       ) : rows.length === 0 ? (
         <p className="rounded-lg border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
           {geral
-            ? `Nenhum insumo encontrado${termo ? ` para “${termo}”` : ""}.`
+            ? `Nenhum insumo com saldo${termo ? ` para “${termo}”` : ""}.`
             : `Nenhum insumo com saldo nesta SPE${termo ? ` para “${termo}”` : ""}.`}
         </p>
       ) : (
@@ -208,7 +219,7 @@ export function InsumosBrowser({ spes }: { spes: SpeCard[] }) {
               </TableHeader>
               <TableBody>
                 {rows.map((r) => {
-                  const baixo = r.estoqueMin !== null && r.saldo <= r.estoqueMin;
+                  const baixo = r.estoqueMin !== null && r.estoqueMin > 0 && r.saldo <= r.estoqueMin;
                   return (
                     <TableRow key={r.insumoId} className="border-t border-border">
                       <TableCell className="px-3 py-2 font-medium text-foreground">{r.nome}</TableCell>
@@ -270,15 +281,15 @@ function Card({
   ativa,
   icone,
   titulo,
-  linha1,
-  linha2,
+  subtitulo,
+  rodape,
   onClick,
 }: {
   ativa: boolean;
   icone: React.ReactNode;
   titulo: string;
-  linha1: string;
-  linha2: string;
+  subtitulo: string;
+  rodape?: string;
   onClick: () => void;
 }) {
   return (
@@ -288,9 +299,7 @@ function Card({
       aria-current={ativa ? "true" : undefined}
       className={cn(
         "flex items-start gap-3 rounded-xl bg-card p-4 text-left shadow-sm transition-all",
-        ativa
-          ? "ring-2 ring-primary"
-          : "hover:bg-muted/50 hover:shadow-md",
+        ativa ? "ring-2 ring-primary" : "hover:bg-muted/50 hover:shadow-md",
       )}
     >
       <span
@@ -303,8 +312,8 @@ function Card({
       </span>
       <div className="min-w-0">
         <p className="truncate font-medium text-foreground">{titulo}</p>
-        <p className="truncate text-xs text-muted-foreground">{linha1}</p>
-        <p className="mt-1 text-xs text-muted-foreground">{linha2}</p>
+        <p className="truncate text-xs text-muted-foreground">{subtitulo}</p>
+        {rodape && <p className="mt-1 text-xs text-muted-foreground">{rodape}</p>}
       </div>
     </button>
   );

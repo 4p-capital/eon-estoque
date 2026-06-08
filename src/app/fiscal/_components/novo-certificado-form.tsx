@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { SubmitButton } from "@/app/_components/submit-button";
@@ -19,6 +20,7 @@ export function NovoCertificadoForm({
   empreendimentos: EmpreendimentoOption[];
   onSuccess?: () => void;
 }) {
+  const router = useRouter();
   const [state, formAction] = useActionState(cadastrarSpe, INITIAL);
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -27,10 +29,11 @@ export function NovoCertificadoForm({
       toast.success(state.message ?? "Certificado cadastrado.");
       formRef.current?.reset();
       onSuccess?.();
+      router.refresh();
     } else if (state.status === "error") {
       toast.error(state.message ?? "Erro ao cadastrar.");
     }
-  }, [state, onSuccess]);
+  }, [state, onSuccess, router]);
 
   return (
     <form ref={formRef} action={formAction} className="space-y-4">
@@ -86,11 +89,22 @@ export function NovoCertificadoForm({
       </div>
 
       <div>
+        <label htmlFor="nome_obra" className={labelCls}>
+          Nome da obra <span className="text-muted-foreground">(opcional)</span>
+        </label>
+        <input id="nome_obra" name="nome_obra" className={inputCls} placeholder="ex.: Gran Veneza" />
+        <p className="mt-1.5 text-xs text-muted-foreground">
+          Nome popular da obra. Vazio = usa a razão social do certificado. Ignorado se você vincular a
+          uma obra existente.
+        </p>
+      </div>
+
+      <div>
         <label htmlFor="empreendimento_id" className={labelCls}>
-          Empreendimento <span className="text-muted-foreground">(opcional)</span>
+          Vincular a obra existente <span className="text-muted-foreground">(opcional)</span>
         </label>
         <select id="empreendimento_id" name="empreendimento_id" className={inputCls} defaultValue="">
-          <option value="">— sem vínculo —</option>
+          <option value="">— criar nova obra —</option>
           {empreendimentos.map((e) => (
             <option key={e.id} value={e.id}>
               {e.nome}

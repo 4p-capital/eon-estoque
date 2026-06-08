@@ -13,6 +13,7 @@ const itemSchema = z
     nome: z.string().trim(),
     unidade: z.string().trim(),
     quantidade: z.coerce.number().positive("Quantidade deve ser maior que zero."),
+    estoque_min: z.coerce.number().min(0, "Mínimo não pode ser negativo.").nullable().optional(),
   })
   .refine((i) => i.insumo_id !== null || (i.nome !== "" && i.unidade !== ""), {
     message: "Insumo novo precisa de nome e unidade.",

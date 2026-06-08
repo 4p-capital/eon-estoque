@@ -18,7 +18,7 @@ export default async function EditarKitPage({ params }: { params: Promise<{ id: 
     supabase.from("tipo_kit").select("id, nome, descricao").eq("id", id).maybeSingle(),
     supabase
       .from("composicao")
-      .select("insumo_id, quantidade, insumo(nome, unidade)")
+      .select("insumo_id, quantidade, insumo(nome, unidade, estoque_min)")
       .eq("tipo_kit_id", id),
     listarTodosInsumos(supabase),
   ]);
@@ -31,6 +31,7 @@ export default async function EditarKitPage({ params }: { params: Promise<{ id: 
       nome: ins?.nome ?? "",
       unidade: ins?.unidade ?? "",
       quantidade: c.quantidade,
+      estoqueMin: Number(ins?.estoque_min ?? 0),
     };
   });
 
