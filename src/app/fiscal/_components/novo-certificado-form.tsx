@@ -47,7 +47,7 @@ export function NovoCertificadoForm({
           type="file"
           accept=".pfx,.p12"
           required
-          className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground file:mr-3 file:rounded file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-primary-foreground hover:file:bg-primary/80"
+          className="mt-1 block w-full rounded-md border border-input bg-card px-3 py-2 text-sm text-foreground file:mr-3 file:rounded file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-primary-foreground hover:file:bg-primary/80"
         />
         <p className="mt-1.5 text-xs text-muted-foreground">
           CNPJ, razão social e validade são lidos do próprio certificado — você não digita nada.
