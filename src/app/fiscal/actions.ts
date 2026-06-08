@@ -20,6 +20,7 @@ const cadastroSchema = z.object({
     .union([z.string().uuid(), z.literal("")])
     .optional()
     .transform((value) => (value ? value : undefined)),
+  nome_obra: z.string().trim().max(120).optional(),
 });
 
 export async function cadastrarSpe(
@@ -38,6 +39,7 @@ export async function cadastrarSpe(
     senha: formData.get("senha"),
     uf: formData.get("uf") ?? "",
     empreendimento_id: formData.get("empreendimento_id") ?? "",
+    nome_obra: formData.get("nome_obra") ?? "",
   });
   if (!parsed.success) {
     return { status: "error", message: parsed.error.issues[0]?.message ?? "Dados inválidos." };
@@ -80,7 +82,7 @@ export async function cadastrarSpe(
   if (!empreendimentoId) {
     const { data: empreendimento, error: erroEmp } = await supabase
       .from("empreendimento")
-      .insert({ nome: dados.razaoSocial })
+      .insert({ nome: parsed.data.nome_obra || dados.razaoSocial })
       .select("id")
       .single();
     if (erroEmp || !empreendimento) {
@@ -110,6 +112,32 @@ export async function cadastrarSpe(
 
   revalidatePath("/fiscal");
   return { status: "ok", message: `Certificado de ${dados.razaoSocial} cadastrado.` };
+}
+
+const renomearSchema = z.object({
+  id: z.string().uuid(),
+  nome: z.string().trim().min(1, "Informe o nome da obra.").max(120, "Nome muito longo."),
+});
+
+// Renomeia o empreendimento (nome popular da obra, ex.: "Gran Veneza").
+export async function renomearObra(empreendimentoId: string, nome: string): Promise<FormState> {
+  const parsed = renomearSchema.safeParse({ id: empreendimentoId, nome });
+  if (!parsed.success) {
+    return { status: "error", message: parsed.error.issues[0]?.message ?? "Dados inválidos." };
+  }
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("empreendimento")
+    .update({ nome: parsed.data.nome })
+    .eq("id", parsed.data.id);
+  if (error) {
+    console.error("[fiscal] renomearObra", error);
+    return { status: "error", message: "Não foi possível renomear a obra." };
+  }
+  revalidatePath("/fiscal");
+  revalidatePath("/insumos");
+  revalidatePath("/producao/estoque");
+  return { status: "ok", message: "Nome da obra atualizado." };
 }
 
 export async function excluirSpe(id: string): Promise<FormState> {

@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { diasAteValidade, formatarCnpj, formatarData } from "@/lib/fiscal/format";
 import { ExcluirCertificadoButton } from "@/app/fiscal/_components/excluir-certificado-button";
+import { ObraNomeInline } from "@/app/fiscal/_components/obra-nome-inline";
 
 export type SpeRow = {
   id: string;
@@ -19,6 +20,7 @@ export type SpeRow = {
   razao_social: string;
   certificado_validade: string;
   ativo: boolean;
+  empreendimento_id: string | null;
   empreendimento_nome: string | null;
 };
 
@@ -73,7 +75,7 @@ export function SpeList({ rows, hoje }: { rows: SpeRow[]; hoje: Date }) {
               CNPJ
             </TableHead>
             <TableHead className="px-4 py-3 text-xs uppercase tracking-wide text-muted-foreground">
-              Empreendimento
+              Nome da obra
             </TableHead>
             <TableHead className="px-4 py-3 text-xs uppercase tracking-wide text-muted-foreground">
               Validade
@@ -91,7 +93,10 @@ export function SpeList({ rows, hoje }: { rows: SpeRow[]; hoje: Date }) {
               </TableCell>
               <TableCell className="px-4 py-3 text-foreground">{formatarCnpj(row.cnpj)}</TableCell>
               <TableCell className="px-4 py-3 text-foreground">
-                {row.empreendimento_nome ?? "—"}
+                <ObraNomeInline
+                  empreendimentoId={row.empreendimento_id}
+                  nome={row.empreendimento_nome}
+                />
               </TableCell>
               <TableCell className="px-4 py-3">
                 <ValidadeBadge validade={row.certificado_validade} hoje={hoje} />

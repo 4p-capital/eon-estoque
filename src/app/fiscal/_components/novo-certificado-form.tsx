@@ -86,11 +86,22 @@ export function NovoCertificadoForm({
       </div>
 
       <div>
+        <label htmlFor="nome_obra" className={labelCls}>
+          Nome da obra <span className="text-muted-foreground">(opcional)</span>
+        </label>
+        <input id="nome_obra" name="nome_obra" className={inputCls} placeholder="ex.: Gran Veneza" />
+        <p className="mt-1.5 text-xs text-muted-foreground">
+          Nome popular da obra. Vazio = usa a razão social do certificado. Ignorado se você vincular a
+          uma obra existente.
+        </p>
+      </div>
+
+      <div>
         <label htmlFor="empreendimento_id" className={labelCls}>
-          Empreendimento <span className="text-muted-foreground">(opcional)</span>
+          Vincular a obra existente <span className="text-muted-foreground">(opcional)</span>
         </label>
         <select id="empreendimento_id" name="empreendimento_id" className={inputCls} defaultValue="">
-          <option value="">— sem vínculo —</option>
+          <option value="">— criar nova obra —</option>
           {empreendimentos.map((e) => (
             <option key={e.id} value={e.id}>
               {e.nome}
