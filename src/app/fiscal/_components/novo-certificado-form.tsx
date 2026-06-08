@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { SubmitButton } from "@/app/_components/submit-button";
@@ -19,6 +20,7 @@ export function NovoCertificadoForm({
   empreendimentos: EmpreendimentoOption[];
   onSuccess?: () => void;
 }) {
+  const router = useRouter();
   const [state, formAction] = useActionState(cadastrarSpe, INITIAL);
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -27,10 +29,11 @@ export function NovoCertificadoForm({
       toast.success(state.message ?? "Certificado cadastrado.");
       formRef.current?.reset();
       onSuccess?.();
+      router.refresh();
     } else if (state.status === "error") {
       toast.error(state.message ?? "Erro ao cadastrar.");
     }
-  }, [state, onSuccess]);
+  }, [state, onSuccess, router]);
 
   return (
     <form ref={formRef} action={formAction} className="space-y-4">

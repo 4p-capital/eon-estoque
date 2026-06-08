@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { Pencil } from "lucide-react";
 import { toast } from "sonner";
 
@@ -15,19 +16,21 @@ export function ObraNomeInline({
   empreendimentoId: string | null;
   nome: string | null;
 }) {
-  const [editando, setEditando] = useState(false);
+  const router = useRouter();
+  const [nomeAtual, setNomeAtual] = useState(nome ?? "");
   const [valor, setValor] = useState(nome ?? "");
+  const [editando, setEditando] = useState(false);
   const [pending, startTransition] = useTransition();
 
   if (!empreendimentoId) {
-    return <span className="text-muted-foreground">—</span>;
+    return <span className="text-sm text-muted-foreground">—</span>;
   }
 
   function salvar() {
     if (!empreendimentoId) return;
     const novo = valor.trim();
-    if (!novo || novo === (nome ?? "")) {
-      setValor(nome ?? "");
+    if (!novo || novo === nomeAtual) {
+      setValor(nomeAtual);
       setEditando(false);
       return;
     }
@@ -35,9 +38,11 @@ export function ObraNomeInline({
       const res = await renomearObra(empreendimentoId, novo);
       if (res.status === "error") {
         toast.error(res.message ?? "Não foi possível renomear.");
-        setValor(nome ?? "");
+        setValor(nomeAtual);
       } else {
         toast.success("Nome da obra atualizado.");
+        setNomeAtual(novo);
+        router.refresh();
       }
       setEditando(false);
     });
@@ -57,12 +62,13 @@ export function ObraNomeInline({
             salvar();
           }
           if (e.key === "Escape") {
-            setValor(nome ?? "");
+            setValor(nomeAtual);
             setEditando(false);
           }
         }}
+        placeholder="ex.: Gran Veneza"
         aria-label="Nome da obra"
-        className={`${inputCls} h-8 py-1`}
+        className={`${inputCls} h-8 max-w-xs py-1`}
       />
     );
   }
@@ -70,12 +76,15 @@ export function ObraNomeInline({
   return (
     <button
       type="button"
-      onClick={() => setEditando(true)}
-      className="group inline-flex items-center gap-1.5 text-left text-foreground transition-colors hover:text-primary"
-      title="Clique para renomear a obra"
+      onClick={() => {
+        setValor(nomeAtual);
+        setEditando(true);
+      }}
+      className="-mx-1 inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+      title="Editar nome da obra"
     >
-      <span className={nome ? "" : "text-muted-foreground"}>{nome || "Definir nome"}</span>
-      <Pencil className="size-3 opacity-0 transition-opacity group-hover:opacity-60" aria-hidden />
+      <span className={nomeAtual ? "" : "text-muted-foreground"}>{nomeAtual || "Definir nome"}</span>
+      <Pencil className="size-3.5 text-primary" aria-hidden />
     </button>
   );
 }
