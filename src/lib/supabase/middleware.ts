@@ -5,7 +5,7 @@ import { isPapel, type Papel } from "@/lib/auth/papel";
 
 // Rotas acessíveis sem login. "/k" = consulta pública de kit pelo QR (página
 // externa que o QR aponta). "/auth" = callback do magic link (estabelece a sessão).
-const PUBLIC_ROUTES = ["/login", "/k", "/auth"];
+const PUBLIC_ROUTES = ["/login", "/k", "/auth", "/apresentacao"];
 
 // Gating por papel (M2). O split completo de áreas galpão×tenant é o M4; aqui só
 // protegemos as rotas novas: provisionamento (galpão) e equipe (tenant).
