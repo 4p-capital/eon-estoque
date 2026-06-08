@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { Sparkles } from "lucide-react";
 
+import { AlertaEstoqueMinimo, type InsumoBaixo } from "@/app/_components/alerta-estoque-minimo";
 import { AtalhosGrid } from "@/app/_components/atalhos-grid";
 import { MODULES_GALPAO, MODULES_TENANT } from "@/app/_components/nav-links";
 import { VisaoGeralCards } from "@/app/_components/visao-geral-cards";
@@ -57,8 +58,24 @@ export default async function InicioPage() {
 
   const dados = await getDadosDashboard();
 
+  // Insumos com saldo no/abaixo do mínimo — alimentam o banner de alerta no topo.
+  const insumosBaixos: InsumoBaixo[] =
+    "erro" in dados
+      ? []
+      : dados.pontos
+          .filter((p) => (p.estoque_min ?? 0) > 0 && (p.saldo ?? 0) <= (p.estoque_min ?? 0))
+          .map((p) => ({
+            nome: p.nome ?? "Insumo",
+            saldo: Number(p.saldo ?? 0),
+            unidade: p.unidade ?? "",
+            estoqueMin: Number(p.estoque_min ?? 0),
+          }))
+          .sort((a, b) => a.saldo - a.estoqueMin - (b.saldo - b.estoqueMin));
+
   return (
     <main className="mx-auto max-w-6xl px-6 py-12">
+      <AlertaEstoqueMinimo itens={insumosBaixos} />
+
       <header className="animate-fade-up mb-10 text-center">
         <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary">
           <Sparkles className="size-3.5" aria-hidden />
