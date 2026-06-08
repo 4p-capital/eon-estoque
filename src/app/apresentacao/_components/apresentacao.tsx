@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import {
+  AlertTriangle,
+  ArrowLeftRight,
   ArrowRight,
   Boxes,
   Building2,
@@ -195,6 +197,54 @@ function Tenant() {
   );
 }
 
+function Desafio() {
+  return (
+    <Slide>
+      <Eyebrow>O maior desafio</Eyebrow>
+      <Titulo>O de-para com o Sienge</Titulo>
+      <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+        A obra roda no <strong className="text-foreground">Sienge</strong>. Pra o estoque conversar
+        com o ERP sem recadastrar tudo, é preciso ligar os dois catálogos de insumo — o{" "}
+        <strong className="text-foreground">de-para</strong>. É o ponto mais complexo do projeto.
+      </p>
+
+      <div className="mt-8 grid gap-4 sm:grid-cols-2">
+        <div className="rounded-xl border border-warning/30 bg-warning/10 p-5">
+          <div className="flex items-center gap-2 text-warning">
+            <AlertTriangle className="size-5" aria-hidden />
+            <h3 className="font-heading text-sm font-bold uppercase tracking-wide">
+              Por que é difícil
+            </h3>
+          </div>
+          <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
+            <li>+6 mil insumos, com nomes e códigos diferentes nos dois sistemas.</li>
+            <li>A mesma coisa aparece de várias formas (abreviações, variações).</li>
+            <li>Unidades divergem — rolo × metro, caixa × unidade.</li>
+          </ul>
+        </div>
+        <div className="rounded-xl border border-primary/20 bg-primary/5 p-5">
+          <div className="flex items-center gap-2 text-primary">
+            <ArrowLeftRight className="size-5" aria-hidden />
+            <h3 className="font-heading text-sm font-bold uppercase tracking-wide">Como atacamos</h3>
+          </div>
+          <ul className="mt-3 space-y-2 text-sm text-foreground">
+            <li>
+              <strong>De-para que aprende</strong>: casa por código/EAN/nome — mapeou uma vez,
+              reutiliza.
+            </li>
+            <li>
+              <strong>Conversão de unidade</strong> no vínculo (1 rolo = 100 m).
+            </li>
+            <li>
+              A <strong>entrada pela NF</strong> alimenta e reforça o de-para a cada nota.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </Slide>
+  );
+}
+
 function Fechamento() {
   return (
     <Slide dark>
@@ -215,7 +265,7 @@ function Fechamento() {
   );
 }
 
-const SLIDES = [Capa, DorResolve, Fluxo, Tenant, Fechamento];
+const SLIDES = [Capa, DorResolve, Fluxo, Tenant, Desafio, Fechamento];
 
 // ── Deck ─────────────────────────────────────────────────────────────────────
 export function Apresentacao() {
