@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, Loader2, Search } from "lucide-react";
 
 import { inputCls } from "@/app/_components/form-styles";
+import { EditarInsumoDrawer } from "@/app/insumos/cadastro/_components/editar-insumo-drawer";
 import { NovoInsumoDrawer } from "@/app/insumos/cadastro/_components/novo-insumo-drawer";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +22,8 @@ type Linha = {
   nome: string;
   unidade: string;
   estoqueMin: number;
+  leadTime: number;
+  consumoDia: number;
 };
 
 const POR_PAGINA = 200;
@@ -54,7 +57,7 @@ export function CadastroInsumos() {
     (async () => {
       let q = supabase
         .from("insumo")
-        .select("id, nome, unidade, estoque_min", { count: "exact" });
+        .select("id, nome, unidade, estoque_min, lead_time_dias, consumo_dia", { count: "exact" });
       if (termo) q = q.ilike("nome", `%${termo}%`);
       const { data, count, error } = await q.order("nome").range(de, ate);
       if (cancelado) return;
@@ -69,6 +72,8 @@ export function CadastroInsumos() {
             nome: d.nome,
             unidade: d.unidade,
             estoqueMin: Number(d.estoque_min ?? 0),
+            leadTime: Number(d.lead_time_dias ?? 0),
+            consumoDia: Number(d.consumo_dia ?? 0),
           })),
         );
         setTotal(count ?? 0);
@@ -121,6 +126,9 @@ export function CadastroInsumos() {
                   <TableHead className="px-3 py-2">Insumo</TableHead>
                   <TableHead className="px-3 py-2">Unidade</TableHead>
                   <TableHead className="px-3 py-2 text-right">Estoque mín.</TableHead>
+                  <TableHead className="px-3 py-2 text-right">
+                    <span className="sr-only">Editar</span>
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -130,6 +138,19 @@ export function CadastroInsumos() {
                     <TableCell className="px-3 py-2 text-muted-foreground">{r.unidade}</TableCell>
                     <TableCell className="px-3 py-2 text-right tabular-nums text-muted-foreground">
                       {nf.format(r.estoqueMin)}
+                    </TableCell>
+                    <TableCell className="px-3 py-1 text-right">
+                      <EditarInsumoDrawer
+                        insumo={{
+                          id: r.id,
+                          nome: r.nome,
+                          unidade: r.unidade,
+                          estoqueMin: r.estoqueMin,
+                          leadTime: r.leadTime,
+                          consumoDia: r.consumoDia,
+                        }}
+                        onSaved={() => setRecarga((n) => n + 1)}
+                      />
                     </TableCell>
                   </TableRow>
                 ))}
