@@ -71,7 +71,7 @@ export const NAV_GALPAO: readonly NavSection[] = [
           { href: "/producao", label: "Lotes", icon: PackagePlus },
           { href: "/producao/entrada", label: "Entrada depósito", icon: ScanLine },
           { href: "/producao/consultar", label: "Consultar kit", icon: PackageSearch },
-          { href: "/saida", label: "Saída", icon: QrCode, soon: true },
+          { href: "/saida", label: "Saída", icon: QrCode },
         ],
       },
     ],
@@ -174,7 +174,6 @@ export const MODULES_GALPAO: readonly ModuleLink[] = [
     icon: QrCode,
     description: "Bipe o QR na saída do kit e registre o destino.",
     color: "green",
-    soon: true,
   },
   {
     href: "/eventos",
