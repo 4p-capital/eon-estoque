@@ -20,6 +20,7 @@ export function VisaoGeralCards({ kits, pontos }: Props) {
         label="Quantidade total em estoque"
         value={nf.format(resumo.totalEstoque)}
         hint={`${nf.format(resumo.insumosMonitorados)} insumos monitorados`}
+        azul
         index={0}
       />
       <StatCard
@@ -27,6 +28,7 @@ export function VisaoGeralCards({ kits, pontos }: Props) {
         label="Kits possíveis"
         value={nf.format(resumo.totalKits)}
         hint={`${nf.format(kits.length)} tipos de kit`}
+        azul
         index={1}
       />
       <StatCard
@@ -34,7 +36,7 @@ export function VisaoGeralCards({ kits, pontos }: Props) {
         label="Abaixo do ponto de pedido"
         value={nf.format(resumo.aComprar)}
         hint={resumo.aComprar > 0 ? "Insumos a comprar" : "Tudo acima do ponto"}
-        alerta={resumo.aComprar > 0}
+        azul
         index={2}
       />
     </section>
