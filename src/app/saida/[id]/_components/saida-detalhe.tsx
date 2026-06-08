@@ -9,7 +9,17 @@ import { inputCls, labelCls } from "@/app/_components/form-styles";
 import { Button } from "@/components/ui/button";
 import { biparSaida, cancelarSaida, finalizarSaida } from "@/app/saida/actions";
 
-type KitBipe = { numero: number };
+type KitBipe = { numero: number; tipo: string; data: string | null };
+
+function fmtData(iso: string | null): string {
+  if (!iso) return "";
+  return new Date(iso).toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
 
 export function SaidaDetalhe({
   saidaId,
@@ -40,7 +50,10 @@ export function SaidaDetalhe({
         toast.error(res.message);
       } else {
         toast.success(`Kit #${res.numero} expedido.`);
-        setKits((k) => [{ numero: res.numero }, ...k]);
+        setKits((k) => [
+          { numero: res.numero, tipo: res.tipo, data: new Date().toISOString() },
+          ...k,
+        ]);
         router.refresh();
       }
       setQr("");
@@ -146,7 +159,10 @@ export function SaidaDetalhe({
               >
                 <CheckCircle2 className="size-4 shrink-0 text-success" aria-hidden />
                 <span className="font-medium text-foreground">Kit #{k.numero}</span>
-                <span className="ml-auto text-xs text-muted-foreground">expedido</span>
+                <span className="truncate text-xs text-muted-foreground">{k.tipo}</span>
+                <span className="ml-auto shrink-0 text-xs text-muted-foreground">
+                  {k.data ? `${fmtData(k.data)} · ` : ""}expedido
+                </span>
               </li>
             ))}
           </ul>

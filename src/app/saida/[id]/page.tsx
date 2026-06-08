@@ -14,12 +14,20 @@ export default async function SaidaDetalhePage({ params }: { params: Promise<{ i
   const supabase = await createClient();
   const [saidaRes, kitsRes] = await Promise.all([
     supabase.from("saida_resumo_view").select("*").eq("saida_id", id).maybeSingle(),
-    supabase.from("unidade_kit").select("numero").eq("saida_id", id).order("numero", { ascending: false }),
+    supabase
+      .from("unidade_kit")
+      .select("numero, lote:lote_id(tipo_kit:tipo_kit_id(nome)), movimentacao(tipo, data)")
+      .eq("saida_id", id)
+      .order("numero", { ascending: false }),
   ]);
 
   const saida = saidaRes.data;
   if (!saida) notFound();
-  const kits = (kitsRes.data ?? []).map((k) => ({ numero: k.numero }));
+  const kits = (kitsRes.data ?? []).map((k) => ({
+    numero: k.numero,
+    tipo: k.lote?.tipo_kit?.nome ?? "Kit",
+    data: (k.movimentacao ?? []).find((m) => m.tipo === "saida_kit")?.data ?? null,
+  }));
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-10">

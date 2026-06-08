@@ -52,7 +52,9 @@ const biparSchema = z.object({
   saidaId: z.string().uuid(),
   qrCode: z.string().trim().min(1, "Bipe um QR."),
 });
-export type BiparSaidaResult = { status: "ok"; numero: number } | { status: "error"; message: string };
+export type BiparSaidaResult =
+  | { status: "ok"; numero: number; tipo: string }
+  | { status: "error"; message: string };
 
 export async function biparSaida(saidaId: string, qrCode: string): Promise<BiparSaidaResult> {
   const parsed = biparSchema.safeParse({ saidaId, qrCode });
@@ -68,8 +70,14 @@ export async function biparSaida(saidaId: string, qrCode: string): Promise<Bipar
     console.error("[saida] biparSaida", error);
     return { status: "error", message: error?.message || "Não foi possível registrar a saída." };
   }
+  // Tipo do kit (pro feedback da linha) — a remessa pode ter tipos diferentes.
+  const { data: lote } = await supabase
+    .from("lote_resumo_view")
+    .select("tipo_kit_nome")
+    .eq("lote_id", data.lote_id)
+    .maybeSingle();
   revalidarSaida(parsed.data.saidaId);
-  return { status: "ok", numero: data.numero };
+  return { status: "ok", numero: data.numero, tipo: lote?.tipo_kit_nome ?? "Kit" };
 }
 
 // ── Finalizar / cancelar remessa ──────────────────────────────────────────────
