@@ -5,7 +5,9 @@
 
 export const labelCls = "block text-sm font-medium text-foreground";
 
+// Campos com fundo BRANCO (bg-card) + borda — nunca o cinza do container
+// (bg-background), que faz o campo "sumir". Dark: usa a cor de card elevada.
 export const inputCls =
-  "mt-1 block w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm text-foreground shadow-sm transition-colors placeholder:text-muted-foreground/60 focus-visible:border-ring focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring";
+  "mt-1 block w-full rounded-md border border-input bg-card px-3 py-2.5 text-sm text-foreground shadow-sm transition-colors placeholder:text-muted-foreground/60 focus-visible:border-ring focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring";
 
 export const cardCls = "rounded-xl bg-card p-5 text-card-foreground ring-1 ring-foreground/10";

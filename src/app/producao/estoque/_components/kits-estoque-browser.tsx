@@ -58,10 +58,10 @@ export function KitsEstoqueBrowser({ empresas }: { empresas: EmpresaKits[] }) {
               }}
               aria-current={e.tenantId === empresaId ? "true" : undefined}
               className={cn(
-                "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
+                "rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors",
                 e.tenantId === empresaId
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground hover:bg-muted/70",
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-border bg-card text-muted-foreground hover:bg-muted/50",
               )}
             >
               {e.nome}
