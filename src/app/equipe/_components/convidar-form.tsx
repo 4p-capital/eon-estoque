@@ -12,9 +12,9 @@ import { Label } from "@/components/ui/label";
 const INITIAL: ConvidarState = { status: "idle" };
 
 const selectCls =
-  "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:border-ring focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50";
+  "flex h-9 w-full rounded-md border border-input bg-card px-3 py-1 text-sm shadow-xs transition-colors focus-visible:border-ring focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50";
 
-export function ConvidarForm() {
+export function ConvidarForm({ galpao }: { galpao: boolean }) {
   const [state, formAction] = useActionState(convidarMembro, INITIAL);
   const formRef = useRef<HTMLFormElement>(null);
   const [copiado, setCopiado] = useState(false);
@@ -50,9 +50,23 @@ export function ConvidarForm() {
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="papel">Papel</Label>
-          <select id="papel" name="papel" defaultValue="tenant_gestor" className={selectCls}>
-            <option value="tenant_gestor">Gestor</option>
-            <option value="tenant_admin">Administrador</option>
+          <select
+            id="papel"
+            name="papel"
+            defaultValue={galpao ? "galpao_operador" : "tenant_gestor"}
+            className={selectCls}
+          >
+            {galpao ? (
+              <>
+                <option value="galpao_operador">Operador</option>
+                <option value="galpao_admin">Administrador</option>
+              </>
+            ) : (
+              <>
+                <option value="tenant_gestor">Gestor</option>
+                <option value="tenant_admin">Administrador</option>
+              </>
+            )}
           </select>
         </div>
       </div>

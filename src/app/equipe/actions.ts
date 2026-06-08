@@ -13,21 +13,35 @@ export type ConvidarState = {
   linkFallback?: string;
 };
 
+const PAPEIS_GALPAO = ["galpao_admin", "galpao_operador"] as const;
+const PAPEIS_TENANT = ["tenant_admin", "tenant_gestor"] as const;
+
 const schema = z.object({
   nome: z.string().trim().min(2, "Informe o nome do membro."),
   email: z.string().trim().email("E-mail inválido."),
-  // tenant_admin pode convidar outro admin ou um gestor do MESMO tenant.
-  papel: z.enum(["tenant_admin", "tenant_gestor"]),
+  papel: z.enum(["galpao_admin", "galpao_operador", "tenant_admin", "tenant_gestor"]),
 });
 
+const LABEL_PAPEL: Record<string, string> = {
+  galpao_admin: "administrador",
+  galpao_operador: "operador",
+  tenant_admin: "administrador",
+  tenant_gestor: "gestor",
+};
+
+// Convida um membro para a MESMA equipe do convidante:
+//   - galpao_admin -> equipe do galpão (operador/admin), no tenant do galpão;
+//   - tenant_admin -> equipe do cliente (gestor/admin), no próprio tenant.
+// Sempre no tenant do convidante; nunca cruza para outro tenant/mundo.
 export async function convidarMembro(
   _prev: ConvidarState,
   formData: FormData,
 ): Promise<ConvidarState> {
-  // Só tenant_admin convida — e SEMPRE para o próprio tenant (nunca outro).
   const sessao = await getSessao();
-  if (!sessao || sessao.papel !== "tenant_admin" || !sessao.tenantId) {
-    return { status: "error", message: "Apenas o administrador do cliente pode convidar membros." };
+  const ehGalpao = sessao?.papel === "galpao_admin";
+  const ehTenant = sessao?.papel === "tenant_admin";
+  if (!sessao?.tenantId || (!ehGalpao && !ehTenant)) {
+    return { status: "error", message: "Apenas o administrador pode convidar membros." };
   }
 
   const parsed = schema.safeParse({
@@ -39,9 +53,12 @@ export async function convidarMembro(
     return { status: "error", message: parsed.error.issues[0]?.message ?? "Dados inválidos." };
   }
 
-  const admin = createAdminClient();
+  const permitidos: readonly string[] = ehGalpao ? PAPEIS_GALPAO : PAPEIS_TENANT;
+  if (!permitidos.includes(parsed.data.papel)) {
+    return { status: "error", message: "Papel inválido para o seu acesso." };
+  }
 
-  // Membro já entra no tenant do convidante; vai direto pro app (sem onboarding).
+  const admin = createAdminClient();
   const convite = await convidarUsuario(admin, {
     email: parsed.data.email,
     nome: parsed.data.nome,
@@ -62,7 +79,7 @@ export async function convidarMembro(
   revalidatePath("/equipe");
   return {
     status: "ok",
-    message: `${parsed.data.nome} convidado como ${parsed.data.papel === "tenant_admin" ? "administrador" : "gestor"}.`,
+    message: `${parsed.data.nome} convidado como ${LABEL_PAPEL[parsed.data.papel] ?? "membro"}.`,
     linkFallback: convite.linkFallback,
   };
 }

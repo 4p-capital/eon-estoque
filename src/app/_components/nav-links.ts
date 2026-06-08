@@ -82,6 +82,7 @@ export const NAV_GALPAO: readonly NavSection[] = [
     entries: [
       { href: "/eventos", label: "Eventos", icon: BarChart3 },
       { href: "/clientes", label: "Clientes", icon: Building2 },
+      { href: "/equipe", label: "Equipe", icon: Users },
       { href: "/dashboard", label: "Gráficos", icon: BarChart3, soon: true },
     ],
   },
