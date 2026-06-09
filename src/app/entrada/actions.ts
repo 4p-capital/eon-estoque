@@ -13,6 +13,7 @@ const mapearSchema = z.object({
   codigoProduto: z.string().min(1),
   descricaoFornecedor: z.string().default(""),
   ean: z.string().nullable().optional(),
+  ncm: z.string().trim().optional(),
   fatorConversao: z.coerce.number().positive().default(1),
   insumoId: z.string().uuid().optional(),
   novoInsumoNome: z.string().trim().optional(),
@@ -39,7 +40,7 @@ export async function mapearInsumo(
     }
     const { data: novo, error } = await supabase
       .from("insumo")
-      .insert({ nome: d.novoInsumoNome, unidade: d.novoInsumoUnidade })
+      .insert({ nome: d.novoInsumoNome, unidade: d.novoInsumoUnidade, ncm: d.ncm ?? null })
       .select("id, nome")
       .single();
     if (error || !novo) {
@@ -49,8 +50,16 @@ export async function mapearInsumo(
     insumoId = novo.id;
     insumoNome = novo.nome;
   } else {
-    const { data: insumo } = await supabase.from("insumo").select("nome").eq("id", insumoId).single();
+    const { data: insumo } = await supabase
+      .from("insumo")
+      .select("nome, ncm")
+      .eq("id", insumoId)
+      .single();
     insumoNome = insumo?.nome ?? "";
+    // Backfill: carimba o NCM no insumo existente que ainda não tem classificação.
+    if (d.ncm && !insumo?.ncm) {
+      await supabase.from("insumo").update({ ncm: d.ncm }).eq("id", insumoId);
+    }
   }
 
   // Grava/atualiza o de-para por (emitente, código do produto).
@@ -63,6 +72,7 @@ export async function mapearInsumo(
         codigo_produto: d.codigoProduto,
         descricao_fornecedor: d.descricaoFornecedor,
         codigo_ean: d.ean ?? null,
+        ncm: d.ncm ?? null,
         fator_conversao: d.fatorConversao,
       },
       { onConflict: "cnpj_emitente,codigo_produto" },

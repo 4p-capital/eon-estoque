@@ -42,6 +42,7 @@ export type ItemConferencia = {
   ean: string | null;
   insumoId: string | null;
   insumoNome: string | null;
+  insumoNcm: string | null; // NCM do insumo cadastrado (base do alerta de divergência)
   fatorConversao: number;
   quantidadeRecebida: number | null;
 };

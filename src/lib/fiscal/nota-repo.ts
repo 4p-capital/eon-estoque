@@ -80,10 +80,11 @@ export async function prepararNota(
   return nota.id;
 }
 
-function nomeInsumo(insumo: unknown): string | null {
+// Extrai um campo do insumo embutido (PostgREST devolve objeto ou array de 1).
+function campoInsumo(insumo: unknown, campo: string): string | null {
   const obj = Array.isArray(insumo) ? insumo[0] : insumo;
-  if (obj && typeof obj === "object" && "nome" in obj) {
-    return String((obj as { nome: unknown }).nome ?? "") || null;
+  if (obj && typeof obj === "object" && campo in obj) {
+    return String((obj as Record<string, unknown>)[campo] ?? "") || null;
   }
   return null;
 }
@@ -106,7 +107,7 @@ export async function carregarNota(
   const { data: itens } = await supabase
     .from("nota_item")
     .select(
-      "id, num_item, codigo_fornecedor, descricao, ncm, unidade, quantidade, valor_unitario, valor_total, ean, insumo_id, fator_conversao, quantidade_recebida, insumo:insumo_id(nome)",
+      "id, num_item, codigo_fornecedor, descricao, ncm, unidade, quantidade, valor_unitario, valor_total, ean, insumo_id, fator_conversao, quantidade_recebida, insumo:insumo_id(nome, ncm)",
     )
     .eq("nota_id", notaId)
     .order("num_item");
@@ -137,7 +138,8 @@ export async function carregarNota(
       valorTotal: Number(it.valor_total ?? 0),
       ean: it.ean,
       insumoId: it.insumo_id,
-      insumoNome: nomeInsumo(it.insumo),
+      insumoNome: campoInsumo(it.insumo, "nome"),
+      insumoNcm: campoInsumo(it.insumo, "ncm"),
       fatorConversao: Number(it.fator_conversao ?? 1),
       quantidadeRecebida: it.quantidade_recebida === null ? null : Number(it.quantidade_recebida),
     })),

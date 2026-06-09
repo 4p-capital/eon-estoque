@@ -42,6 +42,7 @@ export function MapearItem({ item, emitenteCnpj, insumos, onMapeado }: Props) {
         codigoProduto: item.codigo,
         descricaoFornecedor: item.descricao,
         ean: item.ean,
+        ncm: item.ncm,
         fatorConversao: fator,
         insumoId: linha.insumoId ?? undefined,
         novoInsumoNome: linha.isNew ? linha.nome : undefined,

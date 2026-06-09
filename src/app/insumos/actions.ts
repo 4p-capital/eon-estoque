@@ -13,6 +13,12 @@ const insumoSchema = z.object({
   estoque_min: z.coerce.number().min(0, "Não pode ser negativo.").default(0),
   lead_time_dias: z.coerce.number().int().min(0, "Não pode ser negativo.").default(0),
   consumo_dia: z.coerce.number().min(0, "Não pode ser negativo.").default(0),
+  // NCM opcional: string vazia do form vira null (sem classificação).
+  ncm: z
+    .string()
+    .trim()
+    .optional()
+    .transform((v) => (v && v.length > 0 ? v : null)),
 });
 
 export async function criarInsumo(_prev: FormState, formData: FormData): Promise<FormState> {
