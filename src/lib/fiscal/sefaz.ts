@@ -7,6 +7,8 @@
 import https from "node:https";
 import { gunzipSync } from "node:zlib";
 
+import { pfxParaPem } from "@/lib/fiscal/certificado";
+
 const ENDPOINT =
   "https://www1.nfe.fazenda.gov.br/NFeDistribuicaoDFe/NFeDistribuicaoDFe.asmx";
 const NS_NFE = "http://www.portalfiscal.inf.br/nfe";
@@ -44,6 +46,9 @@ export async function consultarPorChave(
   return parseResposta(soap);
 }
 
+// O OpenSSL 3 do Node não abre .pfx de cifragem legada; convertemos para PEM
+// (via node-forge) e passamos chave/cert ao TLS.
+
 function montarEnvelope(
   cnpj: string,
   uf: string,
@@ -64,6 +69,7 @@ function montarEnvelope(
 }
 
 function postSoap(body: string, pfx: Buffer, passphrase: string): Promise<string> {
+  const { key, cert } = pfxParaPem(pfx, passphrase);
   const url = new URL(ENDPOINT);
   return new Promise((resolve, reject) => {
     const req = https.request(
@@ -71,8 +77,8 @@ function postSoap(body: string, pfx: Buffer, passphrase: string): Promise<string
         host: url.host,
         path: url.pathname,
         method: "POST",
-        pfx,
-        passphrase,
+        key,
+        cert,
         minVersion: "TLSv1.2",
         headers: {
           "Content-Type": "application/soap+xml; charset=utf-8",

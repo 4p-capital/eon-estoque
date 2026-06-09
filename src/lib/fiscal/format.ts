@@ -8,6 +8,15 @@ export function formatarCnpj(cnpj: string): string {
   return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5, 8)}/${d.slice(8, 12)}-${d.slice(12)}`;
 }
 
+// "85444900" -> "8544.49.00" (NCM 4-2-2). Mantém como veio se não tiver 8 dígitos.
+export function formatarNcm(ncm: string | null): string {
+  const d = (ncm ?? "").replace(/\D/g, "");
+  if (d.length !== 8) {
+    return ncm ?? "";
+  }
+  return `${d.slice(0, 4)}.${d.slice(4, 6)}.${d.slice(6)}`;
+}
+
 export function formatarData(isoDate: string): string {
   const [ano, mes, dia] = isoDate.split("-");
   if (!ano || !mes || !dia) {

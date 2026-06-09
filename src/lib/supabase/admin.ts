@@ -33,6 +33,21 @@ type PerfilRow = {
   updated_at: string;
 };
 
+// Cofre fiscal: lido via service_role para a consulta SEFAZ (o galpão é cego à
+// RLS de `spe`). Só os campos que a consulta usa; o certificado/senha nunca saem
+// do servidor.
+type SpeRow = {
+  id: string;
+  razao_social: string;
+  cnpj: string;
+  uf: string | null;
+  empreendimento_id: string | null;
+  certificado_cifrado: string;
+  senha_cifrada: string;
+  tenant_id: string | null;
+  ativo: boolean;
+};
+
 type AdminSchema = {
   estoque: {
     Tables: {
@@ -62,6 +77,12 @@ type AdminSchema = {
           updated_at?: string;
         };
         Update: Partial<PerfilRow>;
+        Relationships: [];
+      };
+      spe: {
+        Row: SpeRow;
+        Insert: Partial<SpeRow>;
+        Update: Partial<SpeRow>;
         Relationships: [];
       };
     };

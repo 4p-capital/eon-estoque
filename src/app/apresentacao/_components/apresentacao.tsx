@@ -81,7 +81,7 @@ function Capa() {
         </p>
         <div className="mt-9 inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-1.5 text-xs font-medium">
           <Sparkles className="size-3.5" aria-hidden />
-          Controle de Estoque · EON Produções
+          Controle de Estoque · EON Instalações
         </div>
       </div>
     </Slide>

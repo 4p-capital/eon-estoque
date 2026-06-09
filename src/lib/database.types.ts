@@ -208,6 +208,7 @@ export type Database = {
           fator_conversao: number
           id: string
           insumo_id: string
+          ncm: string | null
         }
         Insert: {
           cnpj_emitente?: string | null
@@ -218,6 +219,7 @@ export type Database = {
           fator_conversao?: number
           id?: string
           insumo_id: string
+          ncm?: string | null
         }
         Update: {
           cnpj_emitente?: string | null
@@ -228,6 +230,7 @@ export type Database = {
           fator_conversao?: number
           id?: string
           insumo_id?: string
+          ncm?: string | null
         }
         Relationships: [
           {
@@ -351,6 +354,7 @@ export type Database = {
           estoque_min: number
           id: string
           lead_time_dias: number
+          ncm: string | null
           nome: string
           unidade: string
         }
@@ -361,6 +365,7 @@ export type Database = {
           estoque_min?: number
           id?: string
           lead_time_dias?: number
+          ncm?: string | null
           nome: string
           unidade: string
         }
@@ -371,6 +376,7 @@ export type Database = {
           estoque_min?: number
           id?: string
           lead_time_dias?: number
+          ncm?: string | null
           nome?: string
           unidade?: string
         }
@@ -589,6 +595,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      ncm: {
+        Row: {
+          ato: string | null
+          atualizado_em: string
+          codigo: string
+          codigo_formatado: string
+          data_fim: string | null
+          data_inicio: string | null
+          descricao: string
+          descricao_completa: string
+          nivel: number
+        }
+        Insert: {
+          ato?: string | null
+          atualizado_em?: string
+          codigo: string
+          codigo_formatado: string
+          data_fim?: string | null
+          data_inicio?: string | null
+          descricao: string
+          descricao_completa: string
+          nivel: number
+        }
+        Update: {
+          ato?: string | null
+          atualizado_em?: string
+          codigo?: string
+          codigo_formatado?: string
+          data_fim?: string | null
+          data_inicio?: string | null
+          descricao?: string
+          descricao_completa?: string
+          nivel?: number
+        }
+        Relationships: []
       }
       nota_fiscal: {
         Row: {

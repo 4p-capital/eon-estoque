@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { getSessao } from "@/lib/auth/sessao";
 import { decifrar, decifrarTexto } from "@/lib/fiscal/cripto";
 import { consultarPorChave } from "@/lib/fiscal/sefaz";
 import { parseChave } from "@/lib/fiscal/chave";
@@ -19,11 +21,26 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, message: "Chave de acesso inválida (esperado 44 dígitos)." }, { status: 400 });
   }
 
-  const supabase = await createClient();
-  const { data: spes, error } = await supabase
+  const sessao = await getSessao();
+  if (!sessao) {
+    return NextResponse.json({ ok: false, message: "Faça login para consultar notas." }, { status: 401 });
+  }
+
+  // Cofre fiscal: o certificado é lido via service_role (o galpão é CEGO à RLS de
+  // `spe` — nunca recebe o .pfx/senha; o sistema só os usa server-side). O galpão
+  // consulta as notas de todos os tenants; um usuário do tenant, só as do seu.
+  const admin = createAdminClient();
+  let speQuery = admin
     .from("spe")
     .select("id, razao_social, cnpj, uf, empreendimento_id, certificado_cifrado, senha_cifrada")
     .eq("ativo", true);
+  if (!sessao.isGalpao) {
+    if (!sessao.tenantId) {
+      return NextResponse.json({ ok: false, message: "Sem permissão para consultar notas." }, { status: 403 });
+    }
+    speQuery = speQuery.eq("tenant_id", sessao.tenantId);
+  }
+  const { data: spes, error } = await speQuery;
 
   if (error) {
     console.error("[fiscal] consultar-nota: carregar SPEs", error);
@@ -32,6 +49,9 @@ export async function POST(request: Request) {
   if (!spes || spes.length === 0) {
     return NextResponse.json({ ok: false, message: "Nenhum certificado de SPE cadastrado." }, { status: 412 });
   }
+
+  // Escrita/leitura da nota seguem sob RLS (o galpão pode gravar operacional).
+  const supabase = await createClient();
 
   const tentativas: Tentativa[] = [];
 

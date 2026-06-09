@@ -16,6 +16,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { createClient } from "@/lib/supabase/client";
+import { Tag } from "@/components/ui/tag";
+import { formatarNcm } from "@/lib/fiscal/format";
 
 type Linha = {
   id: string;
@@ -24,6 +26,7 @@ type Linha = {
   estoqueMin: number;
   leadTime: number;
   consumoDia: number;
+  ncm: string | null;
 };
 
 const POR_PAGINA = 200;
@@ -57,7 +60,7 @@ export function CadastroInsumos() {
     (async () => {
       let q = supabase
         .from("insumo")
-        .select("id, nome, unidade, estoque_min, lead_time_dias, consumo_dia", { count: "exact" });
+        .select("id, nome, unidade, estoque_min, lead_time_dias, consumo_dia, ncm", { count: "exact" });
       if (termo) q = q.ilike("nome", `%${termo}%`);
       const { data, count, error } = await q.order("nome").range(de, ate);
       if (cancelado) return;
@@ -74,6 +77,7 @@ export function CadastroInsumos() {
             estoqueMin: Number(d.estoque_min ?? 0),
             leadTime: Number(d.lead_time_dias ?? 0),
             consumoDia: Number(d.consumo_dia ?? 0),
+            ncm: d.ncm ?? null,
           })),
         );
         setTotal(count ?? 0);
@@ -134,7 +138,14 @@ export function CadastroInsumos() {
               <TableBody>
                 {rows.map((r) => (
                   <TableRow key={r.id} className="border-t border-border">
-                    <TableCell className="px-3 py-2 font-medium text-foreground">{r.nome}</TableCell>
+                    <TableCell className="px-3 py-2 font-medium text-foreground">
+                      {r.nome}
+                      {r.ncm && (
+                        <Tag color="blue" className="ml-2 align-middle" title="NCM (classificação fiscal)">
+                          {formatarNcm(r.ncm)}
+                        </Tag>
+                      )}
+                    </TableCell>
                     <TableCell className="px-3 py-2 text-muted-foreground">{r.unidade}</TableCell>
                     <TableCell className="px-3 py-2 text-right tabular-nums text-muted-foreground">
                       {nf.format(r.estoqueMin)}
@@ -148,6 +159,7 @@ export function CadastroInsumos() {
                           estoqueMin: r.estoqueMin,
                           leadTime: r.leadTime,
                           consumoDia: r.consumoDia,
+                          ncm: r.ncm,
                         }}
                         onSaved={() => setRecarga((n) => n + 1)}
                       />

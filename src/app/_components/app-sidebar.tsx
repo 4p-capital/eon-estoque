@@ -89,14 +89,14 @@ export function AppSidebar({
       </button>
       {/* Marca */}
       <div className={cn("flex h-16 items-center border-b border-sidebar-border", collapsed ? "justify-center px-2" : "px-4")}>
-        <Link href="/" aria-label="EON Produções" className="flex min-w-0 items-center">
+        <Link href="/" aria-label="EON Instalações" className="flex min-w-0 items-center">
           {collapsed ? (
             <span className="font-heading text-lg font-extrabold tracking-tight">EON</span>
           ) : (
             <span className="min-w-0">
               <span className="block truncate font-heading text-base leading-tight tracking-tight">
                 <span className="font-extrabold">EON</span>{" "}
-                <span className="font-normal">Produções</span>
+                <span className="font-normal">Instalações</span>
               </span>
               <span className="block truncate text-[10px] text-muted-foreground">
                 Controle de Estoque

@@ -7,6 +7,7 @@ import { Minus, Plus, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Tag } from "@/components/ui/tag";
 import { ConfirmDialog } from "@/app/_components/confirm-dialog";
 import type { InsumoOption } from "@/app/tipos-kit/_components/insumo-picker";
 import { MapearItem } from "@/app/entrada/_components/mapear-item";
@@ -27,6 +28,18 @@ const ROTULO_STATUS: Record<StatusNota, string> = {
 function clamp(valor: number, max: number): number {
   if (Number.isNaN(valor) || valor < 0) return 0;
   return valor > max ? max : valor;
+}
+
+// Só dígitos, p/ comparar o NCM da nota com o do insumo (formatos podem diferir).
+function soDigitos(ncm: string | null): string {
+  return (ncm ?? "").replace(/\D/g, "");
+}
+
+// Item já mapeado cujo NCM da nota diverge do NCM cadastrado no insumo.
+function temDivergenciaNcm(l: Linha): boolean {
+  const nota = soDigitos(l.ncm);
+  const insumo = soDigitos(l.insumoNcm);
+  return Boolean(l.insumoId) && nota.length > 0 && insumo.length > 0 && nota !== insumo;
 }
 
 export function ConferenciaNota({
@@ -132,6 +145,16 @@ export function ConferenciaNota({
                       )}
                       {" · "}cód. {l.codigo}
                     </p>
+                    {temDivergenciaNcm(l) && (
+                      <Tag
+                        color="amber"
+                        className="mt-1"
+                        title={`NCM da nota (${l.ncm}) diferente do cadastrado no insumo (${l.insumoNcm}).`}
+                      >
+                        <AlertTriangle aria-hidden />
+                        NCM divergente
+                      </Tag>
+                    )}
                   </td>
                   <td className="px-3 py-2.5 text-right tabular-nums text-foreground">
                     {l.quantidade} {l.unidade}

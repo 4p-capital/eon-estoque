@@ -79,7 +79,7 @@ export default async function InicioPage() {
       <header className="animate-fade-up mb-10 text-center">
         <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary">
           <Sparkles className="size-3.5" aria-hidden />
-          Controle de Estoque — EON Produções
+          Controle de Estoque — EON Instalações
         </span>
         <h1 className="font-heading mt-4 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
           Bem-vindo{nome ? ", " : " "}

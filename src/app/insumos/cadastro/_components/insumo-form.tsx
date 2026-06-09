@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { criarInsumo, editarInsumo, type FormState } from "@/app/insumos/actions";
 import { inputCls, labelCls } from "@/app/_components/form-styles";
 import { SubmitButton } from "@/app/_components/submit-button";
+import { NcmPicker } from "@/app/insumos/cadastro/_components/ncm-picker";
 
 const INITIAL: FormState = { status: "idle" };
 
@@ -16,6 +17,7 @@ export type InsumoInicial = {
   estoqueMin: number;
   leadTime: number;
   consumoDia: number;
+  ncm: string | null;
 };
 
 // Form de insumo compartilhado por criar e editar (mesmos campos/API).
@@ -55,6 +57,13 @@ export function InsumoForm({
           defaultValue={inicial?.nome}
           placeholder="Fio flexível 2,5mm"
         />
+      </div>
+      <div>
+        <span className={labelCls}>NCM (classificação fiscal)</span>
+        <NcmPicker defaultCodigo={inicial?.ncm} />
+        <p className="mt-1 text-xs text-muted-foreground">
+          Opcional. Capturado automaticamente na entrada por nota; defina aqui para classificar manualmente.
+        </p>
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div>

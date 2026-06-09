@@ -57,7 +57,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "EON Estoque",
+  title: "EON Instalações",
   description: "Controle inteligente de estoque — EON Instalações",
 };
 
