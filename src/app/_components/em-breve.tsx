@@ -5,7 +5,7 @@ import { PageHeader } from "@/app/_components/page-header";
 export function EmBreve({ titulo, descricao }: { titulo: string; descricao: string }) {
   return (
     <main className="mx-auto max-w-5xl px-6 py-10">
-      <PageHeader eyebrow="EON Estoque" title={titulo} description={descricao} />
+      <PageHeader eyebrow="EON Instalações" title={titulo} description={descricao} />
       <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-border bg-muted/30 p-12 text-center">
         <span className="inline-flex size-12 items-center justify-center rounded-xl bg-accent text-accent-foreground">
           <Construction className="size-6" aria-hidden />
