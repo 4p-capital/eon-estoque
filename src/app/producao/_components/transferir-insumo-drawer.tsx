@@ -7,6 +7,7 @@ import { toast } from "sonner";
 
 import { inputCls, labelCls } from "@/app/_components/form-styles";
 import { Button } from "@/components/ui/button";
+import { Tag } from "@/components/ui/tag";
 import {
   Sheet,
   SheetContent,
@@ -110,10 +111,19 @@ function TransferirForm({ destino, loteId, insumo, sugestaoQtd, onDone }: FormPr
 
   return (
     <form onSubmit={onSubmit} className="space-y-4 p-4">
-      <div>
-        <label htmlFor="origem" className={labelCls}>
-          SPE de origem
-        </label>
+      {/* Resumo da falta: o quê, quanto e para onde. */}
+      <div className="flex items-center justify-between gap-3 rounded-lg bg-muted/50 px-3 py-2.5">
+        <div className="min-w-0">
+          <p className="truncate text-sm font-medium text-foreground">{insumo.nome}</p>
+          <p className="truncate text-xs text-muted-foreground">para {destino.nome}</p>
+        </div>
+        <Tag color="red">
+          falta {sugestaoQtd} {insumo.unidade}
+        </Tag>
+      </div>
+
+      <fieldset>
+        <legend className={labelCls}>De onde tirar (SPE de origem)</legend>
         {origens === null ? (
           <p className="text-sm text-muted-foreground">Buscando estoque das outras SPEs…</p>
         ) : origens.length === 0 ? (
@@ -124,21 +134,34 @@ function TransferirForm({ destino, loteId, insumo, sugestaoQtd, onDone }: FormPr
             ceder.
           </p>
         ) : (
-          <select
-            id="origem"
-            value={origemId}
-            onChange={(e) => setOrigemId(e.target.value)}
-            className={inputCls}
-          >
-            <option value="">Selecione…</option>
-            {origens.map((o) => (
-              <option key={o.empreendimentoId} value={o.empreendimentoId}>
-                {o.empreendimentoNome} — disponível: {o.disponivel} {insumo.unidade}
-              </option>
-            ))}
-          </select>
+          <div className="space-y-2">
+            {origens.map((o) => {
+              const selecionada = o.empreendimentoId === origemId;
+              const cobre = o.disponivel >= sugestaoQtd;
+              return (
+                <button
+                  key={o.empreendimentoId}
+                  type="button"
+                  onClick={() => setOrigemId(o.empreendimentoId)}
+                  aria-pressed={selecionada}
+                  className={`flex w-full items-center justify-between gap-3 rounded-lg border p-3 text-left transition-colors ${
+                    selecionada
+                      ? "border-primary bg-primary/5"
+                      : "border-border hover:border-primary/40"
+                  }`}
+                >
+                  <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
+                    {o.empreendimentoNome}
+                  </span>
+                  <Tag color={cobre ? "green" : "amber"}>
+                    {o.disponivel} {insumo.unidade} disponível
+                  </Tag>
+                </button>
+              );
+            })}
+          </div>
         )}
-      </div>
+      </fieldset>
 
       <div className="max-w-[12rem]">
         <label htmlFor="qtd-transferir" className={labelCls}>

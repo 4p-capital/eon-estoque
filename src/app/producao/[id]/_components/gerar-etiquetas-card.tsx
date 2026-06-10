@@ -2,13 +2,17 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRightLeft, Tag as TagIcon, TriangleAlert } from "lucide-react";
+import { Tag as TagIcon } from "lucide-react";
 import { toast } from "sonner";
 
 import { inputCls, labelCls } from "@/app/_components/form-styles";
 import { Button } from "@/components/ui/button";
 import { EtiquetasQr } from "@/app/producao/_components/etiquetas-qr";
 import { TransferirInsumoDrawer } from "@/app/producao/_components/transferir-insumo-drawer";
+import {
+  FaltaInsumosPanel,
+  type InsumoFaltante,
+} from "@/app/producao/[id]/_components/falta-insumos-panel";
 import { gerarEtiquetas, type UnidadeProduzida } from "@/app/producao/actions";
 import type { BomDisponibilidade } from "@/lib/types";
 
@@ -33,7 +37,7 @@ export function GerarEtiquetasCard({
   const router = useRouter();
   const [qtd, setQtd] = useState("1");
   const [novas, setNovas] = useState<UnidadeProduzida[] | null>(null);
-  const [transferirAberto, setTransferirAberto] = useState(false);
+  const [transferindo, setTransferindo] = useState<InsumoFaltante | null>(null);
   const [pendente, startTransition] = useTransition();
 
   const semBom = disponibilidade.length === 0;
@@ -48,12 +52,28 @@ export function GerarEtiquetasCard({
   );
 
   const qtdNum = Math.max(0, Math.floor(Number(qtd) || 0));
-  const excede = qtdNum > capacidade;
-  const necessario = gargalo ? qtdNum * Number(gargalo.qtd_por_kit) : 0;
-  const deficit = gargalo
-    ? Math.max(Math.ceil(necessario - Number(gargalo.disponivel)), 1)
-    : 1;
-  const bloqueado = semBom || excede || qtdNum <= 0;
+
+  // Insumos que NÃO cobrem a quantidade pedida — cada um com sua falta.
+  const faltantes = useMemo<InsumoFaltante[]>(() => {
+    if (qtdNum <= 0) return [];
+    return disponibilidade
+      .filter((d) => Number(d.limite) < qtdNum)
+      .map((d) => {
+        const necessario = qtdNum * Number(d.qtd_por_kit);
+        const disponivel = Number(d.disponivel);
+        return {
+          insumoId: d.insumo_id,
+          nome: d.insumo_nome,
+          unidade: d.unidade,
+          necessario,
+          disponivel,
+          falta: Math.max(Math.ceil(necessario - disponivel), 1),
+        };
+      })
+      .sort((a, b) => b.falta - a.falta);
+  }, [disponibilidade, qtdNum]);
+
+  const bloqueado = semBom || faltantes.length > 0 || qtdNum <= 0;
 
   function gerar(e: React.FormEvent) {
     e.preventDefault();
@@ -107,7 +127,7 @@ export function GerarEtiquetasCard({
           )}
         </form>
 
-        {!semBom && !excede && (
+        {!semBom && faltantes.length === 0 && (
           <p className="text-xs text-muted-foreground">
             O estoque deste empreendimento comporta{" "}
             <span className="font-semibold text-foreground">{capacidade}</span> etiqueta(s)
@@ -123,29 +143,13 @@ export function GerarEtiquetasCard({
           </p>
         )}
 
-        {!semBom && excede && gargalo && (
-          <div className="space-y-2 rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-            <p className="flex items-start gap-2">
-              <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden />
-              <span>
-                Estoque insuficiente para {qtdNum} etiqueta(s): o disponível comporta{" "}
-                <strong>{capacidade}</strong>. Gargalo: <strong>{gargalo.insumo_nome}</strong>{" "}
-                (disponível {Number(gargalo.disponivel)} {gargalo.unidade}, necessário {necessario}{" "}
-                {gargalo.unidade}).
-              </span>
-            </p>
-            {empreendimento && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setTransferirAberto(true)}
-              >
-                <ArrowRightLeft className="size-4" aria-hidden />
-                Transferir insumo de outra SPE
-              </Button>
-            )}
-          </div>
+        {faltantes.length > 0 && (
+          <FaltaInsumosPanel
+            qtd={qtdNum}
+            faltantes={faltantes}
+            podeTransferir={Boolean(empreendimento)}
+            onTransferir={setTransferindo}
+          />
         )}
       </div>
 
@@ -155,18 +159,20 @@ export function GerarEtiquetasCard({
         </div>
       )}
 
-      {empreendimento && gargalo && (
+      {empreendimento && transferindo && (
         <TransferirInsumoDrawer
-          open={transferirAberto}
-          onOpenChange={setTransferirAberto}
+          open
+          onOpenChange={(aberto) => {
+            if (!aberto) setTransferindo(null);
+          }}
           destino={{ id: empreendimento.id, nome: empreendimento.nome }}
           loteId={loteId}
           insumo={{
-            id: gargalo.insumo_id,
-            nome: gargalo.insumo_nome,
-            unidade: gargalo.unidade,
+            id: transferindo.insumoId,
+            nome: transferindo.nome,
+            unidade: transferindo.unidade,
           }}
-          sugestaoQtd={deficit}
+          sugestaoQtd={transferindo.falta}
         />
       )}
     </>
