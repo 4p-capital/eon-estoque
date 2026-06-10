@@ -20,7 +20,7 @@ export type OrigemDisponivel = {
   disponivel: number;
 };
 export type ListarOrigensResult =
-  | { status: "ok"; origens: OrigemDisponivel[] }
+  | { status: "ok"; origens: OrigemDisponivel[]; tenantNome: string | null }
   | { status: "error"; message: string };
 
 export async function listarOrigensDisponiveis(
@@ -39,6 +39,12 @@ export async function listarOrigensDisponiveis(
     console.error("[transferencia] listarOrigensDisponiveis destino", destinoError);
     return { status: "error", message: "Empreendimento de destino não encontrado." };
   }
+
+  const { data: tenant } = await supabase
+    .from("tenant")
+    .select("nome")
+    .eq("id", tenantId)
+    .maybeSingle();
 
   const [saldosRes, empsRes] = await Promise.all([
     supabase
@@ -68,7 +74,7 @@ export async function listarOrigensDisponiveis(
     }))
     .sort((a, b) => b.disponivel - a.disponivel);
 
-  return { status: "ok", origens };
+  return { status: "ok", origens, tenantNome: tenant?.nome ?? null };
 }
 
 // ── Transferir insumo entre SPEs (registrado + pendência de reposição) ───────

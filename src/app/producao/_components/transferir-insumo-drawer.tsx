@@ -56,6 +56,7 @@ type FormProps = Omit<DrawerProps, "open" | "onOpenChange"> & { onDone: () => vo
 function TransferirForm({ destino, loteId, insumo, sugestaoQtd, onDone }: FormProps) {
   const router = useRouter();
   const [origens, setOrigens] = useState<OrigemDisponivel[] | null>(null);
+  const [tenantNome, setTenantNome] = useState<string | null>(null);
   const [origemId, setOrigemId] = useState("");
   const [quantidade, setQuantidade] = useState(String(sugestaoQtd));
   const [motivo, setMotivo] = useState("");
@@ -71,6 +72,7 @@ function TransferirForm({ destino, loteId, insumo, sugestaoQtd, onDone }: FormPr
         return;
       }
       setOrigens(res.origens);
+      setTenantNome(res.tenantNome);
     });
     return () => {
       ativo = false;
@@ -116,8 +118,10 @@ function TransferirForm({ destino, loteId, insumo, sugestaoQtd, onDone }: FormPr
           <p className="text-sm text-muted-foreground">Buscando estoque das outras SPEs…</p>
         ) : origens.length === 0 ? (
           <p className="rounded-md border border-dashed p-3 text-sm text-muted-foreground">
-            Nenhuma outra SPE tem este insumo disponível. Registre uma entrada de NF ou ajuste de
-            inventário.
+            Nenhuma SPE{tenantNome ? ` de ${tenantNome}` : ""} tem este insumo disponível — a
+            transferência só é permitida entre SPEs do mesmo cliente, e o disponível desconta as
+            etiquetas pendentes. Registre uma entrada de NF ou ajuste de inventário na SPE que vai
+            ceder.
           </p>
         ) : (
           <select
