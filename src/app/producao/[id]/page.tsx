@@ -6,7 +6,7 @@ import { PageHeader } from "@/app/_components/page-header";
 import { LoteDetalhe, type UnidadeRow } from "@/app/producao/[id]/_components/lote-detalhe";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
-import type { LoteResumo } from "@/lib/types";
+import type { BomDisponibilidade, LoteResumo } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -29,6 +29,18 @@ export default async function LotePage({ params }: { params: Promise<{ id: strin
   const unidades = (unidadesRes.data ?? []) as UnidadeRow[];
   const rotulo = lote.empreendimento_nome ?? lote.tipo_kit_nome ?? "Kit";
 
+  // Disponibilidade do BOM (saldo − reservado) só importa enquanto o lote
+  // ainda imprime etiquetas.
+  let disponibilidade: BomDisponibilidade[] = [];
+  if (lote.status === "aberto" && lote.tipo_kit_id && lote.empreendimento_id) {
+    const { data, error } = await supabase.rpc("bom_disponibilidade", {
+      p_tipo_kit_id: lote.tipo_kit_id,
+      p_empreendimento_id: lote.empreendimento_id,
+    });
+    if (error) console.error("[producao] bom_disponibilidade", error);
+    disponibilidade = data ?? [];
+  }
+
   return (
     <main className="mx-auto max-w-3xl px-6 py-10">
       <PageHeader
@@ -44,7 +56,12 @@ export default async function LotePage({ params }: { params: Promise<{ id: strin
           </Button>
         }
       />
-      <LoteDetalhe lote={lote} unidades={unidades} rotulo={rotulo} />
+      <LoteDetalhe
+        lote={lote}
+        unidades={unidades}
+        rotulo={rotulo}
+        disponibilidade={disponibilidade}
+      />
     </main>
   );
 }

@@ -13,6 +13,8 @@ export type PontoPedido = EstoqueViews["ponto_de_pedido_view"]["Row"];
 export type SaldoInsumo = EstoqueViews["saldo_insumo"]["Row"];
 export type ContagemResumo = EstoqueViews["contagem_resumo"]["Row"];
 export type LoteResumo = EstoqueViews["lote_resumo_view"]["Row"];
+export type SaldoInsumoDisponivel = EstoqueViews["saldo_insumo_disponivel"]["Row"];
+export type ReposicaoPendente = EstoqueViews["reposicao_pendente_view"]["Row"];
 
 export type Contagem = EstoqueTables["contagem"]["Row"];
 export type ContagemItem = EstoqueTables["contagem_item"]["Row"];
@@ -24,3 +26,9 @@ export type Empreendimento = EstoqueTables["empreendimento"]["Row"];
 export type Local = EstoqueTables["local"]["Row"];
 export type Lote = EstoqueTables["lote"]["Row"];
 export type UnidadeKit = EstoqueTables["unidade_kit"]["Row"];
+export type TransferenciaInsumo = EstoqueTables["transferencia_insumo"]["Row"];
+
+type EstoqueFunctions = Database["estoque"]["Functions"];
+
+export type KitsDisponiveis = EstoqueFunctions["calcular_kits_disponiveis"]["Returns"][number];
+export type BomDisponibilidade = EstoqueFunctions["bom_disponibilidade"]["Returns"][number];

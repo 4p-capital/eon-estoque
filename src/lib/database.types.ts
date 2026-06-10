@@ -490,6 +490,7 @@ export type Database = {
           quantidade: number
           tenant_id?: string
           tipo: string
+          transferencia_id: string | null
           unidade_kit_id: string | null
           usuario_id: string | null
         }
@@ -505,6 +506,7 @@ export type Database = {
           quantidade: number
           tenant_id?: string
           tipo: string
+          transferencia_id?: string | null
           unidade_kit_id?: string | null
           usuario_id?: string | null
         }
@@ -520,6 +522,7 @@ export type Database = {
           quantidade?: number
           tenant_id?: string
           tipo?: string
+          transferencia_id?: string | null
           unidade_kit_id?: string | null
           usuario_id?: string | null
         }
@@ -998,6 +1001,90 @@ export type Database = {
         }
         Relationships: []
       }
+      transferencia_insumo: {
+        Row: {
+          created_at: string
+          criado_por: string | null
+          destino_id: string
+          id: string
+          insumo_id: string
+          lote_id: string | null
+          motivo: string | null
+          origem_id: string
+          quantidade: number
+          reposta: boolean
+          reposta_em: string | null
+          reposta_por: string | null
+          tenant_id?: string
+        }
+        Insert: {
+          created_at?: string
+          criado_por?: string | null
+          destino_id: string
+          id?: string
+          insumo_id: string
+          lote_id?: string | null
+          motivo?: string | null
+          origem_id: string
+          quantidade: number
+          reposta?: boolean
+          reposta_em?: string | null
+          reposta_por?: string | null
+          tenant_id?: string
+        }
+        Update: {
+          created_at?: string
+          criado_por?: string | null
+          destino_id?: string
+          id?: string
+          insumo_id?: string
+          lote_id?: string | null
+          motivo?: string | null
+          origem_id?: string
+          quantidade?: number
+          reposta?: boolean
+          reposta_em?: string | null
+          reposta_por?: string | null
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transferencia_insumo_destino_id_fkey"
+            columns: ["destino_id"]
+            isOneToOne: false
+            referencedRelation: "empreendimento"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transferencia_insumo_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "insumo"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transferencia_insumo_lote_id_fkey"
+            columns: ["lote_id"]
+            isOneToOne: false
+            referencedRelation: "lote"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transferencia_insumo_origem_id_fkey"
+            columns: ["origem_id"]
+            isOneToOne: false
+            referencedRelation: "empreendimento"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transferencia_insumo_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenant"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tipo_kit: {
         Row: {
           created_at: string
@@ -1297,6 +1384,37 @@ export type Database = {
         }
         Relationships: []
       }
+      reposicao_pendente_view: {
+        Row: {
+          created_at: string | null
+          destino_id: string | null
+          destino_nome: string | null
+          id: string | null
+          insumo_id: string | null
+          insumo_nome: string | null
+          lote_id: string | null
+          motivo: string | null
+          origem_id: string | null
+          origem_nome: string | null
+          quantidade: number | null
+          tenant_id?: string | null
+          unidade: string | null
+        }
+        Relationships: []
+      }
+      saldo_insumo_disponivel: {
+        Row: {
+          disponivel: number | null
+          empreendimento_id: string | null
+          insumo_id: string | null
+          nome: string | null
+          reservado: number | null
+          saldo: number | null
+          tenant_id?: string | null
+          unidade: string | null
+        }
+        Relationships: []
+      }
       saldo_insumo_empreendimento: {
         Row: {
           empreendimento_id: string | null
@@ -1457,6 +1575,82 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "unidade_kit"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      bom_disponibilidade: {
+        Args: { p_empreendimento_id: string; p_tipo_kit_id: string }
+        Returns: {
+          disponivel: number
+          insumo_id: string
+          insumo_nome: string
+          limite: number
+          qtd_por_kit: number
+          reservado: number
+          saldo: number
+          unidade: string
+        }[]
+      }
+      calcular_kits_disponiveis: {
+        Args: { p_empreendimento_id: string; p_tipo_kit_id: string }
+        Returns: {
+          insumo_gargalo_id: string
+          insumo_gargalo_nome: string
+          qtd_disponivel: number
+        }[]
+      }
+      marcar_reposta: {
+        Args: { p_transferencia_id: string }
+        Returns: {
+          created_at: string
+          criado_por: string | null
+          destino_id: string
+          id: string
+          insumo_id: string
+          lote_id: string | null
+          motivo: string | null
+          origem_id: string
+          quantidade: number
+          reposta: boolean
+          reposta_em: string | null
+          reposta_por: string | null
+          tenant_id?: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "transferencia_insumo"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      transferir_insumo: {
+        Args: {
+          p_destino_id: string
+          p_insumo_id: string
+          p_lote_id?: string
+          p_motivo?: string
+          p_origem_id: string
+          p_quantidade: number
+        }
+        Returns: {
+          created_at: string
+          criado_por: string | null
+          destino_id: string
+          id: string
+          insumo_id: string
+          lote_id: string | null
+          motivo: string | null
+          origem_id: string
+          quantidade: number
+          reposta: boolean
+          reposta_em: string | null
+          reposta_por: string | null
+          tenant_id?: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "transferencia_insumo"
           isOneToOne: true
           isSetofReturn: false
         }

@@ -1,23 +1,16 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useMemo, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Ban, CheckCircle2, Tag as TagIcon } from "lucide-react";
+import { Ban, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 
-import { inputCls, labelCls } from "@/app/_components/form-styles";
-import { Button } from "@/components/ui/button";
 import { Tag, type TagColor } from "@/components/ui/tag";
 import { ConfirmDialog } from "@/app/_components/confirm-dialog";
-import { EtiquetasQr } from "@/app/producao/_components/etiquetas-qr";
+import { GerarEtiquetasCard } from "@/app/producao/[id]/_components/gerar-etiquetas-card";
 import { LoteStats } from "@/app/producao/_components/lote-stats";
-import {
-  cancelarLote,
-  finalizarLote,
-  gerarEtiquetas,
-  type UnidadeProduzida,
-} from "@/app/producao/actions";
-import type { LoteResumo } from "@/lib/types";
+import { cancelarLote, finalizarLote } from "@/app/producao/actions";
+import type { BomDisponibilidade, LoteResumo } from "@/lib/types";
 
 export type UnidadeRow = { numero: number; qr_code: string; status: string };
 
@@ -29,40 +22,20 @@ const STATUS: Record<string, { label: string; cor: TagColor }> = {
   cancelado: { label: "Cancelado", cor: "slate" },
 };
 
-type Props = { lote: LoteResumo; unidades: UnidadeRow[]; rotulo: string };
+type Props = {
+  lote: LoteResumo;
+  unidades: UnidadeRow[];
+  rotulo: string;
+  disponibilidade: BomDisponibilidade[];
+};
 
-export function LoteDetalhe({ lote, unidades, rotulo }: Props) {
+export function LoteDetalhe({ lote, unidades, rotulo, disponibilidade }: Props) {
   const router = useRouter();
-  const [qtd, setQtd] = useState("1");
-  const [novas, setNovas] = useState<UnidadeProduzida[] | null>(null);
   const [pendente, startTransition] = useTransition();
 
   const aberto = lote.status === "aberto";
   const gap = Number(lote.gap ?? 0);
   const pendentes = useMemo(() => unidades.filter((u) => u.status === "pendente"), [unidades]);
-
-  function gerar(e: React.FormEvent) {
-    e.preventDefault();
-    startTransition(async () => {
-      const res = await gerarEtiquetas({ loteId: lote.lote_id as string, quantidade: qtd });
-      if (res.status === "error") {
-        toast.error(res.message);
-        return;
-      }
-      setNovas(res.unidades);
-      toast.success(`${res.unidades.length} etiqueta(s) gerada(s). Clique em Imprimir.`);
-      router.refresh();
-    });
-  }
-
-  function reimprimirPendentes() {
-    if (pendentes.length === 0) {
-      toast.error("Nenhuma etiqueta pendente para reimprimir.");
-      return;
-    }
-    setNovas(pendentes.map((u) => ({ numero: u.numero, qr_code: u.qr_code })));
-    toast.success(`${pendentes.length} etiqueta(s) prontas para reimpressão.`);
-  }
 
   function finalizar() {
     startTransition(async () => {
@@ -99,37 +72,17 @@ export function LoteDetalhe({ lote, unidades, rotulo }: Props) {
       />
 
       {aberto && (
-        <form onSubmit={gerar} className="flex flex-wrap items-end gap-3 rounded-xl bg-card p-5 shadow-sm">
-          <div>
-            <label htmlFor="qtd" className={labelCls}>
-              Gerar etiquetas
-            </label>
-            <input
-              id="qtd"
-              type="number"
-              min={1}
-              step={1}
-              value={qtd}
-              onChange={(e) => setQtd(e.target.value)}
-              className={`${inputCls} w-32`}
-            />
-          </div>
-          <Button type="submit" disabled={pendente}>
-            <TagIcon className="size-4" aria-hidden />
-            {pendente ? "Gerando…" : "Gerar e imprimir"}
-          </Button>
-          {pendentes.length > 0 && (
-            <Button type="button" variant="outline" onClick={reimprimirPendentes}>
-              Reimprimir pendentes ({pendentes.length})
-            </Button>
-          )}
-        </form>
-      )}
-
-      {novas && novas.length > 0 && (
-        <div className="rounded-xl bg-card p-5 shadow-sm">
-          <EtiquetasQr unidades={novas} rotulo={rotulo} />
-        </div>
+        <GerarEtiquetasCard
+          loteId={lote.lote_id as string}
+          empreendimento={
+            lote.empreendimento_id && lote.empreendimento_nome
+              ? { id: lote.empreendimento_id, nome: lote.empreendimento_nome }
+              : null
+          }
+          rotulo={rotulo}
+          pendentes={pendentes.map((u) => ({ numero: u.numero, qr_code: u.qr_code }))}
+          disponibilidade={disponibilidade}
+        />
       )}
 
       <section>
