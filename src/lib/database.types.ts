@@ -490,6 +490,7 @@ export type Database = {
           quantidade: number
           tenant_id?: string
           tipo: string
+          transferencia_id: string | null
           unidade_kit_id: string | null
           usuario_id: string | null
         }
@@ -505,6 +506,7 @@ export type Database = {
           quantidade: number
           tenant_id?: string
           tipo: string
+          transferencia_id?: string | null
           unidade_kit_id?: string | null
           usuario_id?: string | null
         }
@@ -520,6 +522,7 @@ export type Database = {
           quantidade?: number
           tenant_id?: string
           tipo?: string
+          transferencia_id?: string | null
           unidade_kit_id?: string | null
           usuario_id?: string | null
         }
@@ -585,6 +588,20 @@ export type Database = {
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenant"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "movimentacao_transferencia_id_fkey"
+            columns: ["transferencia_id"]
+            isOneToOne: false
+            referencedRelation: "reposicao_pendente_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "movimentacao_transferencia_id_fkey"
+            columns: ["transferencia_id"]
+            isOneToOne: false
+            referencedRelation: "transferencia_insumo"
             referencedColumns: ["id"]
           },
           {
@@ -1019,6 +1036,111 @@ export type Database = {
         }
         Relationships: []
       }
+      transferencia_insumo: {
+        Row: {
+          created_at: string
+          criado_por: string | null
+          destino_id: string
+          id: string
+          insumo_id: string
+          lote_id: string | null
+          motivo: string | null
+          origem_id: string
+          quantidade: number
+          reposta: boolean
+          reposta_em: string | null
+          reposta_por: string | null
+          tenant_id?: string
+        }
+        Insert: {
+          created_at?: string
+          criado_por?: string | null
+          destino_id: string
+          id?: string
+          insumo_id: string
+          lote_id?: string | null
+          motivo?: string | null
+          origem_id: string
+          quantidade: number
+          reposta?: boolean
+          reposta_em?: string | null
+          reposta_por?: string | null
+          tenant_id?: string
+        }
+        Update: {
+          created_at?: string
+          criado_por?: string | null
+          destino_id?: string
+          id?: string
+          insumo_id?: string
+          lote_id?: string | null
+          motivo?: string | null
+          origem_id?: string
+          quantidade?: number
+          reposta?: boolean
+          reposta_em?: string | null
+          reposta_por?: string | null
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transferencia_insumo_destino_id_fkey"
+            columns: ["destino_id"]
+            isOneToOne: false
+            referencedRelation: "empreendimento"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transferencia_insumo_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "insumo"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transferencia_insumo_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "ponto_de_pedido_view"
+            referencedColumns: ["insumo_id"]
+          },
+          {
+            foreignKeyName: "transferencia_insumo_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "saldo_insumo"
+            referencedColumns: ["insumo_id"]
+          },
+          {
+            foreignKeyName: "transferencia_insumo_lote_id_fkey"
+            columns: ["lote_id"]
+            isOneToOne: false
+            referencedRelation: "lote"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transferencia_insumo_lote_id_fkey"
+            columns: ["lote_id"]
+            isOneToOne: false
+            referencedRelation: "lote_resumo_view"
+            referencedColumns: ["lote_id"]
+          },
+          {
+            foreignKeyName: "transferencia_insumo_origem_id_fkey"
+            columns: ["origem_id"]
+            isOneToOne: false
+            referencedRelation: "empreendimento"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transferencia_insumo_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenant"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       unidade_kit: {
         Row: {
           created_at: string
@@ -1255,6 +1377,81 @@ export type Database = {
         }
         Relationships: []
       }
+      reposicao_pendente_view: {
+        Row: {
+          created_at: string | null
+          destino_id: string | null
+          destino_nome: string | null
+          id: string | null
+          insumo_id: string | null
+          insumo_nome: string | null
+          lote_id: string | null
+          motivo: string | null
+          origem_id: string | null
+          origem_nome: string | null
+          quantidade: number | null
+          tenant_id?: string | null
+          unidade: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transferencia_insumo_destino_id_fkey"
+            columns: ["destino_id"]
+            isOneToOne: false
+            referencedRelation: "empreendimento"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transferencia_insumo_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "insumo"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transferencia_insumo_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "ponto_de_pedido_view"
+            referencedColumns: ["insumo_id"]
+          },
+          {
+            foreignKeyName: "transferencia_insumo_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "saldo_insumo"
+            referencedColumns: ["insumo_id"]
+          },
+          {
+            foreignKeyName: "transferencia_insumo_lote_id_fkey"
+            columns: ["lote_id"]
+            isOneToOne: false
+            referencedRelation: "lote"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transferencia_insumo_lote_id_fkey"
+            columns: ["lote_id"]
+            isOneToOne: false
+            referencedRelation: "lote_resumo_view"
+            referencedColumns: ["lote_id"]
+          },
+          {
+            foreignKeyName: "transferencia_insumo_origem_id_fkey"
+            columns: ["origem_id"]
+            isOneToOne: false
+            referencedRelation: "empreendimento"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transferencia_insumo_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenant"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       saida_resumo_view: {
         Row: {
           created_at: string | null
@@ -1293,6 +1490,19 @@ export type Database = {
           lead_time_dias: number | null
           nome: string | null
           saldo: number | null
+          unidade: string | null
+        }
+        Relationships: []
+      }
+      saldo_insumo_disponivel: {
+        Row: {
+          disponivel: number | null
+          empreendimento_id: string | null
+          insumo_id: string | null
+          nome: string | null
+          reservado: number | null
+          saldo: number | null
+          tenant_id?: string | null
           unidade: string | null
         }
         Relationships: []
@@ -1460,6 +1670,27 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      bom_disponibilidade: {
+        Args: { p_empreendimento_id: string; p_tipo_kit_id: string }
+        Returns: {
+          disponivel: number
+          insumo_id: string
+          insumo_nome: string
+          limite: number
+          qtd_por_kit: number
+          reservado: number
+          saldo: number
+          unidade: string
+        }[]
+      }
+      calcular_kits_disponiveis: {
+        Args: { p_empreendimento_id: string; p_tipo_kit_id: string }
+        Returns: {
+          insumo_gargalo_id: string
+          insumo_gargalo_nome: string
+          qtd_disponivel: number
+        }[]
       }
       calcular_kits_possiveis:
         | {
@@ -1637,6 +1868,30 @@ export type Database = {
         }
       }
       is_galpao: { Args: never; Returns: boolean }
+      marcar_reposta: {
+        Args: { p_transferencia_id: string }
+        Returns: {
+          created_at: string
+          criado_por: string | null
+          destino_id: string
+          id: string
+          insumo_id: string
+          lote_id: string | null
+          motivo: string | null
+          origem_id: string
+          quantidade: number
+          reposta: boolean
+          reposta_em: string | null
+          reposta_por: string | null
+          tenant_id?: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "transferencia_insumo"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       receber_nota: {
         Args: { p_itens: Json; p_local_id?: string; p_nota_id: string }
         Returns: {
@@ -1745,6 +2000,331 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      transferir_insumo: {
+        Args: {
+          p_destino_id: string
+          p_insumo_id: string
+          p_lote_id?: string
+          p_motivo?: string
+          p_origem_id: string
+          p_quantidade: number
+        }
+        Returns: {
+          created_at: string
+          criado_por: string | null
+          destino_id: string
+          id: string
+          insumo_id: string
+          lote_id: string | null
+          motivo: string | null
+          origem_id: string
+          quantidade: number
+          reposta: boolean
+          reposta_em: string | null
+          reposta_por: string | null
+          tenant_id?: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "transferencia_insumo"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+  public: {
+    Tables: {
+      configuracoes_notificacao: {
+        Row: {
+          id: number
+          notificar_fornecedor: boolean
+          notificar_grupo: boolean
+          updated_at: string
+        }
+        Insert: {
+          id?: number
+          notificar_fornecedor?: boolean
+          notificar_grupo?: boolean
+          updated_at?: string
+        }
+        Update: {
+          id?: number
+          notificar_fornecedor?: boolean
+          notificar_grupo?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      eventos_pedidos_aprovados: {
+        Row: {
+          centro_custo: string | null
+          contato_fornecedor: string | null
+          created_at: string
+          fornecedor_notificado: boolean | null
+          grupo_notificado: boolean
+          id: string
+          id_fornecedor: string | null
+          id_pedido: string | null
+          nome_contato: string | null
+          nome_fornecedor: string | null
+          notificacao_motivo: string | null
+          notificacao_status: string
+          storage_pdf_pedido: string | null
+        }
+        Insert: {
+          centro_custo?: string | null
+          contato_fornecedor?: string | null
+          created_at?: string
+          fornecedor_notificado?: boolean | null
+          grupo_notificado?: boolean
+          id?: string
+          id_fornecedor?: string | null
+          id_pedido?: string | null
+          nome_contato?: string | null
+          nome_fornecedor?: string | null
+          notificacao_motivo?: string | null
+          notificacao_status?: string
+          storage_pdf_pedido?: string | null
+        }
+        Update: {
+          centro_custo?: string | null
+          contato_fornecedor?: string | null
+          created_at?: string
+          fornecedor_notificado?: boolean | null
+          grupo_notificado?: boolean
+          id?: string
+          id_fornecedor?: string | null
+          id_pedido?: string | null
+          nome_contato?: string | null
+          nome_fornecedor?: string | null
+          notificacao_motivo?: string | null
+          notificacao_status?: string
+          storage_pdf_pedido?: string | null
+        }
+        Relationships: []
+      }
+      grupos_notificacao: {
+        Row: {
+          ativo: boolean
+          centros_custo: string[]
+          contato: string
+          created_at: string
+          id: string
+          nome_grupo: string
+        }
+        Insert: {
+          ativo?: boolean
+          centros_custo?: string[]
+          contato: string
+          created_at?: string
+          id?: string
+          nome_grupo: string
+        }
+        Update: {
+          ativo?: boolean
+          centros_custo?: string[]
+          contato?: string
+          created_at?: string
+          id?: string
+          nome_grupo?: string
+        }
+        Relationships: []
+      }
+      logs_eventos_de_solicitacao_sienge: {
+        Row: {
+          created_at: string
+          id: number
+          id_solicitacao: number
+          ultimo_evento_em: string | null
+          ultimo_item_recebido: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          id_solicitacao: number
+          ultimo_evento_em?: string | null
+          ultimo_item_recebido?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          id_solicitacao?: number
+          ultimo_evento_em?: string | null
+          ultimo_item_recebido?: number | null
+        }
+        Relationships: []
+      }
+      logs_pedidos_aprovados: {
+        Row: {
+          created_at: string
+          id: number
+          id_empreendimento: number | null
+          id_pedido: string | null
+          link_drive: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          id_empreendimento?: number | null
+          id_pedido?: string | null
+          link_drive?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          id_empreendimento?: number | null
+          id_pedido?: string | null
+          link_drive?: string | null
+        }
+        Relationships: []
+      }
+      notificacao_queue: {
+        Row: {
+          agendada_para: string
+          created_at: string
+          destinatario: string
+          evento_pedido_id: string
+          id: string
+          mensagem: string
+          nome_destinatario: string | null
+          processada_em: string | null
+          status: string
+          tentativas: number
+          tipo_destinatario: string
+          tracking_token: string
+          ultimo_erro: string | null
+        }
+        Insert: {
+          agendada_para?: string
+          created_at?: string
+          destinatario: string
+          evento_pedido_id: string
+          id?: string
+          mensagem: string
+          nome_destinatario?: string | null
+          processada_em?: string | null
+          status?: string
+          tentativas?: number
+          tipo_destinatario: string
+          tracking_token: string
+          ultimo_erro?: string | null
+        }
+        Update: {
+          agendada_para?: string
+          created_at?: string
+          destinatario?: string
+          evento_pedido_id?: string
+          id?: string
+          mensagem?: string
+          nome_destinatario?: string | null
+          processada_em?: string | null
+          status?: string
+          tentativas?: number
+          tipo_destinatario?: string
+          tracking_token?: string
+          ultimo_erro?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notificacao_queue_evento_pedido_id_fkey"
+            columns: ["evento_pedido_id"]
+            isOneToOne: false
+            referencedRelation: "eventos_pedidos_aprovados"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      whatsapp_message_status: {
+        Row: {
+          button_clicked: boolean
+          button_clicked_at: string | null
+          click_count: number
+          created_at: string
+          destinatario: string
+          evento_pedido_id: string | null
+          first_clicked_at: string | null
+          id: string
+          last_click_ip: string | null
+          last_click_user_agent: string | null
+          last_clicked_at: string | null
+          message_id: string
+          nome_destinatario: string | null
+          payload_raw: Json | null
+          status: string
+          status_timestamp: string
+          tipo_destinatario: string
+          tracking_token: string | null
+          updated_at: string
+          zaap_id: string | null
+        }
+        Insert: {
+          button_clicked?: boolean
+          button_clicked_at?: string | null
+          click_count?: number
+          created_at?: string
+          destinatario: string
+          evento_pedido_id?: string | null
+          first_clicked_at?: string | null
+          id?: string
+          last_click_ip?: string | null
+          last_click_user_agent?: string | null
+          last_clicked_at?: string | null
+          message_id: string
+          nome_destinatario?: string | null
+          payload_raw?: Json | null
+          status?: string
+          status_timestamp?: string
+          tipo_destinatario: string
+          tracking_token?: string | null
+          updated_at?: string
+          zaap_id?: string | null
+        }
+        Update: {
+          button_clicked?: boolean
+          button_clicked_at?: string | null
+          click_count?: number
+          created_at?: string
+          destinatario?: string
+          evento_pedido_id?: string | null
+          first_clicked_at?: string | null
+          id?: string
+          last_click_ip?: string | null
+          last_click_user_agent?: string | null
+          last_clicked_at?: string | null
+          message_id?: string
+          nome_destinatario?: string | null
+          payload_raw?: Json | null
+          status?: string
+          status_timestamp?: string
+          tipo_destinatario?: string
+          tracking_token?: string | null
+          updated_at?: string
+          zaap_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_message_status_evento_pedido_id_fkey"
+            columns: ["evento_pedido_id"]
+            isOneToOne: false
+            referencedRelation: "eventos_pedidos_aprovados"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
     }
     Enums: {
       [_ in never]: never
@@ -1874,6 +2454,9 @@ export type CompositeTypes<
 
 export const Constants = {
   estoque: {
+    Enums: {},
+  },
+  public: {
     Enums: {},
   },
 } as const

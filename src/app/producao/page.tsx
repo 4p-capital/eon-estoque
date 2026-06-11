@@ -4,18 +4,23 @@ import { QrCode } from "lucide-react";
 import { PageHeader } from "@/app/_components/page-header";
 import { NovoLoteDrawer } from "@/app/producao/_components/novo-lote-drawer";
 import { LoteCard } from "@/app/producao/_components/lote-card";
+import { ReposicaoPendenteAlert } from "@/app/producao/_components/reposicao-pendente-alert";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
-import type { LoteResumo } from "@/lib/types";
+import type { LoteResumo, ReposicaoPendente } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
 export default async function ProducaoPage() {
   const supabase = await createClient();
-  const [kitsRes, empsRes, lotesRes] = await Promise.all([
+  const [kitsRes, empsRes, lotesRes, reposicoesRes] = await Promise.all([
     supabase.from("tipo_kit").select("id, nome").order("nome"),
     supabase.from("empreendimento").select("id, nome").order("nome"),
     supabase.from("lote_resumo_view").select("*").order("created_at", { ascending: false }),
+    supabase
+      .from("reposicao_pendente_view")
+      .select("*")
+      .order("created_at", { ascending: true }),
   ]);
 
   const kits = (kitsRes.data ?? []).map((k) => ({ id: k.id, nome: k.nome }));
@@ -23,6 +28,7 @@ export default async function ProducaoPage() {
   const lotes = (lotesRes.data ?? []) as LoteResumo[];
   const abertos = lotes.filter((l) => l.status === "aberto");
   const historico = lotes.filter((l) => l.status !== "aberto").slice(0, 20);
+  const reposicoes = (reposicoesRes.data ?? []) as ReposicaoPendente[];
 
   return (
     <main className="mx-auto max-w-4xl px-6 py-10">
@@ -44,6 +50,8 @@ export default async function ProducaoPage() {
           </div>
         }
       />
+
+      <ReposicaoPendenteAlert pendencias={reposicoes} />
 
       {kits.length === 0 && (
         <p className="rounded-xl bg-card p-6 text-center text-sm text-muted-foreground shadow-sm">
