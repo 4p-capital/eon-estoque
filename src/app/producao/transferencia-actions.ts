@@ -17,16 +17,73 @@ function revalidarTransferencia(loteId?: string | null) {
 // Inclui as de disponível ≤ 0 (saldo todo reservado por etiquetas pendentes):
 // a UI explica o bloqueio em vez de sumir com uma SPE que mostra saldo em
 // /insumos — sumir lia-se como "a regra de mesmo cliente barrou".
+export type ReservaPendente = {
+  tipoKitNome: string;
+  statusLote: string;
+  qtdPendentes: number;
+  consumo: number;
+};
 export type OrigemTransferencia = {
   empreendimentoId: string;
   empreendimentoNome: string;
   saldo: number;
   reservado: number;
   disponivel: number;
+  reservas: ReservaPendente[];
 };
 export type ListarOrigensResult =
   | { status: "ok"; origens: OrigemTransferencia[]; tenantNome: string | null }
   | { status: "error"; message: string };
+
+type ServerClient = Awaited<ReturnType<typeof createClient>>;
+
+// Detalha QUEM segura a reserva de cada SPE: lotes com etiquetas pendentes
+// cujo BOM consome o insumo. Alimenta a explicação do drawer ("3 etiquetas de
+// KIT TESTE seguram 6") em vez de um "reservado" opaco.
+async function buscarReservasPendentes(
+  supabase: ServerClient,
+  insumoId: string,
+  empreendimentoIds: string[],
+): Promise<Map<string, ReservaPendente[]>> {
+  const reservas = new Map<string, ReservaPendente[]>();
+  if (empreendimentoIds.length === 0) return reservas;
+
+  const { data: lotes, error: lotesError } = await supabase
+    .from("lote_resumo_view")
+    .select("tipo_kit_id, tipo_kit_nome, empreendimento_id, status, qtd_pendentes")
+    .in("empreendimento_id", empreendimentoIds)
+    .gt("qtd_pendentes", 0);
+  if (lotesError || !lotes?.length) {
+    if (lotesError) console.error("[transferencia] buscarReservasPendentes lotes", lotesError);
+    return reservas;
+  }
+
+  const tipoKitIds = [...new Set(lotes.map((l) => l.tipo_kit_id).filter(Boolean))] as string[];
+  const { data: comps, error: compsError } = await supabase
+    .from("composicao")
+    .select("tipo_kit_id, quantidade")
+    .eq("insumo_id", insumoId)
+    .in("tipo_kit_id", tipoKitIds);
+  if (compsError) {
+    console.error("[transferencia] buscarReservasPendentes composicao", compsError);
+    return reservas;
+  }
+  const qtdPorKit = new Map((comps ?? []).map((c) => [c.tipo_kit_id, Number(c.quantidade)]));
+
+  for (const l of lotes) {
+    const porKit = qtdPorKit.get(l.tipo_kit_id ?? "");
+    if (!porKit || !l.empreendimento_id) continue;
+    const lista = reservas.get(l.empreendimento_id) ?? [];
+    lista.push({
+      tipoKitNome: l.tipo_kit_nome ?? "kit",
+      statusLote: l.status ?? "aberto",
+      qtdPendentes: Number(l.qtd_pendentes ?? 0),
+      consumo: Number(l.qtd_pendentes ?? 0) * porKit,
+    });
+    reservas.set(l.empreendimento_id, lista);
+  }
+  return reservas;
+}
 
 export async function listarOrigensDisponiveis(
   insumoId: string,
@@ -70,7 +127,7 @@ export async function listarOrigensDisponiveis(
   }
 
   const nomePorId = new Map((empsRes.data ?? []).map((e) => [e.id, e.nome]));
-  const origens = (saldosRes.data ?? [])
+  const parciais = (saldosRes.data ?? [])
     .filter((s) => s.empreendimento_id != null)
     .map((s) => ({
       empreendimentoId: s.empreendimento_id as string,
@@ -80,6 +137,16 @@ export async function listarOrigensDisponiveis(
       disponivel: Number(s.disponivel ?? 0),
     }))
     .sort((a, b) => b.disponivel - a.disponivel);
+
+  const reservasPorSpe = await buscarReservasPendentes(
+    supabase,
+    insumoId,
+    parciais.filter((o) => o.reservado > 0).map((o) => o.empreendimentoId),
+  );
+  const origens = parciais.map((o) => ({
+    ...o,
+    reservas: reservasPorSpe.get(o.empreendimentoId) ?? [],
+  }));
 
   return { status: "ok", origens, tenantNome: tenant?.nome ?? null };
 }

@@ -134,47 +134,37 @@ function TransferirForm({ destino, loteId, insumo, sugestaoQtd, onDone }: FormPr
           </p>
         ) : (
           <div className="space-y-2">
-            {origens.map((o) => {
-              const bloqueada = o.disponivel <= 0;
-              const selecionada = o.empreendimentoId === origemId;
-              const cobre = o.disponivel >= sugestaoQtd;
-              return (
+            {origens.map((o) =>
+              o.disponivel > 0 ? (
                 <button
                   key={o.empreendimentoId}
                   type="button"
-                  disabled={bloqueada}
                   onClick={() => setOrigemId(o.empreendimentoId)}
-                  aria-pressed={selecionada}
-                  className={`flex w-full items-center justify-between gap-3 rounded-lg border p-3 text-left transition-colors ${
-                    bloqueada
-                      ? "cursor-not-allowed border-border opacity-70"
-                      : selecionada
-                        ? "border-primary bg-primary/5"
-                        : "border-border hover:border-primary/40"
+                  aria-pressed={o.empreendimentoId === origemId}
+                  className={`flex w-full flex-wrap items-center justify-between gap-x-3 gap-y-1 rounded-lg border p-3 text-left transition-colors ${
+                    o.empreendimentoId === origemId
+                      ? "border-primary bg-primary/5"
+                      : "border-border hover:border-primary/40"
                   }`}
                 >
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-medium text-foreground">
                       {o.empreendimentoNome}
                     </span>
-                    {bloqueada && (
-                      <span className="block truncate text-xs text-muted-foreground">
-                        {o.saldo} {insumo.unidade} em saldo · {o.reservado} reservado por
+                    {o.reservado > 0 && (
+                      <span className="block text-xs text-muted-foreground">
+                        {o.saldo} {insumo.unidade} em estoque, {o.reservado} já reservado para
                         etiquetas pendentes
                       </span>
                     )}
                   </span>
-                  <Tag color={bloqueada ? "slate" : cobre ? "green" : "amber"}>
-                    {Math.max(0, o.disponivel)} {insumo.unidade} disponível
+                  <Tag color={o.disponivel >= sugestaoQtd ? "green" : "amber"}>
+                    {o.disponivel} {insumo.unidade} disponível
                   </Tag>
                 </button>
-              );
-            })}
-            {origens.some((o) => o.disponivel <= 0) && (
-              <p className="text-xs text-muted-foreground">
-                Etiquetas pendentes (impressas e ainda não bipadas) reservam o estoque da própria
-                SPE. Bipe as etiquetas ou cancele o lote aberto para liberar o disponível.
-              </p>
+              ) : (
+                <OrigemBloqueada key={o.empreendimentoId} origem={o} unidade={insumo.unidade} />
+              ),
             )}
           </div>
         )}
@@ -223,5 +213,59 @@ function TransferirForm({ destino, loteId, insumo, sugestaoQtd, onDone }: FormPr
         {pendente ? "Transferindo…" : "Transferir e registrar pendência"}
       </Button>
     </form>
+  );
+}
+
+const STATUS_LOTE_LABEL: Record<string, string> = {
+  aberto: "lote aberto",
+  finalizado: "lote finalizado",
+};
+
+// SPE com saldo mas sem disponível: explica quem segura a reserva (etiquetas
+// pendentes por lote/kit) e o que fazer para liberar — em vez de só sumir ou
+// mostrar um "0 disponível" sem contexto.
+function OrigemBloqueada({
+  origem,
+  unidade,
+}: {
+  origem: OrigemTransferencia;
+  unidade: string;
+}) {
+  const reservaTotal = origem.reservado >= origem.saldo;
+  const temLoteAberto = origem.reservas.some((r) => r.statusLote === "aberto");
+  return (
+    <div className="rounded-lg border border-dashed border-border bg-muted/40 p-3">
+      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+        <span className="text-sm font-medium text-foreground">{origem.empreendimentoNome}</span>
+        <Tag color="slate">sem disponível</Tag>
+      </div>
+      <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+        Tem{" "}
+        <span className="font-medium text-foreground">
+          {origem.saldo} {unidade}
+        </span>{" "}
+        em estoque, mas {reservaTotal ? "todo o saldo" : `${origem.reservado} ${unidade}`} já está
+        comprometido com etiquetas impressas que ainda não foram bipadas:
+      </p>
+      {origem.reservas.length > 0 && (
+        <ul className="mt-1.5 space-y-1 text-xs leading-relaxed text-muted-foreground">
+          {origem.reservas.map((r, i) => (
+            <li key={i} className="flex gap-1.5">
+              <span aria-hidden>•</span>
+              <span>
+                {r.qtdPendentes} etiqueta{r.qtdPendentes === 1 ? "" : "s"} de{" "}
+                <span className="font-medium text-foreground">{r.tipoKitNome}</span> (
+                {STATUS_LOTE_LABEL[r.statusLote] ?? r.statusLote}) — segura {r.consumo} {unidade}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+      <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+        Para liberar: bipe essas etiquetas na entrada
+        {temLoteAberto ? " ou cancele o lote aberto" : ""}. Sem isso, transferir furaria a
+        produção já prometida desta SPE.
+      </p>
+    </div>
   );
 }
