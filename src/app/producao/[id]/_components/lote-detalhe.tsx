@@ -7,6 +7,7 @@ import { toast } from "sonner";
 
 import { Tag, type TagColor } from "@/components/ui/tag";
 import { ConfirmDialog } from "@/app/_components/confirm-dialog";
+import { CancelarEtiquetasDialog } from "@/app/producao/[id]/_components/cancelar-etiquetas-dialog";
 import { GerarEtiquetasCard } from "@/app/producao/[id]/_components/gerar-etiquetas-card";
 import { LoteStats } from "@/app/producao/_components/lote-stats";
 import { cancelarLote, finalizarLote } from "@/app/producao/actions";
@@ -27,15 +28,18 @@ type Props = {
   unidades: UnidadeRow[];
   rotulo: string;
   disponibilidade: BomDisponibilidade[];
+  isGerente: boolean; // galpao_admin: cancelamentos são dele; o banco revalida
 };
 
-export function LoteDetalhe({ lote, unidades, rotulo, disponibilidade }: Props) {
+export function LoteDetalhe({ lote, unidades, rotulo, disponibilidade, isGerente }: Props) {
   const router = useRouter();
   const [pendente, startTransition] = useTransition();
 
   const aberto = lote.status === "aberto";
+  const finalizado = lote.status === "finalizado";
   const gap = Number(lote.gap ?? 0);
   const pendentes = useMemo(() => unidades.filter((u) => u.status === "pendente"), [unidades]);
+  const mostrarCancelarEtiquetas = isGerente && (aberto || finalizado) && pendentes.length > 0;
 
   function finalizar() {
     startTransition(async () => {
@@ -120,39 +124,50 @@ export function LoteDetalhe({ lote, unidades, rotulo, disponibilidade }: Props) 
         )}
       </section>
 
-      {aberto && (
+      {(aberto || mostrarCancelarEtiquetas) && (
         <div className="flex flex-wrap gap-2">
-          <ConfirmDialog
-            title="Finalizar lote?"
-            description={
-              gap > 0
-                ? `Há ${gap} etiqueta(s) impressa(s) que ainda NÃO foram bipadas. O lote será finalizado mesmo assim, registrando essa divergência.`
-                : "O lote será finalizado e não aceitará novas etiquetas."
-            }
-            confirmLabel="Finalizar"
-            triggerAriaLabel="Finalizar lote"
-            busy={pendente}
-            onConfirm={finalizar}
-            triggerClassName="inline-flex h-9 items-center gap-2 rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
-          >
-            <CheckCircle2 className="size-4" aria-hidden />
-            Finalizar lote
-          </ConfirmDialog>
+          {aberto && (
+            <ConfirmDialog
+              title="Finalizar lote?"
+              description={
+                gap > 0
+                  ? `Há ${gap} etiqueta(s) impressa(s) que ainda NÃO foram bipadas. Elas continuam reservando insumo até serem bipadas — ou canceladas pelo gerente, se foi sobra/erro de impressão. O lote será finalizado registrando essa divergência.`
+                  : "O lote será finalizado e não aceitará novas etiquetas."
+              }
+              confirmLabel="Finalizar"
+              triggerAriaLabel="Finalizar lote"
+              busy={pendente}
+              onConfirm={finalizar}
+              triggerClassName="inline-flex h-9 items-center gap-2 rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+            >
+              <CheckCircle2 className="size-4" aria-hidden />
+              Finalizar lote
+            </ConfirmDialog>
+          )}
 
-          <ConfirmDialog
-            title="Cancelar lote?"
-            description="As etiquetas pendentes (não bipadas) serão canceladas. Unidades já bipadas não são afetadas."
-            confirmLabel="Cancelar lote"
-            cancelLabel="Voltar"
-            destructive
-            triggerAriaLabel="Cancelar lote"
-            busy={pendente}
-            onConfirm={cancelar}
-            triggerClassName="inline-flex h-9 items-center gap-2 rounded-md border border-border px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive disabled:opacity-50"
-          >
-            <Ban className="size-4" aria-hidden />
-            Cancelar lote
-          </ConfirmDialog>
+          {mostrarCancelarEtiquetas && (
+            <CancelarEtiquetasDialog
+              loteId={lote.lote_id as string}
+              pendentes={pendentes.length}
+            />
+          )}
+
+          {aberto && isGerente && (
+            <ConfirmDialog
+              title="Cancelar lote?"
+              description="As etiquetas pendentes (não bipadas) serão canceladas. Unidades já bipadas não são afetadas."
+              confirmLabel="Cancelar lote"
+              cancelLabel="Voltar"
+              destructive
+              triggerAriaLabel="Cancelar lote"
+              busy={pendente}
+              onConfirm={cancelar}
+              triggerClassName="inline-flex h-9 items-center gap-2 rounded-md border border-border px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive disabled:opacity-50"
+            >
+              <Ban className="size-4" aria-hidden />
+              Cancelar lote
+            </ConfirmDialog>
+          )}
         </div>
       )}
     </div>
