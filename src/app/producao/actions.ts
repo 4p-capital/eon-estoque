@@ -105,6 +105,38 @@ export async function cancelarLote(loteId: string): Promise<ActionResult> {
   return { status: "ok" };
 }
 
+// ── Cancelar etiquetas pendentes (sobra/erro de impressão; só gerente) ────────
+// O enforcement real é na RPC (papel galpao_admin via JWT); aqui só validação
+// de input. Cancela as N pendentes mais recentes e libera a reserva de BOM.
+const cancelarEtiquetasSchema = z.object({
+  loteId: z.string().uuid(),
+  quantidade: z.coerce.number().int().positive("Quantidade deve ser maior que zero."),
+  motivo: z.string().trim().min(1, "Informe o motivo do cancelamento.").max(500),
+});
+export type CancelarEtiquetasInput = z.input<typeof cancelarEtiquetasSchema>;
+
+export async function cancelarEtiquetas(input: CancelarEtiquetasInput): Promise<ActionResult> {
+  const parsed = cancelarEtiquetasSchema.safeParse(input);
+  if (!parsed.success) {
+    return { status: "error", message: parsed.error.issues[0]?.message ?? "Dados inválidos." };
+  }
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("cancelar_etiquetas_pendentes", {
+    p_lote_id: parsed.data.loteId,
+    p_quantidade: parsed.data.quantidade,
+    p_motivo: parsed.data.motivo,
+  });
+  if (error) {
+    console.error("[producao] cancelarEtiquetas", error);
+    return {
+      status: "error",
+      message: error.message || "Não foi possível cancelar as etiquetas.",
+    };
+  }
+  revalidarProducao(parsed.data.loteId);
+  return { status: "ok" };
+}
+
 // ── Bipe de entrada no depósito (pendente → em_estoque, baixa BOM de 1 kit) ───
 const entradaSchema = z.object({ qrCode: z.string().trim().min(1, "Bipe um QR.") });
 export type RegistrarEntradaResult =

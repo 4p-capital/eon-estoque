@@ -1143,6 +1143,9 @@ export type Database = {
       }
       unidade_kit: {
         Row: {
+          cancelada_em: string | null
+          cancelada_por: string | null
+          cancelamento_motivo: string | null
           created_at: string
           entrada_em: string | null
           entrada_por: string | null
@@ -1157,6 +1160,9 @@ export type Database = {
           tenant_id?: string
         }
         Insert: {
+          cancelada_em?: string | null
+          cancelada_por?: string | null
+          cancelamento_motivo?: string | null
           created_at?: string
           entrada_em?: string | null
           entrada_por?: string | null
@@ -1171,6 +1177,9 @@ export type Database = {
           tenant_id?: string
         }
         Update: {
+          cancelada_em?: string | null
+          cancelada_por?: string | null
+          cancelamento_motivo?: string | null
           created_at?: string
           entrada_em?: string | null
           entrada_por?: string | null
@@ -1709,6 +1718,10 @@ export type Database = {
               qtd_possivel: number
             }[]
           }
+      cancelar_etiquetas_pendentes: {
+        Args: { p_lote_id: string; p_motivo: string; p_quantidade: number }
+        Returns: number
+      }
       cancelar_lote: {
         Args: { p_lote_id: string }
         Returns: {

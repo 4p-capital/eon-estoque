@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { PageHeader } from "@/app/_components/page-header";
 import { LoteDetalhe, type UnidadeRow } from "@/app/producao/[id]/_components/lote-detalhe";
 import { Button } from "@/components/ui/button";
+import { getSessao } from "@/lib/auth/sessao";
 import { createClient } from "@/lib/supabase/server";
 import type { BomDisponibilidade, LoteResumo } from "@/lib/types";
 
@@ -13,6 +14,7 @@ export const dynamic = "force-dynamic";
 export default async function LotePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();
+  const sessao = await getSessao();
 
   const [loteRes, unidadesRes] = await Promise.all([
     supabase.from("lote_resumo_view").select("*").eq("lote_id", id).maybeSingle(),
@@ -61,6 +63,7 @@ export default async function LotePage({ params }: { params: Promise<{ id: strin
         unidades={unidades}
         rotulo={rotulo}
         disponibilidade={disponibilidade}
+        isGerente={sessao?.papel === "galpao_admin"}
       />
     </main>
   );
