@@ -13,14 +13,19 @@ function revalidarTransferencia(loteId?: string | null) {
   revalidatePath("/dashboard");
 }
 
-// ── Origens candidatas: SPEs do MESMO tenant com disponível > 0 do insumo ────
-export type OrigemDisponivel = {
+// ── Origens candidatas: SPEs do MESMO tenant com saldo do insumo ─────────────
+// Inclui as de disponível ≤ 0 (saldo todo reservado por etiquetas pendentes):
+// a UI explica o bloqueio em vez de sumir com uma SPE que mostra saldo em
+// /insumos — sumir lia-se como "a regra de mesmo cliente barrou".
+export type OrigemTransferencia = {
   empreendimentoId: string;
   empreendimentoNome: string;
+  saldo: number;
+  reservado: number;
   disponivel: number;
 };
 export type ListarOrigensResult =
-  | { status: "ok"; origens: OrigemDisponivel[]; tenantNome: string | null }
+  | { status: "ok"; origens: OrigemTransferencia[]; tenantNome: string | null }
   | { status: "error"; message: string };
 
 export async function listarOrigensDisponiveis(
@@ -49,11 +54,11 @@ export async function listarOrigensDisponiveis(
   const [saldosRes, empsRes] = await Promise.all([
     supabase
       .from("saldo_insumo_disponivel")
-      .select("empreendimento_id, disponivel")
+      .select("empreendimento_id, saldo, reservado, disponivel")
       .eq("insumo_id", insumoId)
       .eq("tenant_id", tenantId)
       .neq("empreendimento_id", destinoId)
-      .gt("disponivel", 0),
+      .gt("saldo", 0),
     supabase
       .from("empreendimento")
       .select("id, nome")
@@ -66,11 +71,13 @@ export async function listarOrigensDisponiveis(
 
   const nomePorId = new Map((empsRes.data ?? []).map((e) => [e.id, e.nome]));
   const origens = (saldosRes.data ?? [])
-    .filter((s) => s.empreendimento_id && s.disponivel != null)
+    .filter((s) => s.empreendimento_id != null)
     .map((s) => ({
       empreendimentoId: s.empreendimento_id as string,
       empreendimentoNome: nomePorId.get(s.empreendimento_id as string) ?? "SPE",
-      disponivel: Number(s.disponivel),
+      saldo: Number(s.saldo ?? 0),
+      reservado: Number(s.reservado ?? 0),
+      disponivel: Number(s.disponivel ?? 0),
     }))
     .sort((a, b) => b.disponivel - a.disponivel);
 

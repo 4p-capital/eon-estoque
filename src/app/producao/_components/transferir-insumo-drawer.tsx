@@ -18,7 +18,7 @@ import {
 import {
   listarOrigensDisponiveis,
   transferirInsumo,
-  type OrigemDisponivel,
+  type OrigemTransferencia,
 } from "@/app/producao/transferencia-actions";
 
 type DrawerProps = {
@@ -56,7 +56,7 @@ type FormProps = Omit<DrawerProps, "open" | "onOpenChange"> & { onDone: () => vo
 
 function TransferirForm({ destino, loteId, insumo, sugestaoQtd, onDone }: FormProps) {
   const router = useRouter();
-  const [origens, setOrigens] = useState<OrigemDisponivel[] | null>(null);
+  const [origens, setOrigens] = useState<OrigemTransferencia[] | null>(null);
   const [tenantNome, setTenantNome] = useState<string | null>(null);
   const [origemId, setOrigemId] = useState("");
   const [quantidade, setQuantidade] = useState(String(sugestaoQtd));
@@ -128,37 +128,54 @@ function TransferirForm({ destino, loteId, insumo, sugestaoQtd, onDone }: FormPr
           <p className="text-sm text-muted-foreground">Buscando estoque das outras SPEs…</p>
         ) : origens.length === 0 ? (
           <p className="rounded-md border border-dashed p-3 text-sm text-muted-foreground">
-            Nenhuma SPE{tenantNome ? ` de ${tenantNome}` : ""} tem este insumo disponível — a
-            transferência só é permitida entre SPEs do mesmo cliente, e o disponível desconta as
-            etiquetas pendentes. Registre uma entrada de NF ou ajuste de inventário na SPE que vai
-            ceder.
+            Nenhuma outra SPE{tenantNome ? ` de ${tenantNome}` : ""} tem saldo deste insumo — a
+            transferência só é permitida entre SPEs do mesmo cliente. Registre uma entrada de NF
+            ou um ajuste de inventário na SPE que vai ceder.
           </p>
         ) : (
           <div className="space-y-2">
             {origens.map((o) => {
+              const bloqueada = o.disponivel <= 0;
               const selecionada = o.empreendimentoId === origemId;
               const cobre = o.disponivel >= sugestaoQtd;
               return (
                 <button
                   key={o.empreendimentoId}
                   type="button"
+                  disabled={bloqueada}
                   onClick={() => setOrigemId(o.empreendimentoId)}
                   aria-pressed={selecionada}
                   className={`flex w-full items-center justify-between gap-3 rounded-lg border p-3 text-left transition-colors ${
-                    selecionada
-                      ? "border-primary bg-primary/5"
-                      : "border-border hover:border-primary/40"
+                    bloqueada
+                      ? "cursor-not-allowed border-border opacity-70"
+                      : selecionada
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-primary/40"
                   }`}
                 >
-                  <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
-                    {o.empreendimentoNome}
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-medium text-foreground">
+                      {o.empreendimentoNome}
+                    </span>
+                    {bloqueada && (
+                      <span className="block truncate text-xs text-muted-foreground">
+                        {o.saldo} {insumo.unidade} em saldo · {o.reservado} reservado por
+                        etiquetas pendentes
+                      </span>
+                    )}
                   </span>
-                  <Tag color={cobre ? "green" : "amber"}>
-                    {o.disponivel} {insumo.unidade} disponível
+                  <Tag color={bloqueada ? "slate" : cobre ? "green" : "amber"}>
+                    {Math.max(0, o.disponivel)} {insumo.unidade} disponível
                   </Tag>
                 </button>
               );
             })}
+            {origens.some((o) => o.disponivel <= 0) && (
+              <p className="text-xs text-muted-foreground">
+                Etiquetas pendentes (impressas e ainda não bipadas) reservam o estoque da própria
+                SPE. Bipe as etiquetas ou cancele o lote aberto para liberar o disponível.
+              </p>
+            )}
           </div>
         )}
       </fieldset>

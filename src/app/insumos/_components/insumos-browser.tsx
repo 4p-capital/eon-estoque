@@ -7,14 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { inputCls } from "@/app/_components/form-styles";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { InsumosTabela, type LinhaInsumo } from "./insumos-tabela";
 
 export type Empresa = {
   tenantId: string;
@@ -22,28 +15,20 @@ export type Empresa = {
   spes: { empreendimentoId: string; nome: string; qtdInsumos: number }[];
 };
 
-type Linha = {
-  insumoId: string;
-  nome: string;
-  unidade: string;
-  saldo: number;
-  estoqueMin: number | null;
-};
-
 const POR_PAGINA = 200;
 const GERAL = "geral";
-const nf = new Intl.NumberFormat("pt-BR");
 
 // Estoque de insumos em 2 níveis: empresa (tenant) -> SPE (empreendimento).
 // "Geral da empresa" soma as SPEs (saldo_insumo_tenant); cada SPE usa
-// saldo_insumo_empreendimento. Galpão alterna empresas; cliente vê só a sua.
+// saldo_insumo_disponivel (saldo + reservado por etiquetas pendentes).
+// Galpão alterna empresas; cliente vê só a sua.
 export function InsumosBrowser({ empresas }: { empresas: Empresa[] }) {
   const [empresaId, setEmpresaId] = useState(empresas[0]?.tenantId ?? "");
   const [modo, setModo] = useState<string>(GERAL); // GERAL ou um empreendimentoId
   const [busca, setBusca] = useState("");
   const [termo, setTermo] = useState("");
   const [page, setPage] = useState(0);
-  const [rows, setRows] = useState<Linha[]>([]);
+  const [rows, setRows] = useState<LinhaInsumo[]>([]);
   const [total, setTotal] = useState(0);
   const [carregando, setCarregando] = useState(true);
 
@@ -85,8 +70,8 @@ export function InsumosBrowser({ empresas }: { empresas: Empresa[] }) {
             .select("insumo_id, nome, unidade, saldo, estoque_min", { count: "exact" })
             .eq("tenant_id", empresa.tenantId)
         : supabase
-            .from("saldo_insumo_empreendimento")
-            .select("insumo_id, nome, unidade, saldo", { count: "exact" })
+            .from("saldo_insumo_disponivel")
+            .select("insumo_id, nome, unidade, saldo, reservado, disponivel", { count: "exact" })
             .eq("empreendimento_id", modo);
 
       let q = base.gt("saldo", 0); // estoque mostra só o que tem saldo; catálogo fica em Cadastro.
@@ -109,6 +94,8 @@ export function InsumosBrowser({ empresas }: { empresas: Empresa[] }) {
             unidade: d.unidade ?? "",
             saldo: Number(d.saldo ?? 0),
             estoqueMin: geral && "estoque_min" in d ? Number(d.estoque_min ?? 0) : null,
+            reservado: !geral && "reservado" in d ? Number(d.reservado ?? 0) : null,
+            disponivel: !geral && "disponivel" in d ? Number(d.disponivel ?? 0) : null,
           })),
         );
         setTotal(count ?? 0);
@@ -208,38 +195,7 @@ export function InsumosBrowser({ empresas }: { empresas: Empresa[] }) {
         </p>
       ) : (
         <>
-          <div className="overflow-hidden rounded-lg bg-card shadow-sm">
-            <Table>
-              <TableHeader className="bg-muted/50 text-xs uppercase text-muted-foreground">
-                <TableRow>
-                  <TableHead className="px-3 py-2">Insumo</TableHead>
-                  <TableHead className="px-3 py-2 text-right">Saldo</TableHead>
-                  {geral && <TableHead className="px-3 py-2 text-right">Mínimo</TableHead>}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {rows.map((r) => {
-                  const baixo = r.estoqueMin !== null && r.estoqueMin > 0 && r.saldo <= r.estoqueMin;
-                  return (
-                    <TableRow key={r.insumoId} className="border-t border-border">
-                      <TableCell className="px-3 py-2 font-medium text-foreground">{r.nome}</TableCell>
-                      <TableCell className="px-3 py-2 text-right tabular-nums text-foreground">
-                        <span className={baixo ? "font-semibold text-destructive" : undefined}>
-                          {nf.format(r.saldo)}
-                        </span>{" "}
-                        <span className="text-muted-foreground">{r.unidade}</span>
-                      </TableCell>
-                      {geral && (
-                        <TableCell className="px-3 py-2 text-right tabular-nums text-muted-foreground">
-                          {nf.format(r.estoqueMin ?? 0)}
-                        </TableCell>
-                      )}
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </div>
+          <InsumosTabela rows={rows} geral={geral} />
 
           <div className="flex items-center justify-between text-sm text-muted-foreground">
             <span>
