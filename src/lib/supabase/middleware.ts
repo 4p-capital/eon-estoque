@@ -4,8 +4,9 @@ import { NextResponse, type NextRequest } from "next/server";
 import { isPapel, type Papel } from "@/lib/auth/papel";
 
 // Rotas acessíveis sem login. "/k" = consulta pública de kit pelo QR (página
-// externa que o QR aponta). "/auth" = callback do magic link (estabelece a sessão).
-const PUBLIC_ROUTES = ["/login", "/k", "/auth", "/apresentacao"];
+// externa que o QR aponta). "/os" = recebimento público da OS na obra (o token
+// da URL é a credencial). "/auth" = callback do magic link (estabelece a sessão).
+const PUBLIC_ROUTES = ["/login", "/k", "/os", "/auth", "/apresentacao"];
 
 // Gating por papel (M2). O split completo de áreas galpão×tenant é o M4; aqui só
 // protegemos as rotas novas: provisionamento (galpão) e equipe (tenant).

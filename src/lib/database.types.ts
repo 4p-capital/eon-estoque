@@ -877,7 +877,14 @@ export type Database = {
           finalizado_em: string | null
           finalizado_por: string | null
           id: string
+          numero: number
           observacao: string | null
+          recebedor_cpf: string | null
+          recebedor_nome: string | null
+          recebido_em: string | null
+          recebimento_expira_em: string | null
+          recebimento_token: string
+          recusa_motivo: string | null
           status: string
           tenant_id?: string
         }
@@ -889,7 +896,14 @@ export type Database = {
           finalizado_em?: string | null
           finalizado_por?: string | null
           id?: string
+          numero?: number
           observacao?: string | null
+          recebedor_cpf?: string | null
+          recebedor_nome?: string | null
+          recebido_em?: string | null
+          recebimento_expira_em?: string | null
+          recebimento_token?: string
+          recusa_motivo?: string | null
           status?: string
           tenant_id?: string
         }
@@ -901,7 +915,14 @@ export type Database = {
           finalizado_em?: string | null
           finalizado_por?: string | null
           id?: string
+          numero?: number
           observacao?: string | null
+          recebedor_cpf?: string | null
+          recebedor_nome?: string | null
+          recebido_em?: string | null
+          recebimento_expira_em?: string | null
+          recebimento_token?: string
+          recusa_motivo?: string | null
           status?: string
           tenant_id?: string
         }
@@ -918,6 +939,65 @@ export type Database = {
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenant"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saida_bipe_estranho: {
+        Row: {
+          bipado_em: string
+          id: string
+          motivo: string
+          qr_code: string
+          saida_id: string
+          tenant_id?: string
+          unidade_kit_id: string | null
+        }
+        Insert: {
+          bipado_em?: string
+          id?: string
+          motivo: string
+          qr_code: string
+          saida_id: string
+          tenant_id?: string
+          unidade_kit_id?: string | null
+        }
+        Update: {
+          bipado_em?: string
+          id?: string
+          motivo?: string
+          qr_code?: string
+          saida_id?: string
+          tenant_id?: string
+          unidade_kit_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saida_bipe_estranho_saida_id_fkey"
+            columns: ["saida_id"]
+            isOneToOne: false
+            referencedRelation: "saida"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "saida_bipe_estranho_saida_id_fkey"
+            columns: ["saida_id"]
+            isOneToOne: false
+            referencedRelation: "saida_resumo_view"
+            referencedColumns: ["saida_id"]
+          },
+          {
+            foreignKeyName: "saida_bipe_estranho_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenant"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "saida_bipe_estranho_unidade_kit_id_fkey"
+            columns: ["unidade_kit_id"]
+            isOneToOne: false
+            referencedRelation: "unidade_kit"
             referencedColumns: ["id"]
           },
         ]
@@ -1149,6 +1229,7 @@ export type Database = {
           created_at: string
           entrada_em: string | null
           entrada_por: string | null
+          entregue_em: string | null
           id: string
           impressa_em: string | null
           local_id: string | null
@@ -1166,6 +1247,7 @@ export type Database = {
           created_at?: string
           entrada_em?: string | null
           entrada_por?: string | null
+          entregue_em?: string | null
           id?: string
           impressa_em?: string | null
           local_id?: string | null
@@ -1183,6 +1265,7 @@ export type Database = {
           created_at?: string
           entrada_em?: string | null
           entrada_por?: string | null
+          entregue_em?: string | null
           id?: string
           impressa_em?: string | null
           local_id?: string | null
@@ -1468,8 +1551,17 @@ export type Database = {
           empreendimento_id: string | null
           empreendimento_nome: string | null
           finalizado_em: string | null
+          numero: number | null
           observacao: string | null
+          qtd_entregues: number | null
+          qtd_estranhos: number | null
           qtd_kits: number | null
+          recebedor_cpf_mascarado: string | null
+          recebedor_nome: string | null
+          recebido_em: string | null
+          recebimento_expira_em: string | null
+          recebimento_token: string | null
+          recusa_motivo: string | null
           saida_id: string | null
           status: string | null
           tenant_id?: string | null
@@ -1645,7 +1737,14 @@ export type Database = {
           finalizado_em: string | null
           finalizado_por: string | null
           id: string
+          numero: number
           observacao: string | null
+          recebedor_cpf: string | null
+          recebedor_nome: string | null
+          recebido_em: string | null
+          recebimento_expira_em: string | null
+          recebimento_token: string
+          recusa_motivo: string | null
           status: string
           tenant_id?: string
         }
@@ -1657,12 +1756,20 @@ export type Database = {
         }
       }
       aplicar_contagem: { Args: { p_contagem_id: string }; Returns: undefined }
+      bipar_recebimento: {
+        Args: { p_qr_code: string; p_token: string }
+        Returns: Json
+      }
       bipar_saida: {
         Args: { p_qr_code: string; p_saida_id: string }
         Returns: {
+          cancelada_em: string | null
+          cancelada_por: string | null
+          cancelamento_motivo: string | null
           created_at: string
           entrada_em: string | null
           entrada_por: string | null
+          entregue_em: string | null
           id: string
           impressa_em: string | null
           local_id: string | null
@@ -1754,7 +1861,14 @@ export type Database = {
           finalizado_em: string | null
           finalizado_por: string | null
           id: string
+          numero: number
           observacao: string | null
+          recebedor_cpf: string | null
+          recebedor_nome: string | null
+          recebido_em: string | null
+          recebimento_expira_em: string | null
+          recebimento_token: string
+          recusa_motivo: string | null
           status: string
           tenant_id?: string
         }
@@ -1764,6 +1878,16 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      confirmar_recebimento: {
+        Args: {
+          p_acao: string
+          p_cpf: string
+          p_motivo?: string
+          p_nome: string
+          p_token: string
+        }
+        Returns: Json
       }
       consultar_kit_publico: {
         Args: { p_qr_code: string }
@@ -1776,6 +1900,14 @@ export type Database = {
           status: string
           tipo_kit_nome: string
         }[]
+      }
+      consultar_recebimento_publico: {
+        Args: { p_token: string }
+        Returns: Json
+      }
+      cpf_valido: {
+        Args: { p_cpf: string }
+        Returns: boolean
       }
       criar_kit_com_bom: {
         Args: { p_descricao: string; p_itens: Json; p_nome: string }
@@ -1846,7 +1978,14 @@ export type Database = {
           finalizado_em: string | null
           finalizado_por: string | null
           id: string
+          numero: number
           observacao: string | null
+          recebedor_cpf: string | null
+          recebedor_nome: string | null
+          recebido_em: string | null
+          recebimento_expira_em: string | null
+          recebimento_token: string
+          recusa_motivo: string | null
           status: string
           tenant_id?: string
         }
@@ -1860,9 +1999,13 @@ export type Database = {
       gerar_etiquetas: {
         Args: { p_lote_id: string; p_quantidade: number }
         Returns: {
+          cancelada_em: string | null
+          cancelada_por: string | null
+          cancelamento_motivo: string | null
           created_at: string
           entrada_em: string | null
           entrada_por: string | null
+          entregue_em: string | null
           id: string
           impressa_em: string | null
           local_id: string | null
@@ -1901,6 +2044,34 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "transferencia_insumo"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      prorrogar_recebimento: {
+        Args: { p_saida_id: string }
+        Returns: {
+          created_at: string
+          criado_por: string | null
+          destino: string | null
+          empreendimento_id: string
+          finalizado_em: string | null
+          finalizado_por: string | null
+          id: string
+          numero: number
+          observacao: string | null
+          recebedor_cpf: string | null
+          recebedor_nome: string | null
+          recebido_em: string | null
+          recebimento_expira_em: string | null
+          recebimento_token: string
+          recusa_motivo: string | null
+          status: string
+          tenant_id?: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "saida"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -1966,9 +2137,13 @@ export type Database = {
       registrar_entrada_kit: {
         Args: { p_local_id?: string; p_qr_code: string }
         Returns: {
+          cancelada_em: string | null
+          cancelada_por: string | null
+          cancelamento_motivo: string | null
           created_at: string
           entrada_em: string | null
           entrada_por: string | null
+          entregue_em: string | null
           id: string
           impressa_em: string | null
           local_id: string | null
@@ -1993,9 +2168,13 @@ export type Database = {
           p_qr_code: string
         }
         Returns: {
+          cancelada_em: string | null
+          cancelada_por: string | null
+          cancelamento_motivo: string | null
           created_at: string
           entrada_em: string | null
           entrada_por: string | null
+          entregue_em: string | null
           id: string
           impressa_em: string | null
           local_id: string | null
