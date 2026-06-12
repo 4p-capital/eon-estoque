@@ -4,6 +4,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { Printer } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { publicBaseUrl } from "@/lib/site-url";
 import type { UnidadeProduzida } from "@/app/producao/actions";
 
 type Props = {
@@ -16,12 +17,9 @@ type Props = {
 // "Imprimir" usa o navegador — o CSS .print-area (globals.css) isola só as etiquetas
 // e cada uma quebra em sua própria página (print:break-after-page).
 // Futuro: enfileirar na fila_impressao → agente no Pi imprime 1 QR por vez na TSC.
-// Base pública para o QR apontar (configurável p/ produção via env; no dev cai
-// na origem atual). O QR codifica a URL /k/<token> para abrir no celular.
+// O QR codifica a URL /k/<token> para abrir no celular.
 function urlKit(qr: string): string {
-  const base =
-    process.env.NEXT_PUBLIC_SITE_URL ??
-    (typeof window !== "undefined" ? window.location.origin : "");
+  const base = publicBaseUrl();
   return base ? `${base}/k/${qr}` : qr;
 }
 
