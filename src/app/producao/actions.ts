@@ -3,18 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+import { tokenFromScan } from "@/lib/qr";
 import { createClient } from "@/lib/supabase/server";
 
 export type ActionResult = { status: "ok" | "error"; message?: string };
 export type UnidadeProduzida = { numero: number; qr_code: string };
-
-// O QR codifica a URL /k/<token>; o scanner pode "digitar" a URL inteira.
-// Extrai o token (último segmento de /k/) ou usa o valor cru.
-function tokenFromScan(v: string): string {
-  const t = v.trim();
-  const m = t.match(/\/k\/([^/?#\s]+)/);
-  return m ? decodeURIComponent(m[1]) : t;
-}
 
 function revalidarProducao(loteId?: string) {
   revalidatePath("/producao");

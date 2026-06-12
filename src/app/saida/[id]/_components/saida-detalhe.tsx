@@ -8,8 +8,9 @@ import { toast } from "sonner";
 import { inputCls, labelCls } from "@/app/_components/form-styles";
 import { Button } from "@/components/ui/button";
 import { biparSaida, cancelarSaida, finalizarSaida } from "@/app/saida/actions";
+import { statusSaida } from "@/app/saida/_components/status-saida";
 
-type KitBipe = { numero: number; tipo: string; data: string | null };
+type KitBipe = { numero: number; tipo: string; data: string | null; recebidoEm: string | null };
 
 function fmtData(iso: string | null): string {
   if (!iso) return "";
@@ -51,7 +52,7 @@ export function SaidaDetalhe({
       } else {
         toast.success(`Kit #${res.numero} expedido.`);
         setKits((k) => [
-          { numero: res.numero, tipo: res.tipo, data: new Date().toISOString() },
+          { numero: res.numero, tipo: res.tipo, data: new Date().toISOString(), recebidoEm: null },
           ...k,
         ]);
         router.refresh();
@@ -136,8 +137,11 @@ export function SaidaDetalhe({
         </form>
       ) : (
         <div className="rounded-xl bg-card p-5 text-sm text-muted-foreground shadow-sm">
-          Esta remessa está <span className="font-medium text-foreground">{status}</span> e não aceita
-          mais kits.
+          Esta OS está{" "}
+          <span className="font-medium text-foreground">
+            {statusSaida(status).label.toLowerCase()}
+          </span>{" "}
+          e não aceita mais kits.
           {observacao ? <p className="mt-1">{observacao}</p> : null}
         </div>
       )}
@@ -161,7 +165,13 @@ export function SaidaDetalhe({
                 <span className="font-medium text-foreground">Kit #{k.numero}</span>
                 <span className="truncate text-xs text-muted-foreground">{k.tipo}</span>
                 <span className="ml-auto shrink-0 text-xs text-muted-foreground">
-                  {k.data ? `${fmtData(k.data)} · ` : ""}expedido
+                  {k.recebidoEm ? (
+                    <span className="font-medium text-success">
+                      recebido na obra {fmtData(k.recebidoEm)}
+                    </span>
+                  ) : (
+                    <>{k.data ? `${fmtData(k.data)} · ` : ""}expedido</>
+                  )}
                 </span>
               </li>
             ))}

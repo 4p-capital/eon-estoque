@@ -3,14 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+import { tokenFromScan } from "@/lib/qr";
 import { createClient } from "@/lib/supabase/server";
-
-// O QR codifica a URL /k/<token>; o scanner pode "digitar" a URL inteira.
-function tokenFromScan(v: string): string {
-  const t = v.trim();
-  const m = t.match(/\/k\/([^/?#\s]+)/);
-  return m ? decodeURIComponent(m[1]) : t;
-}
 
 function revalidarSaida(saidaId?: string) {
   revalidatePath("/saida");
@@ -102,5 +96,19 @@ export async function cancelarSaida(saidaId: string): Promise<ActionResult> {
     return { status: "error", message: error.message || "Não foi possível cancelar a saída." };
   }
   revalidarSaida(saidaId);
+  return { status: "ok" };
+}
+
+// ── Prorrogar janela de recebimento (+48h; só gerente, banco revalida) ────────
+export async function prorrogarRecebimento(saidaId: string): Promise<ActionResult> {
+  const parsed = z.string().uuid().safeParse(saidaId);
+  if (!parsed.success) return { status: "error", message: "Saída inválida." };
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("prorrogar_recebimento", { p_saida_id: parsed.data });
+  if (error) {
+    console.error("[saida] prorrogarRecebimento", error);
+    return { status: "error", message: error.message || "Não foi possível prorrogar o recebimento." };
+  }
+  revalidarSaida(parsed.data);
   return { status: "ok" };
 }

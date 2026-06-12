@@ -15,7 +15,10 @@ export default async function SaidaPage() {
   const empreendimentos = (empsRes.data ?? []).map((e) => ({ id: e.id, nome: e.nome }));
   const saidas = (saidasRes.data ?? []) as SaidaResumo[];
   const abertas = saidas.filter((s) => s.status === "aberta");
-  const historico = saidas.filter((s) => s.status !== "aberta").slice(0, 20);
+  const emRecebimento = saidas.filter((s) => s.status === "finalizada");
+  const historico = saidas
+    .filter((s) => s.status !== "aberta" && s.status !== "finalizada")
+    .slice(0, 20);
 
   return (
     <main className="mx-auto max-w-4xl px-6 py-10">
@@ -50,6 +53,19 @@ export default async function SaidaPage() {
           </div>
         )}
       </section>
+
+      {emRecebimento.length > 0 && (
+        <section className="mt-10">
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+            Em recebimento na obra
+          </h2>
+          <div className="space-y-2">
+            {emRecebimento.map((s) => (
+              <SaidaCard key={s.saida_id} saida={s} />
+            ))}
+          </div>
+        </section>
+      )}
 
       {historico.length > 0 && (
         <section className="mt-10">

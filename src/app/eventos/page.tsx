@@ -11,6 +11,9 @@ const ESTILO_TIPO: Record<string, { label: string; color: TagColor }> = {
   recebimento_divergencia: { label: "Divergência", color: "amber" },
   recusa_nota: { label: "Recusa", color: "red" },
   mapeamento_insumo: { label: "Mapeamento", color: "blue" },
+  recebimento_expedicao: { label: "OS recebida", color: "teal" },
+  recebimento_expedicao_divergencia: { label: "OS c/ divergência", color: "amber" },
+  recusa_expedicao: { label: "OS recusada", color: "red" },
 };
 
 function nome(rel: unknown, campo: string): string | null {
@@ -35,6 +38,14 @@ function detalhe(tipo: string, dados: unknown): string | null {
         return `${i.descricao}: esperado ${i.esperado}, recebido ${i.recebido} (faltou ${i.falta})`;
       })
       .join(" · ");
+  }
+  if (tipo.startsWith("recebimento_expedicao") || tipo === "recusa_expedicao") {
+    const partes = [
+      `${d.entregues ?? "?"} de ${d.total ?? "?"} kits`,
+      d.recebedor_nome ? `por ${String(d.recebedor_nome)}` : null,
+      d.motivo ? `Motivo: ${String(d.motivo)}` : null,
+    ].filter(Boolean);
+    return partes.join(" · ");
   }
   return null;
 }

@@ -17,12 +17,13 @@ export function AppShell({ userEmail, contexto, children }: Props) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
 
-  // Login, onboarding e a consulta pública de kit (/k/<token>) não usam a casca.
+  // Login, onboarding e as páginas públicas (/k/<token>, /os/<token>) não usam a casca.
   if (
     pathname === "/login" ||
     pathname === "/onboarding" ||
     pathname === "/apresentacao" ||
-    pathname.startsWith("/k/")
+    pathname.startsWith("/k/") ||
+    pathname.startsWith("/os/")
   ) {
     return <>{children}</>;
   }
