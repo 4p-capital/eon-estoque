@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { ConfirmDialog } from "@/app/_components/confirm-dialog";
 import { Button } from "@/components/ui/button";
 import { Tag } from "@/components/ui/tag";
+import { publicBaseUrl } from "@/lib/site-url";
 import { prorrogarRecebimento } from "@/app/saida/actions";
 import { statusSaida } from "@/app/saida/_components/status-saida";
 
@@ -35,9 +36,7 @@ function dataHoraBR(iso: string | null): string {
 }
 
 function urlOs(token: string): string {
-  const base =
-    process.env.NEXT_PUBLIC_SITE_URL ??
-    (typeof window !== "undefined" ? window.location.origin : "");
+  const base = publicBaseUrl();
   return base ? `${base}/os/${token}` : token;
 }
 
